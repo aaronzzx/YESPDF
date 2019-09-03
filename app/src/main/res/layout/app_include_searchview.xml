@@ -14,6 +14,7 @@
         android:background="@color/base_black_divider_shallow">
 
         <EditText
+            android:id="@+id/app_et_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -21,17 +22,23 @@
             android:background="@null"
             android:maxLines="1"
             android:singleLine="true"
+            android:drawableStart="@drawable/app_ic_action_search"
+            android:drawablePadding="8dp"
+            android:textSize="@dimen/base_text_large"
             android:hint="@string/app_name_en"
             android:textColorHint="@color/base_black_hint"
             tools:ignore="Autofill,TextFields" />
 
         <ImageButton
+            android:id="@+id/app_ibtn_clear"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
             android:layout_marginStart="4dp"
             android:background="@null"
-            android:src="@drawable/app_ic_action_clear"/>
+            android:src="@drawable/app_ic_action_clear"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
 
     </LinearLayout>
 
