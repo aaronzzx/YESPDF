@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="app_color_primary">#008577</color>
-    <color name="app_color_primary_dark">#00574B</color>
-    <color name="app_color_accent">#D81B60</color>
+    <color name="app_color_primary">#FFFFFF</color>
+    <color name="app_color_primary_dark">#FFFFFF</color>
+    <color name="app_color_accent">#E54F4F</color>
     <color name="app_ic_launcher_background">#E54F4F</color>
 </resources>

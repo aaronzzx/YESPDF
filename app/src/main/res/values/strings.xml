@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name_en">YES PDF!</string>
+    <string name="app_recent">最近</string>
+    <string name="app_all">全部</string>
+    <string name="app_more">更多</string>
 </resources>

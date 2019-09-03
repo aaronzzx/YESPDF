@@ -1,11 +1,36 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/app_color_primary</item>
         <item name="colorPrimaryDark">@color/app_color_primary_dark</item>
         <item name="colorAccent">@color/app_color_accent</item>
+    </style>
+
+    <style name="AppToolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:textAppearance">@style/AppTitleStyle</item>
+        <item name="titleTextColor">@color/app_color_accent</item>
+    </style>
+
+    <style name="AppTitleStyle" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTabStyle" parent="Widget.Design.TabLayout">
+        <item name="tabPaddingStart">16dp</item>
+        <item name="tabPaddingEnd">16dp</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabTextAppearance">@style/AppTabTextStyle</item>
+        <item name="tabTextColor">@color/base_black_hint</item>
+        <item name="tabSelectedTextColor">@color/base_black</item>
+        <item name="tabRippleColor">@color/base_transparent</item>
+    </style>
+
+    <style name="AppTabTextStyle" parent="Widget.Design.TabLayout">
+        <item name="android:textSize">@dimen/base_text_xxxhlarge</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

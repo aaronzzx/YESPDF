@@ -1,25 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.github.barteksc.pdfviewer.PDFView
-        android:id="@+id/app_pdfView"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/app_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppToolbarStyle"
+            app:layout_scrollFlags="scroll|snap|enterAlways"
+            tools:title="@string/app_name_en">
+
+            <include layout="@layout/app_include_searchview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/app_tab_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTabStyle">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_recent"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_all"/>
+
+        </com.google.android.material.tabs.TabLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/app_vp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <View
-        android:id="@+id/app_view_previous"
-        android:layout_width="120dp"
-        android:layout_height="match_parent"/>
-
-    <View
-        android:id="@+id/app_view_next"
-        android:layout_width="120dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"/>
-
-</RelativeLayout>
+</LinearLayout>

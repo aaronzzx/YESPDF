@@ -1,49 +1,30 @@
 package com.aaron.yespdf;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.Menu;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-import com.blankj.utilcode.constant.PermissionConstants;
-import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.PermissionUtils;
-import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnTapListener;
+public class MainActivity extends CommonActivity {
 
-import java.io.File;
+    @Override
+    protected int layoutId() {
+        return R.layout.app_activity_main;
+    }
 
-public class MainActivity extends AppCompatActivity {
+    @Override
+    protected Toolbar createToolbar() {
+        return findViewById(R.id.app_toolbar);
+    }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.app_activity_main);
-        final PDFView pdfView = findViewById(R.id.app_pdfView);
-        View previous = findViewById(R.id.app_view_previous);
-        View next = findViewById(R.id.app_view_next);
-        previous.setOnClickListener(v -> pdfView.jumpTo(pdfView.getCurrentPage() - 1, true));
-        next.setOnClickListener(v -> pdfView.jumpTo(pdfView.getCurrentPage() + 1, true));
-        PermissionUtils.permission(PermissionConstants.STORAGE)
-                .callback(new PermissionUtils.SimpleCallback() {
-                    @Override
-                    public void onGranted() {
-                        String path = "/storage/emulated/0/Android#Java/Java/Java 编程思想(原书第4版).pdf";
-                        pdfView.fromFile(new File(path))
-                                .swipeHorizontal(true)
-                                .pageSnap(true)
-                                .load();
-                    }
+    }
 
-                    @Override
-                    public void onDenied() {
-
-                    }
-                })
-                .request();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.app_main, menu);
+        return true;
     }
 }
