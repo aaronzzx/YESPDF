@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_tv_path"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:text="@string/app_internal_storage"
+    android:maxLines="1"
+    android:singleLine="true"
+    android:ellipsize="end"
+    android:maxEms="16"
+    android:drawableEnd="@drawable/app_ic_navigate_next_black_20dp"
+    tools:text="内部存储设备内部存储设备内部存储设备内部存储设备"/>

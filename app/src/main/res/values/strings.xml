@@ -3,4 +3,11 @@
     <string name="app_recent">最近</string>
     <string name="app_all">全部</string>
     <string name="app_more">更多</string>
+
+    <string name="app_import">导入</string>
+    <string name="app_about">关于</string>
+    <string name="app_settings">设置</string>
+
+    <string name="app_import_pdf">导入PDF</string>
+    <string name="app_internal_storage">内部存储设备</string>
 </resources>

@@ -22,7 +22,7 @@
             android:background="@null"
             android:maxLines="1"
             android:singleLine="true"
-            android:drawableStart="@drawable/app_ic_action_search"
+            android:drawableStart="@drawable/app_ic_action_search_grey"
             android:drawablePadding="8dp"
             android:textSize="@dimen/base_text_large"
             android:hint="@string/app_name_en"
@@ -36,7 +36,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="4dp"
             android:background="@null"
-            android:src="@drawable/app_ic_action_clear"
+            android:src="@drawable/app_ic_action_clear_grey"
             android:visibility="gone"
             tools:ignore="ContentDescription" />
 

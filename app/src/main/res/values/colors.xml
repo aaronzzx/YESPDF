@@ -3,5 +3,5 @@
     <color name="app_color_primary">#FFFFFF</color>
     <color name="app_color_primary_dark">#FFFFFF</color>
     <color name="app_color_accent">#E54F4F</color>
-    <color name="app_ic_launcher_background">#E54F4F</color>
+    <color name="app_ic_launcher_background">#FFFFFF</color>
 </resources>

@@ -9,7 +9,7 @@
     </style>
 
     <style name="AppToolbarStyle" parent="Widget.AppCompat.Toolbar">
-        <item name="android:textAppearance">@style/AppTitleStyle</item>
+        <item name="titleTextAppearance">@style/AppTitleStyle</item>
         <item name="titleTextColor">@color/app_color_accent</item>
     </style>
 
@@ -31,6 +31,11 @@
     <style name="AppTabTextStyle" parent="Widget.Design.TabLayout">
         <item name="android:textSize">@dimen/base_text_xxxhlarge</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppPopupWindow" parent="Widget.AppCompat.PopupWindow">
+        <item name="android:windowEnterAnimation">@anim/app_pw_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/app_pw_fade_out</item>
     </style>
 
 </resources>
