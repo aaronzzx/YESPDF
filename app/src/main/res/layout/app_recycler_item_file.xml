@@ -7,10 +7,10 @@
     android:background="?selectableItemBackground">
 
     <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:id="@+id/app_iv_icon"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:layout_gravity="center"
-        android:scaleType="centerCrop"
         android:src="@drawable/app_ic_folder_yellow_24dp"
         tools:ignore="ContentDescription" />
 
@@ -28,11 +28,10 @@
             android:layout_height="wrap_content"
             android:textColor="@color/base_black"
             android:textStyle="bold"
-            android:textSize="@dimen/base_text_large"
+            android:textSize="@dimen/base_text_normal"
             android:maxLines="1"
             android:singleLine="true"
             android:ellipsize="end"
-            android:text="Android#Java"
             tools:text="Android#JavaAndroid#JavaAndroid#Java"/>
 
         <TextView
@@ -44,12 +43,12 @@
             android:textSize="@dimen/base_text_small"
             android:maxLines="1"
             android:singleLine="true"
-            android:text="3项 - 2019年9月4日 14:19"
             tools:text="3项 - 2019年9月4日 14:19"/>
 
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/app_iv_next"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="center"

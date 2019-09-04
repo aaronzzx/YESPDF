@@ -16,18 +16,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aaron.yespdf.CommonActivity;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.PathUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class SelectActivity extends CommonActivity implements View.OnClickListener {
+public class SelectActivity extends CommonActivity implements View.OnClickListener, Communicable {
 
     @BindView(R2.id.app_ll) ViewGroup mVgPath;
     @BindView(R2.id.app_tv_path) TextView mTvPath;
     @BindView(R2.id.app_rv_select) RecyclerView mRvSelect;
 
     private Unbinder mUnbinder;
+    private Listable mListable;
+    private RecyclerView.Adapter mAdapter;
+    private List<File> mFileList = new ArrayList<>();
+
+    private String mPreviousPath = "";
+    private String mCurrentPath = "/storage/emulated/0";
 
     public static void start(Context context) {
         Intent starter = new Intent(context, SelectActivity.class);
@@ -59,6 +71,17 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
     }
 
     @Override
+    public void onBackPressed() {
+        if (mCurrentPath.endsWith("0")) {
+            super.onBackPressed();
+        } else {
+            mPreviousPath = mCurrentPath.substring(0, mCurrentPath.lastIndexOf("/"));
+            handleJump(mPreviousPath);
+            backPath();
+        }
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
@@ -66,10 +89,44 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
+        String path = (String) view.getTag();
+        handleJump(path);
+        jumpPath(view);
+    }
+
+    @Override
+    public void onTap(View view, String path) {
+        LogUtils.e(path);
+        handleJump(path);
+        setCurPath(path);
+    }
+
+    private void jumpPath(View view) {
+        int index = mVgPath.indexOfChild(view);
+        int count = mVgPath.getChildCount();
+        mVgPath.removeViews(index + 1,count - index - 1);
+    }
+
+    private void backPath() {
+        int index = mVgPath.getChildCount() - 1;
+        mVgPath.removeViews(index,1);
+    }
+
+    private void handleJump(String path) {
+        mPreviousPath = mCurrentPath;
+        mCurrentPath = path;
+        mFileList.clear();
+        mFileList.addAll(mListable.listFile(path));
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void setCurPath(String path) {
+        String curPath = path.substring(path.lastIndexOf("/") + 1);
         LayoutInflater inflater = LayoutInflater.from(this);
         TextView tvPath = (TextView) inflater.inflate(R.layout.app_include_tv_path, null);
         tvPath.setOnClickListener(this);
-        tvPath.setText("Android#Java");
+        tvPath.setText(curPath);
+        tvPath.setTag(path);
         mVgPath.addView(tvPath);
     }
 
@@ -87,10 +144,13 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
 
     private void initView(Bundle savedInstanceState) {
         mTvPath.setOnClickListener(this);
+        mTvPath.setTag(mCurrentPath);
 
         RecyclerView.LayoutManager lm = new LinearLayoutManager(this);
         mRvSelect.setLayoutManager(lm);
-        RecyclerView.Adapter adapter = new SelectAdapter();
-        mRvSelect.setAdapter(adapter);
+        mListable = new ByNameListable();
+        mFileList = mListable.listFile(PathUtils.getExternalStoragePath());
+        mAdapter = new SelectAdapter(mFileList);
+        mRvSelect.setAdapter(mAdapter);
     }
 }

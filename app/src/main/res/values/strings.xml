@@ -8,6 +8,6 @@
     <string name="app_about">关于</string>
     <string name="app_settings">设置</string>
 
-    <string name="app_import_pdf">导入PDF</string>
+    <string name="app_import_pdf">导入 PDF</string>
     <string name="app_internal_storage">内部存储设备</string>
 </resources>
