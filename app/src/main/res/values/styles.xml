@@ -33,9 +33,14 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="AppPopupWindow" parent="Widget.AppCompat.PopupWindow">
+    <style name="AppPwMenu" parent="Widget.AppCompat.PopupWindow">
         <item name="android:windowEnterAnimation">@anim/app_pw_fade_in</item>
         <item name="android:windowExitAnimation">@anim/app_pw_fade_out</item>
+    </style>
+
+    <style name="AppPwCollection" parent="Widget.AppCompat.PopupWindow">
+        <item name="android:windowEnterAnimation">@anim/app_pw_collection_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/app_pw_collection_fade_out</item>
     </style>
 
 </resources>

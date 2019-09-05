@@ -24,8 +24,8 @@ public final class UiManager {
             StatusBarUtils.setColor(activity, Color.WHITE, 0);
             StatusBarUtils.setStatusBarLight(activity, true);
         } else {
-//            StatusBarUtils.setTranslucent(activity, 60);
             StatusBarUtils.setColor(activity, Color.WHITE, 60);
+//            StatusBarUtils.setTranslucent(activity, 60);
         }
     }
 

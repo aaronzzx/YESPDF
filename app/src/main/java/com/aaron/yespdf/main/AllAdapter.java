@@ -44,8 +44,9 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View itemView = inflater.inflate(R.layout.app_recycler_item_collection, parent, false);
+        View itemView = inflater.inflate(R.layout.app_recycler_item_all, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
+        holder.itemView.setOnClickListener(v -> ((Communicable) context).onTap());
         return holder;
     }
 
@@ -62,7 +63,7 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return 3 * 6;
+        return 3 * 3;
     }
 
     private void setCover(ImageView ivCover, Bitmap bitmap) {

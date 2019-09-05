@@ -2,9 +2,11 @@ package com.aaron.yespdf.main;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,37 +58,11 @@ public class AllFragment extends BaseFragment {
     }
 
     private void initView() {
-        mRvAll.addItemDecoration(new XItemDecoration());
-        mRvAll.addItemDecoration(new YItemDecoration());
+        mRvAll.addItemDecoration(new XGridDecoration());
+        mRvAll.addItemDecoration(new YGridDecoration());
         RecyclerView.LayoutManager lm = new GridLayoutManager(mActivity, 3);
         mRvAll.setLayoutManager(lm);
         RecyclerView.Adapter adapter = new AllAdapter();
         mRvAll.setAdapter(adapter);
-    }
-
-    private static class XItemDecoration extends RecyclerView.ItemDecoration {
-        @Override
-        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-            int pos = parent.getChildAdapterPosition(view);
-            switch (pos % 3) {
-                case 0:
-                case 1:
-                case 2:
-                    outRect.left = ConvertUtils.dp2px(8);
-                    outRect.right = ConvertUtils.dp2px(8);
-                    break;
-            }
-        }
-    }
-
-    private static class YItemDecoration extends RecyclerView.ItemDecoration {
-        @Override
-        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-            if (parent.getChildAdapterPosition(view) < 3) {
-                outRect.top = ConvertUtils.dp2px(8);
-            } else {
-                outRect.top = ConvertUtils.dp2px(24);
-            }
-        }
     }
 }

@@ -2,69 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/app_iv_cover"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        android:padding="4dp"
-        android:clipToPadding="false"
-        android:clipChildren="false"
-        android:background="@drawable/app_shape_rect"
-        tools:ignore="UselessParent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/app_iv_1"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_weight="1"
-                android:background="@color/base_transparent"
-                tools:background="@color/app_color_accent"/>
-
-            <ImageView
-                android:id="@+id/app_iv_2"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:background="@color/base_transparent"
-                tools:background="@color/app_color_accent"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp">
-
-            <ImageView
-                android:id="@+id/app_iv_3"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_weight="1"
-                android:background="@color/base_transparent"
-                tools:background="@color/app_color_accent"/>
-
-            <ImageView
-                android:id="@+id/app_iv_4"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:background="@color/base_transparent"
-                tools:background="@color/app_color_accent"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+        android:layout_height="144dp"
+        tools:background="@color/app_color_accent"/>
 
     <LinearLayout
         android:layout_width="106dp"
@@ -78,16 +24,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="2"
+            android:ellipsize="end"
             android:textColor="@color/base_black"
             android:textStyle="bold"
-            tools:text="程序员的数学线性代数"/>
+            android:textSize="@dimen/base_text_small"
+            tools:text="大话设计模式"/>
 
         <TextView
-            android:id="@+id/app_tv_count"
+            android:id="@+id/app_tv_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/base_text_small"
-            tools:text="共 8 本"/>
+            android:textSize="10sp"
+            tools:text="已读 23.5%"
+            tools:ignore="SmallSp" />
 
     </LinearLayout>
 
