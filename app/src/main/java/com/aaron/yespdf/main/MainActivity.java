@@ -13,6 +13,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
@@ -31,8 +32,8 @@ import butterknife.Unbinder;
 
 public class MainActivity extends CommonActivity {
 
-    @BindView(R2.id.app_et_search)  EditText mEtSearch;
-    @BindView(R2.id.app_ibtn_clear) ImageButton mIbtnClear;
+//    @BindView(R2.id.app_et_search)  EditText mEtSearch;
+//    @BindView(R2.id.app_ibtn_clear) ImageButton mIbtnClear;
     @BindView(R2.id.app_tab_layout) TabLayout mTabLayout;
     @BindView(R2.id.app_vp)         ViewPager mVp;
 
@@ -84,31 +85,36 @@ public class MainActivity extends CommonActivity {
         initPopupWindow();
 
         // 监听软键盘是否打开，如果是则让 EditText 显示光标，否则不显示。
-        KeyboardUtils.registerSoftInputChangedListener(this, height -> mEtSearch.setCursorVisible(height > 0));
-        mEtSearch.addTextChangedListener(new TextWatcherImpl() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() != 0) {
-                    mIbtnClear.setVisibility(View.VISIBLE);
-                } else {
-                    mIbtnClear.setVisibility(View.GONE);
-                }
-            }
-        });
-        mIbtnClear.setOnClickListener(v -> {
-            mEtSearch.setText("");
-            if (!KeyboardUtils.isSoftInputVisible(MainActivity.this)) {
-                KeyboardUtils.showSoftInput(MainActivity.this);
-            }
-        });
+//        KeyboardUtils.registerSoftInputChangedListener(this, height -> mEtSearch.setCursorVisible(height > 0));
+//        mEtSearch.addTextChangedListener(new TextWatcherImpl() {
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                if (charSequence.length() != 0) {
+//                    mIbtnClear.setVisibility(View.VISIBLE);
+//                } else {
+//                    mIbtnClear.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//        mIbtnClear.setOnClickListener(v -> {
+//            mEtSearch.setText("");
+//            if (!KeyboardUtils.isSoftInputVisible(MainActivity.this)) {
+//                KeyboardUtils.showSoftInput(MainActivity.this);
+//            }
+//        });
         mTabLayout.setupWithViewPager(mVp);
         mVp.setAdapter(new MainFragmentAdapter(getSupportFragmentManager()));
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
     }
 
     private void initPopupWindow() {
         View pwView = LayoutInflater.from(this).inflate(R.layout.app_pw_main, null);
         TextView tvImport   = pwView.findViewById(R.id.app_tv_import);
-        TextView tvSettings = pwView.findViewById(R.id.app_tv_settings);
+//        TextView tvSettings = pwView.findViewById(R.id.app_tv_settings);
         TextView tvAbout    = pwView.findViewById(R.id.app_tv_about);
         mPwMenu = new PopupWindow(pwView);
         tvImport.setOnClickListener(v -> {
@@ -116,10 +122,9 @@ public class MainActivity extends CommonActivity {
             SelectActivity.start(this);
             mPwMenu.dismiss();
         });
-        tvSettings.setOnClickListener(v -> {
-            // TODO: 2019/9/4 App 设置逻辑
-            mPwMenu.dismiss();
-        });
+//        tvSettings.setOnClickListener(v -> {
+//            mPwMenu.dismiss();
+//        });
         tvAbout.setOnClickListener(v -> {
             // TODO: 2019/9/4 App 关于逻辑
             mPwMenu.dismiss();

@@ -1,11 +1,15 @@
 package com.aaron.yespdf.filepicker;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -13,9 +17,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.aaron.base.impl.OnClickListenerImpl;
 import com.aaron.yespdf.CommonActivity;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.UiManager;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
 
@@ -29,17 +35,32 @@ import butterknife.Unbinder;
 
 public class SelectActivity extends CommonActivity implements View.OnClickListener, Communicable {
 
+    @BindView(R2.id.app_iv_check) ImageView mCbSelectAll;
+    @BindView(R2.id.app_horizontal_sv) HorizontalScrollView mHorizontalSv;
     @BindView(R2.id.app_ll) ViewGroup mVgPath;
     @BindView(R2.id.app_tv_path) TextView mTvPath;
     @BindView(R2.id.app_rv_select) RecyclerView mRvSelect;
+    @BindView(R2.id.app_tv_import_count) TextView mTvImportCount;
 
     private Unbinder mUnbinder;
     private Listable mListable;
     private RecyclerView.Adapter mAdapter;
     private List<File> mFileList = new ArrayList<>();
+    private List<String> mPathList = new ArrayList<>();
 
     private String mPreviousPath = "";
-    private String mCurrentPath = "/storage/emulated/0";
+    private String mCurrentPath = PathUtils.getExternalStoragePath();
+
+    private RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            mCbSelectAll.setSelected(false);
+            mTvImportCount.setText(R.string.app_import_count);
+            mPathList.clear();
+            ((AdapterComm) mAdapter).init();
+            handleCbSelectAll();
+        }
+    };
 
     public static void start(Context context) {
         Intent starter = new Intent(context, SelectActivity.class);
@@ -68,6 +89,7 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
     protected void onDestroy() {
         super.onDestroy();
         mUnbinder.unbind();
+        mAdapter.unregisterAdapterDataObserver(mDataObserver);
     }
 
     @Override
@@ -95,13 +117,23 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
     }
 
     @Override
-    public void onTap(View view, String path) {
+    public void onDirTap(String path) {
         LogUtils.e(path);
         handleJump(path);
         setCurPath(path);
     }
 
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onSelectResult(List<String> pathList, int total) {
+        mCbSelectAll.setSelected(pathList.size() == total);
+        mTvImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
+        mPathList.clear();
+        mPathList.addAll(pathList);
+    }
+
     private void jumpPath(View view) {
+
         int index = mVgPath.indexOfChild(view);
         int count = mVgPath.getChildCount();
         mVgPath.removeViews(index + 1,count - index - 1);
@@ -145,12 +177,41 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
     private void initView(Bundle savedInstanceState) {
         mTvPath.setOnClickListener(this);
         mTvPath.setTag(mCurrentPath);
+        mTvImportCount.setOnClickListener(new OnClickListenerImpl() {
+            @Override
+            public void onViewClick(View v, long interval) {
+                LogUtils.e(mPathList);
+                if (mPathList.isEmpty()) {
+                    UiManager.showShort(R.string.app_have_not_select);
+                } else {
+                    finish();
+                    UiManager.showShort(R.string.app_import_success);
+                }
+            }
+        });
+        mCbSelectAll.setOnClickListener(v -> {
+            mCbSelectAll.setSelected(!mCbSelectAll.isSelected());
+            ((AdapterComm) mAdapter).selectAll();
+        });
 
         RecyclerView.LayoutManager lm = new LinearLayoutManager(this);
         mRvSelect.setLayoutManager(lm);
         mListable = new ByNameListable();
         mFileList = mListable.listFile(PathUtils.getExternalStoragePath());
         mAdapter = new SelectAdapter(mFileList);
+        mAdapter.registerAdapterDataObserver(mDataObserver);
         mRvSelect.setAdapter(mAdapter);
+    }
+
+    private void handleCbSelectAll() {
+        boolean noFile = false;
+        if (!mFileList.isEmpty()) {
+            for (File file : mFileList) {
+                noFile = !file.isFile();
+            }
+        } else {
+            noFile = true;
+        }
+        mCbSelectAll.setEnabled(!noFile);
     }
 }

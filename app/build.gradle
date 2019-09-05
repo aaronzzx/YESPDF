@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 29
@@ -26,6 +27,14 @@ android {
     }
 }
 
+//greendao {
+//    schemaVersion 1//数据库版本号
+//    daoPackage 'com.aaron.yespdf.greendao'//设置DaoMaster、DaoSession、Dao包名
+//    targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
+//    //targetGenDirTest：设置生成单元测试目录
+//    //generateTests：设置自动生成单元测试用例
+//}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -39,4 +48,5 @@ dependencies {
     implementation 'com.aaron:base:1.1.5-beta9'
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+    implementation 'org.greenrobot:greendao:3.2.2'
 }

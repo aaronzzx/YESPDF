@@ -27,22 +27,22 @@
             android:drawableStart="@drawable/app_ic_action_import_black"
             android:drawablePadding="16dp"/>
 
-        <TextView
-            android:id="@+id/app_tv_settings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:textSize="@dimen/base_text_large"
-            android:textColor="@color/base_black"
-            android:background="?selectableItemBackground"
-            android:textStyle="bold"
-            android:text="@string/app_settings"
-            android:drawableStart="@drawable/app_ic_action_settings_black"
-            android:drawablePadding="16dp"/>
+<!--        <TextView-->
+<!--            android:id="@+id/app_tv_settings"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:paddingTop="12dp"-->
+<!--            android:paddingBottom="12dp"-->
+<!--            android:textSize="@dimen/base_text_large"-->
+<!--            android:textColor="@color/base_black"-->
+<!--            android:background="?selectableItemBackground"-->
+<!--            android:textStyle="bold"-->
+<!--            android:text="@string/app_settings"-->
+<!--            android:drawableStart="@drawable/app_ic_action_settings_black"-->
+<!--            android:drawablePadding="16dp"/>-->
 
         <TextView
             android:id="@+id/app_tv_about"

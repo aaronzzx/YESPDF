@@ -3,11 +3,15 @@
     <string name="app_recent">最近</string>
     <string name="app_all">全部</string>
     <string name="app_more">更多</string>
+    <string name="app_select_all">全选</string>
 
     <string name="app_import">导入</string>
+    <string name="app_import_count">导入(0)</string>
     <string name="app_about">关于</string>
     <string name="app_settings">设置</string>
 
     <string name="app_import_pdf">导入 PDF</string>
     <string name="app_internal_storage">内部存储设备</string>
+    <string name="app_have_not_select">还没选择文件噢~</string>
+    <string name="app_import_success">导入成功</string>
 </resources>
