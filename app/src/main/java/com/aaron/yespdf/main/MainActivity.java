@@ -1,5 +1,6 @@
 package com.aaron.yespdf.main;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,14 +29,17 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.BlurUtils;
 import com.aaron.yespdf.common.CommonActivity;
-import com.aaron.yespdf.common.DBManager;
+import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
+import com.aaron.yespdf.common.utils.DialogUtils;
 import com.aaron.yespdf.filepicker.SelectActivity;
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 import com.google.android.material.tabs.TabLayout;
 
@@ -59,6 +63,7 @@ public class MainActivity extends CommonActivity implements Communicable {
     @BindView(R2.id.app_black_cover) View mBlackCover;
 
     private Unbinder mUnbinder;
+    private Dialog mLoadingDialog;
     private PopupWindow mPwMenu;
     private PopupWindow mPwCollection;
 
@@ -99,11 +104,23 @@ public class MainActivity extends CommonActivity implements Communicable {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECT_REQUEST_CODE && resultCode == RESULT_OK) {
             if (data != null) {
+                mLoadingDialog.show();
                 List<String> pathList = data.getStringArrayListExtra(SelectActivity.EXTRA_SELECTED);
-                try {
-                    if (pathList != null) DBManager.insert(pathList);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (pathList != null) {
+                    ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<Object>() {
+                        @Nullable
+                        @Override
+                        public Object doInBackground() throws Throwable {
+                            DBHelper.insert(pathList);
+                            return null;
+                        }
+
+                        @Override
+                        public void onSuccess(@Nullable Object result) {
+                            mLoadingDialog.dismiss();
+                            UiManager.showShort(R.string.app_import_success);
+                        }
+                    });
                 }
             }
         }
@@ -130,13 +147,15 @@ public class MainActivity extends CommonActivity implements Communicable {
     public void onTap(String name) {
         mTvCollectionTitle.setText(name);
         mPDFList.clear();
-        mPDFList.addAll(DBManager.queryPDF(name));
+        mPDFList.addAll(DBHelper.queryPDF(name));
         mCollectionAdapter.notifyDataSetChanged();
         mPwCollection.showAtLocation(mVp, Gravity.CENTER, 0, 0);
         showBlackCover();
     }
 
     private void initView(Bundle savedInstanceState) {
+        mLoadingDialog = DialogUtils.createDialog(this, R.layout.app_dialog_loading);
+
         initPwMenu();
         initPwCollection();
 
@@ -202,7 +221,7 @@ public class MainActivity extends CommonActivity implements Communicable {
         RecyclerView.LayoutManager lm = new GridLayoutManager(this, 3);
         mRvCollection.setLayoutManager(lm);
 
-        mCollectionAdapter = new CollectionAdapter(mPDFList);
+        mCollectionAdapter = new PDFAdapter(mPDFList);
         mRvCollection.setAdapter(mCollectionAdapter);
         mPwCollection = new PopupWindow(pwView);
         mPwCollection.setOnDismissListener(() -> {
@@ -214,7 +233,7 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPwCollection.setFocusable(true);
         mPwCollection.setOutsideTouchable(true);
         mPwCollection.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        mPwCollection.setHeight(ConvertUtils.dp2px(500));
+        mPwCollection.setHeight(ConvertUtils.dp2px(490));
         mPwCollection.setElevation(ConvertUtils.dp2px(2));
     }
 

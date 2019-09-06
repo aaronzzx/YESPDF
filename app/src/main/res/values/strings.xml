@@ -14,4 +14,5 @@
     <string name="app_internal_storage">内部存储设备</string>
     <string name="app_have_not_select">还没选择文件噢~</string>
     <string name="app_import_success">导入成功</string>
+    <string name="app_wait_a_moment">请稍候…</string>
 </resources>

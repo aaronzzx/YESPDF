@@ -5,10 +5,13 @@
     android:layout_height="match_parent"
     android:background="@color/base_white">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/app_rv_recent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="RecentFragment"/>
+        android:overScrollMode="never"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"/>
 
 </LinearLayout>

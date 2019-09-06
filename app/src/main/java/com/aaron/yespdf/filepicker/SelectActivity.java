@@ -190,7 +190,6 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
                     Intent data = new Intent();
                     data.putStringArrayListExtra(EXTRA_SELECTED, (ArrayList<String>) mPathList);
                     setResult(RESULT_OK, data);
-                    UiManager.showShort(R.string.app_import_success);
                     finish();
                 }
             }

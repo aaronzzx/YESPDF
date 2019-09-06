@@ -77,7 +77,7 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mContext = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View itemView = inflater.inflate(R.layout.app_recycler_item_file, parent, false);
+        View itemView = inflater.inflate(R.layout.app_recycler_item_filepicker, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
         mCbList.add(holder.cb);
         holder.itemView.setOnClickListener(v -> {

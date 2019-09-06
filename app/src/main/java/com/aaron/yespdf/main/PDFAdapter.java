@@ -14,22 +14,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.preview.PreviewActivity;
+import com.blankj.utilcode.util.TimeUtils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<PDF> mPDFList;
 
-    CollectionAdapter(List<PDF> pdfList) {
+    PDFAdapter(List<PDF> pdfList) {
         mPDFList = pdfList;
     }
 
+    @SuppressLint("SimpleDateFormat")
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,7 +44,13 @@ class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ViewHolder holder = new ViewHolder(itemView);
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
-            PreviewActivity.start(context, mPDFList.get(pos).getPath());
+            PDF pdf = mPDFList.get(pos);
+            long cur = System.currentTimeMillis();
+            DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+            pdf.setLatestRead(Long.parseLong(TimeUtils.millis2String(cur, df)));
+            DBHelper.updatePDF(pdf);
+            DBHelper.insertRecent(pdf);
+            PreviewActivity.start(context, pdf.getPath());
         });
         return holder;
     }

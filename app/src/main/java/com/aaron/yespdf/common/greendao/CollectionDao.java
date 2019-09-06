@@ -51,7 +51,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
                 "\"COVER2\" TEXT," + // 2: cover2
                 "\"COVER3\" TEXT," + // 3: cover3
                 "\"COVER4\" TEXT," + // 4: cover4
-                "\"NAME\" TEXT," + // 5: name
+                "\"NAME\" TEXT UNIQUE ," + // 5: name
                 "\"COUNT\" INTEGER NOT NULL );"); // 6: count
     }
 

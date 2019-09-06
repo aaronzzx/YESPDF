@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
-import com.aaron.yespdf.common.DBManager;
+import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.bean.Collection;
 import com.blankj.utilcode.util.StringUtils;
@@ -28,7 +28,7 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Collection> mCollections;
 
     AllAdapter() {
-        mCollections = DBManager.queryAllCollection();
+        mCollections = DBHelper.queryAllCollection();
     }
 
     @NonNull

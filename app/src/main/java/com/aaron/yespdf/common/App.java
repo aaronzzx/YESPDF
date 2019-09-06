@@ -10,8 +10,6 @@ import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
  */
 public class App extends Application {
 
-    private static final String DB_NAME = "yespdf.db";
-
     private static Context sContext;
 
     @Override
@@ -19,7 +17,7 @@ public class App extends Application {
         super.onCreate();
         sContext = this.getApplicationContext();
 
-        DBManager.init(this, DB_NAME);
+        DBHelper.init(this, AppConfig.DB_NAME);
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
     }
 

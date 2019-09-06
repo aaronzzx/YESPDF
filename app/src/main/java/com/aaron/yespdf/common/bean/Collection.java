@@ -3,6 +3,7 @@ package com.aaron.yespdf.common.bean;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Unique;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -15,7 +16,7 @@ public class Collection {
     String cover2;
     String cover3;
     String cover4;
-    String name;
+    @Unique String name;
     int count;
 
     public Collection() {

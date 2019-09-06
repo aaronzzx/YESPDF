@@ -20,12 +20,13 @@ public class PDF {
     int curPage;
     int totalPage;
     int bookmarkPage;
+    long latestRead;
 
     public PDF() {
 
     }
 
-    public PDF(String path, String dir, String name, String cover, String progress, int curPage, int totalPage, int bookmarkPage) {
+    public PDF(String path, String dir, String name, String cover, String progress, int curPage, int totalPage, int bookmarkPage, long latestRead) {
         this.path = path;
         this.dir = dir;
         this.name = name;
@@ -34,11 +35,12 @@ public class PDF {
         this.curPage = curPage;
         this.totalPage = totalPage;
         this.bookmarkPage = bookmarkPage;
+        this.latestRead = latestRead;
     }
 
-    @Generated(hash = 1265867610)
-    public PDF(Long id, String path, String dir, String name, String cover, String progress, int curPage, int totalPage,
-            int bookmarkPage) {
+    @Generated(hash = 1105056540)
+    public PDF(Long id, String path, String dir, String name, String cover, String progress, int curPage, int totalPage, int bookmarkPage,
+            long latestRead) {
         this.id = id;
         this.path = path;
         this.dir = dir;
@@ -48,6 +50,7 @@ public class PDF {
         this.curPage = curPage;
         this.totalPage = totalPage;
         this.bookmarkPage = bookmarkPage;
+        this.latestRead = latestRead;
     }
 
     @Override
@@ -62,6 +65,7 @@ public class PDF {
                 ", curPage=" + curPage +
                 ", totalPage=" + totalPage +
                 ", bookmarkPage=" + bookmarkPage +
+                ", latestRead=" + latestRead +
                 '}';
     }
 
@@ -135,5 +139,13 @@ public class PDF {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public long getLatestRead() {
+        return latestRead;
+    }
+
+    public void setLatestRead(long latestRead) {
+        this.latestRead = latestRead;
     }
 }
