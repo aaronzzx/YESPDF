@@ -1,8 +1,8 @@
 package com.aaron.yespdf.main;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -17,22 +17,29 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.aaron.yespdf.BlurUtils;
-import com.aaron.yespdf.CommonActivity;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.common.BlurUtils;
+import com.aaron.yespdf.common.CommonActivity;
+import com.aaron.yespdf.common.DBManager;
+import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.filepicker.SelectActivity;
+import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.PermissionUtils;
+import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +47,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+@ParallaxBack
 public class MainActivity extends CommonActivity implements Communicable {
+
+    static final int SELECT_REQUEST_CODE = 101;
 
     //    @BindView(R2.id.app_et_search)  EditText mEtSearch;
 //    @BindView(R2.id.app_ibtn_clear) ImageButton mIbtnClear;
@@ -51,7 +61,12 @@ public class MainActivity extends CommonActivity implements Communicable {
     private Unbinder mUnbinder;
     private PopupWindow mPwMenu;
     private PopupWindow mPwCollection;
+
+    private TextView mTvCollectionTitle;
     private RecyclerView mRvCollection;
+    private RecyclerView.Adapter mCollectionAdapter;
+
+    private List<PDF> mPDFList = new ArrayList<>();
 
     @Override
     protected int layoutId() {
@@ -66,6 +81,8 @@ public class MainActivity extends CommonActivity implements Communicable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PermissionUtils.permission(PermissionConstants.STORAGE)
+                .request();
         mUnbinder = ButterKnife.bind(this);
         initView(savedInstanceState);
     }
@@ -75,6 +92,21 @@ public class MainActivity extends CommonActivity implements Communicable {
         super.onDestroy();
         mUnbinder.unbind();
         KeyboardUtils.unregisterSoftInputChangedListener(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECT_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (data != null) {
+                List<String> pathList = data.getStringArrayListExtra(SelectActivity.EXTRA_SELECTED);
+                try {
+                    if (pathList != null) DBManager.insert(pathList);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -95,14 +127,13 @@ public class MainActivity extends CommonActivity implements Communicable {
     }
 
     @Override
-    public void onTap() {
+    public void onTap(String name) {
+        mTvCollectionTitle.setText(name);
+        mPDFList.clear();
+        mPDFList.addAll(DBManager.queryPDF(name));
+        mCollectionAdapter.notifyDataSetChanged();
         mPwCollection.showAtLocation(mVp, Gravity.CENTER, 0, 0);
         showBlackCover();
-//        applyBlur();
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-//        WindowManager.LayoutParams lp = getWindow().getAttributes();
-//        lp.alpha = 0.3f;
-//        getWindow().setAttributes(lp);
     }
 
     private void initView(Bundle savedInstanceState) {
@@ -144,7 +175,7 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPwMenu = new PopupWindow(pwView);
         tvImport.setOnClickListener(v -> {
             // TODO: 2019/9/4 导入 PDF 逻辑
-            SelectActivity.start(this);
+            SelectActivity.start(this, SELECT_REQUEST_CODE);
             mPwMenu.dismiss();
         });
 //        tvSettings.setOnClickListener(v -> {
@@ -164,27 +195,19 @@ public class MainActivity extends CommonActivity implements Communicable {
 
     private void initPwCollection() {
         View pwView = LayoutInflater.from(this).inflate(R.layout.app_pw_collection, null);
+        mTvCollectionTitle = pwView.findViewById(R.id.app_tv_title);
         mRvCollection = pwView.findViewById(R.id.app_rv_collection);
         mRvCollection.addItemDecoration(new XGridDecoration());
         mRvCollection.addItemDecoration(new YGridDecoration());
         RecyclerView.LayoutManager lm = new GridLayoutManager(this, 3);
         mRvCollection.setLayoutManager(lm);
 
-        List<String> pathList = new ArrayList<>();
-        pathList.add("/storage/emulated/0/Android#Java/Java/算法(第4版).pdf");
-        pathList.add("/storage/emulated/0/Android#Java/Java/大话设计模式.pdf");
-        pathList.add("/storage/emulated/0/Android#Java/Java/Effective Java 第二版 中文版.pdf");
-        pathList.add("/storage/emulated/0/Android#Java/Java/Java 编程的逻辑.pdf");
-        RecyclerView.Adapter adapter = new CollectionAdapter(pathList);
-        mRvCollection.setAdapter(adapter);
+        mCollectionAdapter = new CollectionAdapter(mPDFList);
+        mRvCollection.setAdapter(mCollectionAdapter);
         mPwCollection = new PopupWindow(pwView);
         mPwCollection.setOnDismissListener(() -> {
             mRvCollection.scrollToPosition(0);
             hideBlackCover();
-//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-//            WindowManager.LayoutParams lp = getWindow().getAttributes();
-//            lp.alpha = 1.0F;
-//            getWindow().setAttributes(lp);
         });
 
         mPwCollection.setAnimationStyle(R.style.AppPwCollection);

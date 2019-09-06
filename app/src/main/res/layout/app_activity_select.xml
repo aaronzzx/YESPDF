@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/base_white"
     tools:context=".filepicker.SelectActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -40,10 +41,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:text="@string/app_import_count"
         android:textSize="@dimen/base_text_large"
-        android:textColor="@color/app_color_accent"/>
+        android:textColor="@color/app_color_accent"
+        android:background="@color/base_white"/>
 
 </LinearLayout>

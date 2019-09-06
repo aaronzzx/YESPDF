@@ -1,7 +1,7 @@
 package com.aaron.yespdf.main;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,30 +13,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
-import com.aaron.yespdf.PdfUtils;
+import com.aaron.yespdf.common.DBManager;
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.bean.Collection;
+import com.blankj.utilcode.util.StringUtils;
 
-import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
 class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Bitmap b1;
-    private Bitmap b2;
-    private Bitmap b3;
-    private Bitmap b4;
+    private List<Collection> mCollections;
 
     AllAdapter() {
-        try {
-            b1 = PdfUtils.pdfToBitmap("/storage/emulated/0/Android#Java/Java/算法(第4版).pdf", 0);
-            b2 = PdfUtils.pdfToBitmap("/storage/emulated/0/Android#Java/Java/大话设计模式.pdf", 0);
-            b3 = PdfUtils.pdfToBitmap("/storage/emulated/0/Android#Java/Java/Effective Java 第二版 中文版.pdf", 0);
-            b4 = PdfUtils.pdfToBitmap("/storage/emulated/0/Android#Java/Java/Java 编程的逻辑.pdf", 0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        mCollections = DBManager.queryAllCollection();
     }
 
     @NonNull
@@ -44,30 +36,37 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View itemView = inflater.inflate(R.layout.app_recycler_item_all, parent, false);
+        View itemView = inflater.inflate(R.layout.app_recycler_item_collection, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
-        holder.itemView.setOnClickListener(v -> ((Communicable) context).onTap());
+        holder.itemView.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            String name = mCollections.get(pos).getName();
+            ((Communicable) context).onTap(name);
+        });
         return holder;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         ViewHolder holder = (ViewHolder) viewHolder;
-        holder.tvTitle.setText("Java");
-        holder.tvCount.setText("共 16 本");
-        setCover(holder.ivCover1, b1);
-        setCover(holder.ivCover2, b2);
-        setCover(holder.ivCover3, b3);
-        setCover(holder.ivCover4, b4);
+        Collection collection = mCollections.get(position);
+        holder.tvTitle.setText(collection.getName());
+        holder.tvCount.setText("共 " + collection.getCount() + " 本");
+        setCover(holder.ivCover1, collection.getCover1());
+        setCover(holder.ivCover2, collection.getCover2());
+        setCover(holder.ivCover3, collection.getCover3());
+        setCover(holder.ivCover4, collection.getCover4());
     }
 
     @Override
     public int getItemCount() {
-        return 3 * 3;
+        return mCollections.size();
     }
 
-    private void setCover(ImageView ivCover, Bitmap bitmap) {
-        ImageLoader.load(ivCover.getContext(), new DefaultOption.Builder(bitmap)
+    private void setCover(ImageView ivCover, String path) {
+        if (StringUtils.isEmpty(path)) return;
+        ImageLoader.load(ivCover.getContext(), new DefaultOption.Builder(path)
                 .into(ivCover));
     }
 

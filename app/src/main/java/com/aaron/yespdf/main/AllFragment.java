@@ -1,12 +1,9 @@
 package com.aaron.yespdf.main;
 
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,9 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aaron.base.base.BaseFragment;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
-import com.blankj.utilcode.util.ConvertUtils;
-import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.ScreenUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

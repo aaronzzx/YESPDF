@@ -1,13 +1,13 @@
 package com.aaron.yespdf.filepicker;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,12 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.impl.OnClickListenerImpl;
-import com.aaron.yespdf.CommonActivity;
+import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
-import com.aaron.yespdf.UiManager;
+import com.aaron.yespdf.common.UiManager;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
+import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,7 +34,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+@ParallaxBack
 public class SelectActivity extends CommonActivity implements View.OnClickListener, Communicable {
+
+    public static final String EXTRA_SELECTED = "EXTRA_SELECTED";
 
     @BindView(R2.id.app_iv_check) ImageView mCbSelectAll;
     @BindView(R2.id.app_horizontal_sv) HorizontalScrollView mHorizontalSv;
@@ -62,9 +66,9 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
         }
     };
 
-    public static void start(Context context) {
-        Intent starter = new Intent(context, SelectActivity.class);
-        context.startActivity(starter);
+    public static void start(Activity activity, int requestCode) {
+        Intent starter = new Intent(activity, SelectActivity.class);
+        activity.startActivityForResult(starter, requestCode);
     }
 
     @Override
@@ -180,12 +184,14 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
         mTvImportCount.setOnClickListener(new OnClickListenerImpl() {
             @Override
             public void onViewClick(View v, long interval) {
-                LogUtils.e(mPathList);
                 if (mPathList.isEmpty()) {
                     UiManager.showShort(R.string.app_have_not_select);
                 } else {
-                    finish();
+                    Intent data = new Intent();
+                    data.putStringArrayListExtra(EXTRA_SELECTED, (ArrayList<String>) mPathList);
+                    setResult(RESULT_OK, data);
                     UiManager.showShort(R.string.app_import_success);
+                    finish();
                 }
             }
         });

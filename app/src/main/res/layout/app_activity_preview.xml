@@ -9,14 +9,30 @@
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/app_pdfview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="#000000"/>
+
+    <View
+        android:id="@+id/app_action_previous"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"/>
+
+    <View
+        android:id="@+id/app_action_next"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"/>
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/app_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:titleTextColor="@color/base_black"
+        android:layout_alignParentTop="true"
+        android:background="@color/app_preview_bar_bg"
+        app:contentInsetStartWithNavigation="0dp"
+        app:titleTextColor="@color/base_white"
         style="@style/AppToolbarStyle"
-        tools:title="大话设计模式"/>
+        tools:title="大话设计模式" />
 
 </RelativeLayout>

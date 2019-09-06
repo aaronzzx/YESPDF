@@ -1,4 +1,4 @@
-package com.aaron.yespdf;
+package com.aaron.yespdf.common;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,15 +18,25 @@ import com.blankj.utilcode.util.ToastUtils;
 public final class UiManager {
 
     public static void setStatusBar(Activity activity, Toolbar toolbar) {
-//        toolbar.setPadding(0, ConvertUtils.dp2px(25), 0, 0);
+        toolbar.setPadding(0, ConvertUtils.dp2px(25), 0, 0);
         int version = Build.VERSION.SDK_INT;
         if (version >= Build.VERSION_CODES.M) {
-            StatusBarUtils.setColor(activity, Color.WHITE, 0);
-            StatusBarUtils.setStatusBarLight(activity, true);
+            StatusBarUtils.setTransparent(activity, true);
+//            StatusBarUtils.setColor(activity, Color.WHITE, 0);
+//            StatusBarUtils.setStatusBarLight(activity, true);
         } else {
-            StatusBarUtils.setColor(activity, Color.WHITE, 60);
-//            StatusBarUtils.setTranslucent(activity, 60);
+//            StatusBarUtils.setColor(activity, Color.WHITE, 60);
+            StatusBarUtils.setTranslucent(activity, 60);
         }
+    }
+
+    public static void setTransparentStatusBar(Activity activity, Toolbar toolbar) {
+        toolbar.setPadding(0, ConvertUtils.dp2px(25), 0, 0);
+        StatusBarUtils.setTransparent(activity);
+    }
+
+    public static void setBlackNavigationBar(Activity activity) {
+        activity.getWindow().setNavigationBarColor(Color.BLACK);
     }
 
     public static void showShort(CharSequence text) {

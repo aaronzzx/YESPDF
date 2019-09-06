@@ -5,5 +5,5 @@ package com.aaron.yespdf.main;
  */
 interface Communicable {
 
-    void onTap();
+    void onTap(String name);
 }

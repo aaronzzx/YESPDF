@@ -1,4 +1,4 @@
-package com.aaron.yespdf;
+package com.aaron.yespdf.common;
 
 import android.os.Bundle;
 

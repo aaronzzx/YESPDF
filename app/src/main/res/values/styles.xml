@@ -15,6 +15,7 @@
 
     <style name="AppTitleStyle" parent="TextAppearance.AppCompat.Title">
         <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/base_text_hlarge</item>
     </style>
 
     <style name="AppTabStyle" parent="Widget.Design.TabLayout">
