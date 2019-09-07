@@ -46,4 +46,12 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+    <com.github.mmin18.widget.RealtimeBlurView
+        android:id="@+id/app_blur_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:realtimeBlurRadius="24dp"
+        app:realtimeOverlayColor="@color/base_white_shallow"
+        android:visibility="gone"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

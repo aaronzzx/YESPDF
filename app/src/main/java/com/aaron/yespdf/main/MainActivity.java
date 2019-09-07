@@ -1,5 +1,7 @@
 package com.aaron.yespdf.main;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -42,6 +44,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
+import com.github.mmin18.widget.RealtimeBlurView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.alterac.blurkit.BlurLayout;
 import jp.wasabeef.blurry.Blurry;
 
 @ParallaxBack
@@ -61,6 +65,7 @@ public class MainActivity extends CommonActivity implements Communicable {
 //    @BindView(R2.id.app_ibtn_clear) ImageButton mIbtnClear;
     @BindView(R2.id.app_tab_layout) TabLayout mTabLayout;
     @BindView(R2.id.app_vp) ViewPager mVp;
+    @BindView(R2.id.app_blur_view) RealtimeBlurView mBlurView;
 
     private Unbinder mUnbinder;
     private Dialog mLoadingDialog;
@@ -150,11 +155,12 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPDFList.addAll(DBHelper.queryPDF(name));
         mCollectionAdapter.notifyDataSetChanged();
         mPwCollection.showAtLocation(mVp, Gravity.CENTER, 0, 0);
-        Blurry.with(this)
-                .animate(200)
-                .radius(40)
-                .sampling(6)
-                .onto((ViewGroup) getWindow().getDecorView());
+        mBlurView.animate().alpha(1).setDuration(300).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mBlurView.setVisibility(View.VISIBLE);
+            }
+        }).start();
     }
 
     private void initView(Bundle savedInstanceState) {
@@ -229,9 +235,12 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPwCollection = new PopupWindow(pwView);
         mPwCollection.setOnDismissListener(() -> {
             mRvCollection.scrollToPosition(0);
-            mVp.postDelayed(() -> {
-                Blurry.delete((ViewGroup) getWindow().getDecorView());
-            }, 200);
+            mBlurView.animate().alpha(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mBlurView.setVisibility(View.GONE);
+                }
+            }).start();
         });
 
         mPwCollection.setAnimationStyle(R.style.AppPwCollection);
