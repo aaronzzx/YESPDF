@@ -44,13 +44,13 @@ import com.blankj.utilcode.util.ThreadUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 import com.google.android.material.tabs.TabLayout;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import jp.wasabeef.blurry.Blurry;
 
 @ParallaxBack
 public class MainActivity extends CommonActivity implements Communicable {
@@ -61,7 +61,6 @@ public class MainActivity extends CommonActivity implements Communicable {
 //    @BindView(R2.id.app_ibtn_clear) ImageButton mIbtnClear;
     @BindView(R2.id.app_tab_layout) TabLayout mTabLayout;
     @BindView(R2.id.app_vp) ViewPager mVp;
-    @BindView(R2.id.app_black_cover) View mBlackCover;
 
     private Unbinder mUnbinder;
     private Dialog mLoadingDialog;
@@ -151,7 +150,11 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPDFList.addAll(DBHelper.queryPDF(name));
         mCollectionAdapter.notifyDataSetChanged();
         mPwCollection.showAtLocation(mVp, Gravity.CENTER, 0, 0);
-        showBlackCover();
+        Blurry.with(this)
+                .animate(200)
+                .radius(40)
+                .sampling(6)
+                .onto((ViewGroup) getWindow().getDecorView());
     }
 
     private void initView(Bundle savedInstanceState) {
@@ -226,7 +229,9 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPwCollection = new PopupWindow(pwView);
         mPwCollection.setOnDismissListener(() -> {
             mRvCollection.scrollToPosition(0);
-            hideBlackCover();
+            mVp.postDelayed(() -> {
+                Blurry.delete((ViewGroup) getWindow().getDecorView());
+            }, 200);
         });
 
         mPwCollection.setAnimationStyle(R.style.AppPwCollection);
@@ -235,53 +240,5 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPwCollection.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         mPwCollection.setHeight(ConvertUtils.dp2px(490));
         mPwCollection.setElevation(ConvertUtils.dp2px(2));
-    }
-
-    private void applyBlur() {
-        View view = getWindow().getDecorView();
-        view.setDrawingCacheEnabled(true);
-        view.buildDrawingCache(true);
-        // 获取当前窗口快照，相当于截屏
-        Bitmap bitmap = view.getDrawingCache();
-        blur(bitmap, findViewById(android.R.id.content));
-    }
-
-    private void blur(Bitmap bkg, View view) {
-        long startMs = System.currentTimeMillis();
-        float scaleFactor = 8; // 图片缩放比例；
-        float radius = 20; // 模糊程度
-
-        Bitmap overlay = Bitmap.createBitmap(
-                (int) (view.getMeasuredWidth() / scaleFactor),
-                (int) (view.getMeasuredHeight() / scaleFactor),
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(overlay);
-        canvas.translate(-view.getLeft() / scaleFactor, -view.getTop() / scaleFactor);
-        canvas.scale(1 / scaleFactor, 1 / scaleFactor);
-        Paint paint = new Paint();
-        paint.setFlags(Paint.FILTER_BITMAP_FLAG);
-        canvas.drawBitmap(bkg, 0, 0, paint);
-
-
-        overlay = BlurUtils.handleBlur(overlay, (int) radius, true);
-        view.setBackground(new BitmapDrawable(getResources(), overlay));
-        // 打印高斯模糊处理时间，如果时间大约16ms，用户就能感到到卡顿，时间越长卡顿越明显，如果对模糊完图片要求不高，可是将scaleFactor设置大一些。
-        LogUtils.e("blur time:" + (System.currentTimeMillis() - startMs));
-    }
-
-    private void showBlackCover() {
-        mBlackCover.setVisibility(View.VISIBLE);
-        AlphaAnimation aa = new AlphaAnimation(0, 1);
-        aa.setFillAfter(true);
-        aa.setDuration(300);
-        mBlackCover.startAnimation(aa);
-    }
-
-    private void hideBlackCover() {
-        mBlackCover.setVisibility(View.GONE);
-        AlphaAnimation aa = new AlphaAnimation(1, 0);
-        aa.setFillAfter(true);
-        aa.setDuration(300);
-        mBlackCover.startAnimation(aa);
     }
 }

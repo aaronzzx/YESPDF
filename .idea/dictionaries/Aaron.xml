@@ -2,11 +2,14 @@
   <dictionary name="Aaron">
     <words>
       <w>autofill</w>
+      <w>bottombar</w>
       <w>filepicker</w>
       <w>hmmss</w>
       <w>ibtn</w>
+      <w>pageinfo</w>
       <w>pdfview</w>
       <w>searchview</w>
+      <w>seekbar</w>
       <w>selectall</w>
       <w>traversable</w>
       <w>unbinder</w>

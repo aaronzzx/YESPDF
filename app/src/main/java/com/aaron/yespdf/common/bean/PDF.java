@@ -1,5 +1,8 @@
 package com.aaron.yespdf.common.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Unique;
@@ -9,7 +12,7 @@ import org.greenrobot.greendao.annotation.Generated;
  * @author Aaron aaronzzxup@gmail.com
  */
 @Entity
-public class PDF {
+public class PDF implements Parcelable {
 
     @Id(autoincrement = true) Long id;
     @Unique String path;
@@ -148,4 +151,48 @@ public class PDF {
     public void setLatestRead(long latestRead) {
         this.latestRead = latestRead;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.id);
+        dest.writeString(this.path);
+        dest.writeString(this.dir);
+        dest.writeString(this.name);
+        dest.writeString(this.cover);
+        dest.writeString(this.progress);
+        dest.writeInt(this.curPage);
+        dest.writeInt(this.totalPage);
+        dest.writeString(this.bookmarkPage);
+        dest.writeLong(this.latestRead);
+    }
+
+    protected PDF(Parcel in) {
+        this.id = (Long) in.readValue(Long.class.getClassLoader());
+        this.path = in.readString();
+        this.dir = in.readString();
+        this.name = in.readString();
+        this.cover = in.readString();
+        this.progress = in.readString();
+        this.curPage = in.readInt();
+        this.totalPage = in.readInt();
+        this.bookmarkPage = in.readString();
+        this.latestRead = in.readLong();
+    }
+
+    public static final Parcelable.Creator<PDF> CREATOR = new Parcelable.Creator<PDF>() {
+        @Override
+        public PDF createFromParcel(Parcel source) {
+            return new PDF(source);
+        }
+
+        @Override
+        public PDF[] newArray(int size) {
+            return new PDF[size];
+        }
+    };
 }

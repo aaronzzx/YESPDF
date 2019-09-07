@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textColor="@color/base_white"
+        android:textColor="@color/base_black"
         android:textStyle="bold"
         android:textSize="@dimen/base_text_xxhlarge"/>
 
@@ -17,10 +17,11 @@
         android:id="@+id/app_rv_collection"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="24dp"
-        android:padding="8dp"
+        android:layout_marginTop="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:clipToPadding="false"
-        android:background="#FAFAFA"
+        android:overScrollMode="never"
         android:scrollbars="vertical"/>
 
 </LinearLayout>

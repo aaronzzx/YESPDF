@@ -7,6 +7,14 @@
     android:background="#000000"
     tools:context=".preview.PreviewActivity">
 
+    <View
+        android:id="@+id/app_pdfview_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true"
+        android:background="@color/base_white"
+        android:visibility="gone"/>
+
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/app_pdfview"
         android:layout_width="match_parent"
@@ -26,6 +34,53 @@
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"/>
 
+    <LinearLayout
+        android:id="@+id/app_ll_bottombar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="44dp"
+        android:background="@color/app_preview_bar_bg">
+
+        <SeekBar
+            android:id="@+id/app_sb_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxHeight="3dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:progressDrawable="@drawable/app_seekbar_bg"/>
+
+        <ImageButton
+            android:id="@+id/app_ibtn_content"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:background="@null"
+            android:src="@drawable/app_ic_list_white"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/app_tv_pageinfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/app_ll_bottombar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="@drawable/app_shape_pageinfo_bg"
+        android:textColor="@color/base_white_shallow"
+        tools:text="123 / 386"/>
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/app_toolbar"
         android:layout_width="match_parent"
@@ -44,7 +99,8 @@
             android:layout_marginEnd="16dp"
             android:button="@null"
             android:background="@drawable/app_sel_bookmark"
-            android:layout_gravity="center_vertical|end"/>
+            android:layout_gravity="center_vertical|end"
+            android:visibility="gone"/>
 
     </androidx.appcompat.widget.Toolbar>
 

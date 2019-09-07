@@ -109,7 +109,7 @@ public class AboutActivity extends CommonActivity implements IAboutContract.V<Me
     private void initVersionStatus() {
         TextView version = findViewById(R.id.app_tv_version);
         String versionName = BuildConfig.VERSION_NAME;
-        version.setText("Version" + versionName);
+        version.setText("Version " + versionName);
     }
 
     private <T> void initMessage(List<T> messageList) {

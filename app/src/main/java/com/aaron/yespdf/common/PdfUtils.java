@@ -17,6 +17,7 @@ import java.io.IOException;
 public final class PdfUtils {
 
     public static Bitmap pdfToBitmap(String path, int curPage) throws IOException {
+        if (path == null) return null;
         PdfRenderer.Page page = new PdfRenderer(ParcelFileDescriptor.open(new File(path), ParcelFileDescriptor.MODE_READ_WRITE)).openPage(curPage);
         Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
         page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
@@ -67,6 +68,7 @@ public final class PdfUtils {
     }
 
     public static void saveBitmap(Bitmap bitmap, String savePath) {
+        if (bitmap == null) return;
         File file = new File(savePath);
         if (file.exists()) file.delete();
         try {

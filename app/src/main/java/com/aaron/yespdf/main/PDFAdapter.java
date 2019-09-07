@@ -50,7 +50,7 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             pdf.setLatestRead(Long.parseLong(TimeUtils.millis2String(cur, df)));
             DBHelper.updatePDF(pdf);
             DBHelper.insertRecent(pdf);
-            PreviewActivity.start(context, pdf.getPath());
+            PreviewActivity.start(context, pdf);
         });
         return holder;
     }

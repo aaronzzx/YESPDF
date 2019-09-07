@@ -27,6 +27,7 @@ public class BorderImageView extends ImageView {
 
     private int mBorderColor;
     private float mBorderRadius;
+    private boolean drawBorder = true;
     private Paint mPaint;
 
     public BorderImageView(Context context) {
@@ -41,16 +42,43 @@ public class BorderImageView extends ImageView {
         mPaint.setStyle(Paint.Style.STROKE);
     }
 
+    public int getBorderColor() {
+        return mBorderColor;
+    }
+
+    public void setBorderColor(int borderColor) {
+        mBorderColor = borderColor;
+    }
+
+    public float getBorderRadius() {
+        return mBorderRadius;
+    }
+
+    public void setBorderRadius(float borderRadius) {
+        mBorderRadius = borderRadius;
+    }
+
+    public boolean isDrawBorder() {
+        return drawBorder;
+    }
+
+    public void clearBorder() {
+        drawBorder = false;
+        invalidate();
+    }
+
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //画边框
-        Rect rect = canvas.getClipBounds();
-        RectF rectF = new RectF(rect);
-        rect.bottom--;
-        rect.right--;
-        canvas.drawRoundRect(rectF, mBorderRadius, mBorderRadius, mPaint);
+        if (drawBorder) {
+            //画边框
+            Rect rect = canvas.getClipBounds();
+            RectF rectF = new RectF(rect);
+            rect.bottom--;
+            rect.right--;
+            canvas.drawRoundRect(rectF, mBorderRadius, mBorderRadius, mPaint);
+        }
     }
 
     private void init(Context context, AttributeSet attrs) {

@@ -2,6 +2,8 @@ package com.aaron.yespdf.main;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,8 @@ import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.bean.Collection;
+import com.aaron.yespdf.common.widgets.BorderImageView;
+import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.StringUtils;
 
 import java.util.List;
@@ -50,6 +54,42 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         ViewHolder holder = (ViewHolder) viewHolder;
+        switch (mCollections.size()) {
+            case 1:
+                holder.ivCover1.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover2.clearBorder();
+                holder.ivCover3.clearBorder();
+                holder.ivCover4.clearBorder();
+                break;
+            case 2:
+                holder.ivCover1.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover2.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover3.clearBorder();
+                holder.ivCover4.clearBorder();
+                break;
+            case 3:
+                holder.ivCover1.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover2.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover3.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover3.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover4.clearBorder();
+                break;
+            default:
+                holder.ivCover1.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover2.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover3.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover3.setBorderRadius(ConvertUtils.dp2px(1));
+                holder.ivCover4.setBackground(new ColorDrawable(Color.WHITE));
+                holder.ivCover4.setBorderRadius(ConvertUtils.dp2px(1));
+                break;
+        }
         Collection collection = mCollections.get(position);
         holder.tvTitle.setText(collection.getName());
         holder.tvCount.setText("共 " + collection.getCount() + " 本");
@@ -71,10 +111,10 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView ivCover1;
-        private ImageView ivCover2;
-        private ImageView ivCover3;
-        private ImageView ivCover4;
+        private BorderImageView ivCover1;
+        private BorderImageView ivCover2;
+        private BorderImageView ivCover3;
+        private BorderImageView ivCover4;
         private TextView tvTitle;
         private TextView tvCount;
 

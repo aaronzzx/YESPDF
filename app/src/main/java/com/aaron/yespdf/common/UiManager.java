@@ -39,6 +39,10 @@ public final class UiManager {
         activity.getWindow().setNavigationBarColor(Color.BLACK);
     }
 
+    public static void setTransparentNavigationBar(Activity activity) {
+        activity.getWindow().setNavigationBarColor(Color.TRANSPARENT);
+    }
+
     public static void showShort(CharSequence text) {
         ToastUtils.showShort(text);
     }
