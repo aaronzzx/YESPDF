@@ -174,8 +174,6 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black);
         }
         mToolbar.setTitle(R.string.app_import_pdf);
-        mToolbar.setTitleTextColor(getResources().getColor(R.color.base_black));
-        mToolbar.setContentInsetStartWithNavigation(0);
     }
 
     private void initView(Bundle savedInstanceState) {

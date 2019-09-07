@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context=".preview.PreviewActivity">
 
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/app_pdfview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000000"/>
+        android:layout_centerInParent="true"
+        android:background="@color/base_transparent"/>
 
     <View
         android:id="@+id/app_action_previous"
@@ -33,6 +35,17 @@
         app:contentInsetStartWithNavigation="0dp"
         app:titleTextColor="@color/base_white"
         style="@style/AppToolbarStyle"
-        tools:title="大话设计模式" />
+        tools:title="大话设计模式" >
+
+        <CheckBox
+            android:id="@+id/app_cb_bookmark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:button="@null"
+            android:background="@drawable/app_sel_bookmark"
+            android:layout_gravity="center_vertical|end"/>
+
+    </androidx.appcompat.widget.Toolbar>
 
 </RelativeLayout>

@@ -14,14 +14,11 @@ import com.aaron.yespdf.common.greendao.PDFDao;
 import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 
-import org.greenrobot.greendao.Property;
-import org.greenrobot.greendao.converter.PropertyConverter;
 import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -79,7 +76,7 @@ public final class DBHelper {
         sDaoSession.insertOrReplace(recent);
     }
 
-    public static void insert(List<String> pathList) throws IOException {
+    public static void insert(List<String> pathList) {
         // 实际文件路径与文件名称
         String actualPath1 = pathList.get(0);
         String actualPath2 = pathList.get(1);
@@ -128,10 +125,10 @@ public final class DBHelper {
         insertPDFs(name, pathList);
     }
 
-    private static void insertPDFs(String dir, List<String> pathList) throws IOException {
+    private static void insertPDFs(String dir, List<String> pathList) {
         for (String path : pathList) {
             int curPage = 0;
-            int bookmarkPage = 0;
+            String bookmarkPage = "";
             int totalPage = PdfUtils.getPdfTotalPage(path);
             String name = path.substring(path.lastIndexOf("/"), path.length() - 4);
             String progress = "0.0%";

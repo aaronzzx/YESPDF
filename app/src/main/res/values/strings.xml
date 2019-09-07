@@ -15,4 +15,12 @@
     <string name="app_have_not_select">还没选择文件噢~</string>
     <string name="app_import_success">导入成功</string>
     <string name="app_wait_a_moment">请稍候…</string>
+    <string name="app_overview">概览</string>
+    <string name="app_open_source">开源库</string>
+    <string name="app_introduce">介绍</string>
+    <string name="app_feedback">反馈</string>
+    <string name="app_source_code">源码</string>
+    <string name="app_github">GITHUB</string>
+    <string name="app_gift">捐赠(微信)</string>
+    <string name="app_feedback_title">请尽可能详细描述您的问题或建议，请不要删除或修改下列设备信息。</string>
 </resources>

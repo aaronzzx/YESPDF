@@ -27,6 +27,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.about.AboutActivity;
 import com.aaron.yespdf.common.BlurUtils;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DBHelper;
@@ -110,7 +111,7 @@ public class MainActivity extends CommonActivity implements Communicable {
                     ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<Object>() {
                         @Nullable
                         @Override
-                        public Object doInBackground() throws Throwable {
+                        public Object doInBackground() {
                             DBHelper.insert(pathList);
                             return null;
                         }
@@ -193,7 +194,6 @@ public class MainActivity extends CommonActivity implements Communicable {
         TextView tvAbout = pwView.findViewById(R.id.app_tv_about);
         mPwMenu = new PopupWindow(pwView);
         tvImport.setOnClickListener(v -> {
-            // TODO: 2019/9/4 导入 PDF 逻辑
             SelectActivity.start(this, SELECT_REQUEST_CODE);
             mPwMenu.dismiss();
         });
@@ -201,7 +201,7 @@ public class MainActivity extends CommonActivity implements Communicable {
 //            mPwMenu.dismiss();
 //        });
         tvAbout.setOnClickListener(v -> {
-            // TODO: 2019/9/4 App 关于逻辑
+            AboutActivity.start(this);
             mPwMenu.dismiss();
         });
         mPwMenu.setAnimationStyle(R.style.AppPwMenu);
@@ -273,7 +273,7 @@ public class MainActivity extends CommonActivity implements Communicable {
         mBlackCover.setVisibility(View.VISIBLE);
         AlphaAnimation aa = new AlphaAnimation(0, 1);
         aa.setFillAfter(true);
-        aa.setDuration(200);
+        aa.setDuration(300);
         mBlackCover.startAnimation(aa);
     }
 
@@ -281,7 +281,7 @@ public class MainActivity extends CommonActivity implements Communicable {
         mBlackCover.setVisibility(View.GONE);
         AlphaAnimation aa = new AlphaAnimation(1, 0);
         aa.setFillAfter(true);
-        aa.setDuration(200);
+        aa.setDuration(300);
         mBlackCover.startAnimation(aa);
     }
 }

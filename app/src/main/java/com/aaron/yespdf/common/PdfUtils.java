@@ -7,6 +7,7 @@ import android.os.ParcelFileDescriptor;
 import com.blankj.utilcode.util.PathUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -22,9 +23,47 @@ public final class PdfUtils {
         return bitmap;
     }
 
-    public static int getPdfTotalPage(String path) throws IOException {
-        PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(new File(path), ParcelFileDescriptor.MODE_READ_WRITE));
-        return renderer.getPageCount();
+    public static int getPdfTotalPage(String path) {
+        PdfRenderer renderer = null;
+        try {
+            renderer = new PdfRenderer(ParcelFileDescriptor.open(new File(path), ParcelFileDescriptor.MODE_READ_WRITE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (renderer != null) {
+            return renderer.getPageCount();
+        }
+        return 0;
+    }
+
+    public static int getPdfWidth(String path, int page) {
+        PdfRenderer renderer = null;
+        try {
+            renderer = new PdfRenderer(ParcelFileDescriptor.open(new File(path), ParcelFileDescriptor.MODE_READ_WRITE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int width = 0;
+        if (renderer != null) {
+            width = renderer.openPage(page).getWidth();
+//            renderer.close();
+        }
+        return width;
+    }
+
+    public static int getPdfHeight(String path, int page) {
+        PdfRenderer renderer = null;
+        try {
+            renderer = new PdfRenderer(ParcelFileDescriptor.open(new File(path), ParcelFileDescriptor.MODE_READ_WRITE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int height = 0;
+        if (renderer != null) {
+            height = renderer.openPage(page).getHeight();
+//            renderer.close();
+        }
+        return height;
     }
 
     public static void saveBitmap(Bitmap bitmap, String savePath) {

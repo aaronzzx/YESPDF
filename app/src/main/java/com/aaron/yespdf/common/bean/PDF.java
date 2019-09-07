@@ -19,14 +19,14 @@ public class PDF {
     String progress;
     int curPage;
     int totalPage;
-    int bookmarkPage;
+    String bookmarkPage;
     long latestRead;
 
     public PDF() {
 
     }
 
-    public PDF(String path, String dir, String name, String cover, String progress, int curPage, int totalPage, int bookmarkPage, long latestRead) {
+    public PDF(String path, String dir, String name, String cover, String progress, int curPage, int totalPage, String bookmarkPage, long latestRead) {
         this.path = path;
         this.dir = dir;
         this.name = name;
@@ -38,8 +38,8 @@ public class PDF {
         this.latestRead = latestRead;
     }
 
-    @Generated(hash = 1105056540)
-    public PDF(Long id, String path, String dir, String name, String cover, String progress, int curPage, int totalPage, int bookmarkPage,
+    @Generated(hash = 549187711)
+    public PDF(Long id, String path, String dir, String name, String cover, String progress, int curPage, int totalPage, String bookmarkPage,
             long latestRead) {
         this.id = id;
         this.path = path;
@@ -129,11 +129,11 @@ public class PDF {
         this.totalPage = totalPage;
     }
 
-    public int getBookmarkPage() {
+    public String getBookmarkPage() {
         return bookmarkPage;
     }
 
-    public void setBookmarkPage(int bookmarkPage) {
+    public void setBookmarkPage(String bookmarkPage) {
         this.bookmarkPage = bookmarkPage;
     }
 

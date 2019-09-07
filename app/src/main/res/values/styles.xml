@@ -10,7 +10,7 @@
 
     <style name="AppToolbarStyle" parent="Widget.AppCompat.Toolbar">
         <item name="titleTextAppearance">@style/AppTitleStyle</item>
-        <item name="titleTextColor">@color/app_color_accent</item>
+<!--        <item name="titleTextColor">@color/app_color_accent</item>-->
     </style>
 
     <style name="AppTitleStyle" parent="TextAppearance.AppCompat.Title">

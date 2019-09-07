@@ -23,7 +23,7 @@ import com.blankj.utilcode.util.ConvertUtils;
 public class BorderImageView extends ImageView {
 
     private static final int BORDER_COLOR = App.getContext().getResources().getColor(R.color.base_black_hint);
-    private static final float BORDER_RADIUS = ConvertUtils.dp2px(3);
+    private static final float BORDER_RADIUS = ConvertUtils.dp2px(2);
 
     private int mBorderColor;
     private float mBorderRadius;

@@ -5,10 +5,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
@@ -16,11 +19,22 @@ import androidx.appcompat.widget.Toolbar;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.common.PdfUtils;
 import com.aaron.yespdf.common.UiManager;
 import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnDrawListener;
+import com.github.barteksc.pdfviewer.listener.OnErrorListener;
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
+import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
+import com.github.barteksc.pdfviewer.listener.OnRenderListener;
+import com.shockwave.pdfium.PdfDocument;
 
 import java.io.File;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -140,6 +154,22 @@ public class PreviewActivity extends CommonActivity {
                 .pageSnap(true)
                 .fitEachPage(true)
                 .spacing(ConvertUtils.dp2px(4))
+                .onLoad(new OnLoadCompleteListener() {
+                    @Override
+                    public void loadComplete(int nbPages) {
+                        List<PdfDocument.Bookmark> bkList = mPDFView.getTableOfContents();
+                        LogUtils.e(bkList.size());
+                        for (PdfDocument.Bookmark bk : bkList) {
+                            LogUtils.e(bk.getTitle() + "-" + bk.getPageIdx());
+                            if (bk.hasChildren()) {
+                                List<PdfDocument.Bookmark> list = bk.getChildren();
+                                for (PdfDocument.Bookmark b : list) {
+                                    LogUtils.e(b.getTitle() + "-" + b.getPageIdx());
+                                }
+                            }
+                        }
+                    }
+                })
                 .onTap(event -> {
                     switch (mToolbar.getVisibility()) {
                         case View.VISIBLE:
