@@ -39,47 +39,108 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="44dp"
-        android:background="@color/app_preview_bar_bg">
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
 
-        <SeekBar
-            android:id="@+id/app_sb_progress"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxHeight="3dp"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:progressDrawable="@drawable/app_seekbar_bg"/>
+            android:background="@color/app_preview_bar_bg"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
 
-        <ImageButton
-            android:id="@+id/app_ibtn_content"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center"
-            android:layout_marginStart="16dp"
-            android:background="@null"
-            android:src="@drawable/app_ic_list_white"
-            tools:ignore="ContentDescription" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/app_previous_chapter"
+                android:textSize="@dimen/base_text_large"
+                android:textColor="@color/base_white_hint"/>
+
+            <SeekBar
+                android:id="@+id/app_sb_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxHeight="3dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:thumb="@drawable/app_sel_seekbar"
+                android:progressDrawable="@drawable/app_seekbar_bg"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/app_next_chapter"
+                android:textSize="@dimen/base_text_large"
+                android:textColor="@color/base_white_hint"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/app_preview_bar_bg"
+            android:paddingTop="12dp"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/app_content"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white"
+                android:drawablePadding="8dp"
+                android:drawableTop="@drawable/app_ic_action_content_white"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/app_read_method"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white"
+                android:drawablePadding="8dp"
+                android:drawableTop="@drawable/app_ic_action_read_method_white"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/app_bookmark"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white"
+                android:drawablePadding="8dp"
+                android:drawableTop="@drawable/app_ic_bookmark_border_white_24dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/app_settings"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white"
+                android:drawablePadding="8dp"
+                android:drawableTop="@drawable/app_ic_action_settings_white"/>
+
+        </LinearLayout>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/app_tv_pageinfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/app_ll_bottombar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:background="@drawable/app_shape_pageinfo_bg"
-        android:textColor="@color/base_white_shallow"
-        tools:text="123 / 386"/>
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/app_toolbar"
@@ -87,7 +148,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@color/app_preview_bar_bg"
-        app:contentInsetStartWithNavigation="0dp"
         app:titleTextColor="@color/base_white"
         style="@style/AppToolbarStyle"
         tools:title="大话设计模式" >
@@ -103,5 +163,77 @@
             android:visibility="gone"/>
 
     </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/app_tv_pageinfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/app_toolbar"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="@drawable/app_shape_pageinfo_bg"
+        android:textColor="@color/base_white_shallow"
+        tools:text="123 / 386"/>
+
+    <LinearLayout
+        android:id="@+id/app_ll_quickbar"
+        android:layout_width="300dp"
+        android:layout_height="54dp"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/app_ll_bottombar"
+        android:background="@drawable/app_shape_round_rect">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/app_quickbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="@color/base_white"
+                android:text="6.2.4 通过系统剪贴板传递 Java 成员变量"
+                tools:text="6.2.4 通过系统剪贴板传递 Java 成员变量"/>
+
+            <TextView
+                android:id="@+id/app_tv_cur_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white_shallow"
+                android:text="146 / 891"
+                tools:text="146 / 891"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0.6dp"
+            android:layout_height="match_parent"
+            android:background="#33FFFFFF"/>
+
+        <ImageButton
+            android:id="@+id/app_quickbar_action"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="@null"
+            android:src="@drawable/app_ic_undo_white_24dp"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

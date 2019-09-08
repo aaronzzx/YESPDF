@@ -1,13 +1,4 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="15.6"
-    android:viewportHeight="15.6"
-    android:alpha="1.0">
-    <group android:translateX="-4.2"
-        android:translateY="-3.875">
-        <path
-            android:fillColor="#FFFFFFFF"
-            android:pathData="M15.41,16.09l-4.58,-4.59 4.58,-4.59L14,5.5l-6,6 6,6z"/>
-    </group>
-</vector>
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/app_ic_back_white"
+    android:tint="@color/base_white"/>

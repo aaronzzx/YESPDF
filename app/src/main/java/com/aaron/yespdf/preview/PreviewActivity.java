@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 
-import com.aaron.base.impl.OnClickListenerImpl;
 import com.aaron.base.util.TimerUtils;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
@@ -27,13 +25,8 @@ import com.aaron.yespdf.common.PdfUtils;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
 import com.blankj.utilcode.util.ConvertUtils;
-import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.UriUtils;
 import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
-import com.github.barteksc.pdfviewer.listener.OnRenderListener;
 import com.shockwave.pdfium.PdfDocument;
 
 import java.io.File;
@@ -47,22 +40,14 @@ public class PreviewActivity extends CommonActivity {
 
     public static final String EXTRA_PDF = "EXTRA_PDF";
 
-    @BindView(R2.id.app_pdfview_bg)
-    View mPDFViewBg;
-    @BindView(R2.id.app_pdfview)
-    PDFView mPDFView;
-    @BindView(R2.id.app_action_previous)
-    View mActionPrevious;
-    @BindView(R2.id.app_action_next)
-    View mActionNext;
-    @BindView(R2.id.app_ll_bottombar)
-    LinearLayout mLlBottomBar;
-    @BindView(R2.id.app_tv_pageinfo)
-    TextView mTvPageinfo;
-    @BindView(R.id.app_sb_progress)
-    SeekBar mSbProgress;
-    @BindView(R.id.app_ibtn_content)
-    ImageButton mIbtnContent;
+    @BindView(R2.id.app_pdfview_bg) View mPDFViewBg;
+    @BindView(R2.id.app_pdfview) PDFView mPDFView;
+    @BindView(R2.id.app_action_previous) View mActionPrevious;
+    @BindView(R2.id.app_action_next) View mActionNext;
+    @BindView(R2.id.app_ll_quickbar) LinearLayout mLlQuickBar;
+    @BindView(R2.id.app_ll_bottombar) LinearLayout mLlBottomBar;
+    @BindView(R2.id.app_tv_pageinfo) TextView mTvPageinfo;
+    @BindView(R.id.app_sb_progress) SeekBar mSbProgress;
 
     private List<PdfDocument.Bookmark> mContentList = new ArrayList<>();
 
@@ -130,7 +115,7 @@ public class PreviewActivity extends CommonActivity {
     @SuppressLint({"SwitchIntDef"})
     private void initView(Bundle savedInstanceState) {
         UiManager.setTransparentStatusBar(this, mToolbar);
-        UiManager.setTransparentNavigationBar(this);
+        UiManager.setNavigationBarColor(this, R.color.base_black);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -153,12 +138,6 @@ public class PreviewActivity extends CommonActivity {
             }
             int currentPage = mPDFView.getCurrentPage();
             mPDFView.jumpTo(++currentPage, true);
-        });
-        mIbtnContent.setOnClickListener(new OnClickListenerImpl() {
-            @Override
-            public void onViewClick(View v, long interval) {
-                // TODO: 2019/9/7 跳转目录
-            }
         });
 
         Intent intent = getIntent();
@@ -271,6 +250,12 @@ public class PreviewActivity extends CommonActivity {
                 mTvPageinfo.setVisibility(View.GONE);
             }
         }).start();
+        mLlQuickBar.animate().setDuration(200).alpha(0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLlQuickBar.setVisibility(View.GONE);
+            }
+        }).start();
 
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -297,6 +282,12 @@ public class PreviewActivity extends CommonActivity {
             @Override
             public void onAnimationStart(Animator animation) {
                 mTvPageinfo.setVisibility(View.VISIBLE);
+            }
+        }).start();
+        mLlQuickBar.animate().setDuration(200).alpha(1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mLlQuickBar.setVisibility(View.VISIBLE);
             }
         }).start();
 

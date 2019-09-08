@@ -17,7 +17,10 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.preview.PreviewActivity;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.TimeUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,10 +31,12 @@ import java.util.List;
  */
 class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private RecentPDFEvent mRecentPDFEvent;
     private List<PDF> mPDFList;
 
     PDFAdapter(List<PDF> pdfList) {
         mPDFList = pdfList;
+        mRecentPDFEvent = new RecentPDFEvent();
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -51,6 +56,7 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             DBHelper.updatePDF(pdf);
             DBHelper.insertRecent(pdf);
             PreviewActivity.start(context, pdf);
+            EventBus.getDefault().post(mRecentPDFEvent);
         });
         return holder;
     }

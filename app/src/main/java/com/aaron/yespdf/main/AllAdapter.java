@@ -18,6 +18,7 @@ import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.bean.Collection;
+import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.widgets.BorderImageView;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.StringUtils;
@@ -31,8 +32,8 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Collection> mCollections;
 
-    AllAdapter() {
-        mCollections = DBHelper.queryAllCollection();
+    AllAdapter(List<Collection> list) {
+        mCollections = list;
     }
 
     @NonNull
@@ -45,7 +46,7 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             String name = mCollections.get(pos).getName();
-            ((Communicable) context).onTap(name);
+            ((AllAdapterComm) context).onTap(name);
         });
         return holder;
     }
@@ -90,13 +91,20 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.ivCover4.setBorderRadius(ConvertUtils.dp2px(1));
                 break;
         }
-        Collection collection = mCollections.get(position);
-        holder.tvTitle.setText(collection.getName());
-        holder.tvCount.setText("共 " + collection.getCount() + " 本");
-        setCover(holder.ivCover1, collection.getCover1());
-        setCover(holder.ivCover2, collection.getCover2());
-        setCover(holder.ivCover3, collection.getCover3());
-        setCover(holder.ivCover4, collection.getCover4());
+        Collection c = mCollections.get(position);
+        List<PDF> pdfList = DBHelper.queryPDF(c.getName());
+        int count = pdfList.size();
+
+        holder.tvTitle.setText(c.getName());
+        holder.tvCount.setText("共 " + count + " 本");
+        if (count == 0) return;
+        setCover(holder.ivCover1, pdfList.get(0).getCover());
+        if (count == 1) return;
+        setCover(holder.ivCover2, pdfList.get(1).getCover());
+        if (count == 2) return;
+        setCover(holder.ivCover3, pdfList.get(2).getCover());
+        if (count == 3) return;
+        setCover(holder.ivCover4, pdfList.get(3).getCover());
     }
 
     @Override

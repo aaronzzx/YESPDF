@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 
@@ -16,6 +18,11 @@ import com.blankj.utilcode.util.ToastUtils;
  * @author Aaron aaronzzxup@gmail.com
  */
 public final class UiManager {
+
+    public static void setNavigationBarColor(Activity activity, @ColorRes int colorRes) {
+        int color = activity.getResources().getColor(colorRes);
+        activity.getWindow().setNavigationBarColor(color);
+    }
 
     public static void setStatusBar(Activity activity, Toolbar toolbar) {
         toolbar.setPadding(0, ConvertUtils.dp2px(25), 0, 0);

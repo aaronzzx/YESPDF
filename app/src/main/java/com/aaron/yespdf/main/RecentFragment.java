@@ -17,6 +17,10 @@ import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.PDF;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +36,7 @@ public class RecentFragment extends BaseFragment {
     @BindView(R2.id.app_rv_recent) RecyclerView mRvRecent;
 
     private Unbinder mUnbinder;
+    private RecyclerView.Adapter mAdapter;
 
     private List<PDF> mRecentPDFList = new ArrayList<>();
 
@@ -43,9 +48,19 @@ public class RecentFragment extends BaseFragment {
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRecentPDFEvent(RecentPDFEvent event) {
+        if (mActivity == null) return;
+        mRecentPDFList.clear();
+        mRecentPDFList.addAll(DBHelper.queryRecentPDF());
+        // 实时更新最新阅读列表
+        mRvRecent.postDelayed(() -> mAdapter.notifyDataSetChanged(), 500);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         View layout = inflater.inflate(R.layout.app_fragment_recent, container, false);
         mUnbinder = ButterKnife.bind(this, layout);
         initView();
@@ -55,6 +70,7 @@ public class RecentFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        EventBus.getDefault().unregister(this);
         mUnbinder.unbind();
     }
 
@@ -65,8 +81,8 @@ public class RecentFragment extends BaseFragment {
         mRvRecent.addItemDecoration(new YGridDecoration());
         RecyclerView.LayoutManager lm = new GridLayoutManager(mActivity, 3);
         mRvRecent.setLayoutManager(lm);
-        RecyclerView.Adapter adapter = new PDFAdapter(mRecentPDFList);
-        mRvRecent.setAdapter(adapter);
+        mAdapter = new PDFAdapter(mRecentPDFList);
+        mRvRecent.setAdapter(mAdapter);
     }
 
     private void initData() {

@@ -24,6 +24,20 @@ public final class PdfUtils {
         return bitmap;
     }
 
+    public static void saveBitmap(Bitmap bitmap, String savePath) {
+        if (bitmap == null) return;
+        File file = new File(savePath);
+        if (file.exists()) return;
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static int getPdfTotalPage(String path) {
         PdfRenderer renderer = null;
         try {
@@ -47,7 +61,6 @@ public final class PdfUtils {
         int width = 0;
         if (renderer != null) {
             width = renderer.openPage(page).getWidth();
-//            renderer.close();
         }
         return width;
     }
@@ -62,23 +75,8 @@ public final class PdfUtils {
         int height = 0;
         if (renderer != null) {
             height = renderer.openPage(page).getHeight();
-//            renderer.close();
         }
         return height;
-    }
-
-    public static void saveBitmap(Bitmap bitmap, String savePath) {
-        if (bitmap == null) return;
-        File file = new File(savePath);
-        if (file.exists()) file.delete();
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private PdfUtils() {}

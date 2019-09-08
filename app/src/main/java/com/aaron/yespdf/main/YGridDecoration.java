@@ -12,7 +12,7 @@ import com.blankj.utilcode.util.LogUtils;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class YGridDecoration extends RecyclerView.ItemDecoration {
+class YGridDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {

@@ -1,13 +1,7 @@
 package com.aaron.yespdf.main;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -23,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -30,7 +25,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.about.AboutActivity;
-import com.aaron.yespdf.common.BlurUtils;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
@@ -40,7 +34,6 @@ import com.aaron.yespdf.filepicker.SelectActivity;
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
@@ -53,11 +46,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.alterac.blurkit.BlurLayout;
-import jp.wasabeef.blurry.Blurry;
 
 @ParallaxBack
-public class MainActivity extends CommonActivity implements Communicable {
+public class MainActivity extends CommonActivity implements AllAdapterComm {
 
     static final int SELECT_REQUEST_CODE = 101;
 
@@ -75,6 +66,7 @@ public class MainActivity extends CommonActivity implements Communicable {
     private TextView mTvCollectionTitle;
     private RecyclerView mRvCollection;
     private RecyclerView.Adapter mCollectionAdapter;
+    private FragmentPagerAdapter mFragmentPagerAdapter;
 
     private List<PDF> mPDFList = new ArrayList<>();
 
@@ -111,24 +103,36 @@ public class MainActivity extends CommonActivity implements Communicable {
             if (data != null) {
                 mLoadingDialog.show();
                 List<String> pathList = data.getStringArrayListExtra(SelectActivity.EXTRA_SELECTED);
-                if (pathList != null) {
-                    ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<Object>() {
-                        @Nullable
-                        @Override
-                        public Object doInBackground() {
-                            DBHelper.insert(pathList);
-                            return null;
-                        }
-
-                        @Override
-                        public void onSuccess(@Nullable Object result) {
-                            mLoadingDialog.dismiss();
-                            UiManager.showShort(R.string.app_import_success);
-                        }
-                    });
-                }
+                insertPDF(pathList);
             }
         }
+    }
+
+    private void insertPDF(List<String> pathList) {
+        ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<Boolean>() {
+            @NonNull
+            @Override
+            public Boolean doInBackground() {
+                return DBHelper.insert(pathList);
+            }
+
+            @Override
+            public void onSuccess(Boolean success) {
+                mLoadingDialog.dismiss();
+                if (success) {
+                    UiManager.showShort(R.string.app_import_success);
+                    List<Fragment> list = getSupportFragmentManager().getFragments();
+                    for (Fragment f : list) {
+                        if (f instanceof AllFragmentComm) {
+                            ((AllFragmentComm) f).update(pathList);
+                            break;
+                        }
+                    }
+                } else {
+                    UiManager.showShort(R.string.app_import_failure);
+                }
+            }
+        });
     }
 
     @Override
@@ -154,13 +158,8 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPDFList.clear();
         mPDFList.addAll(DBHelper.queryPDF(name));
         mCollectionAdapter.notifyDataSetChanged();
+        mBlurView.animate().alpha(1).setDuration(200).start();
         mPwCollection.showAtLocation(mVp, Gravity.CENTER, 0, 0);
-        mBlurView.animate().alpha(1).setDuration(300).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mBlurView.setVisibility(View.VISIBLE);
-            }
-        }).start();
     }
 
     private void initView(Bundle savedInstanceState) {
@@ -188,7 +187,8 @@ public class MainActivity extends CommonActivity implements Communicable {
 //            }
 //        });
         mTabLayout.setupWithViewPager(mVp);
-        mVp.setAdapter(new MainFragmentAdapter(getSupportFragmentManager()));
+        mFragmentPagerAdapter = new MainFragmentAdapter(getSupportFragmentManager());
+        mVp.setAdapter(mFragmentPagerAdapter);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -198,17 +198,17 @@ public class MainActivity extends CommonActivity implements Communicable {
 
     private void initPwMenu() {
         View pwView = LayoutInflater.from(this).inflate(R.layout.app_pw_main, null);
-        TextView tvImport = pwView.findViewById(R.id.app_tv_import);
-//        TextView tvSettings = pwView.findViewById(R.id.app_tv_settings);
-        TextView tvAbout = pwView.findViewById(R.id.app_tv_about);
+        TextView tvImport   = pwView.findViewById(R.id.app_tv_import);
+        TextView tvSettings = pwView.findViewById(R.id.app_tv_settings);
+        TextView tvAbout    = pwView.findViewById(R.id.app_tv_about);
         mPwMenu = new PopupWindow(pwView);
         tvImport.setOnClickListener(v -> {
             SelectActivity.start(this, SELECT_REQUEST_CODE);
             mPwMenu.dismiss();
         });
-//        tvSettings.setOnClickListener(v -> {
-//            mPwMenu.dismiss();
-//        });
+        tvSettings.setOnClickListener(v -> {
+            mPwMenu.dismiss();
+        });
         tvAbout.setOnClickListener(v -> {
             AboutActivity.start(this);
             mPwMenu.dismiss();
@@ -218,7 +218,7 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPwMenu.setOutsideTouchable(true);
         mPwMenu.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPwMenu.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mPwMenu.setElevation(ConvertUtils.dp2px(2));
+        mPwMenu.setElevation(ConvertUtils.dp2px(4));
     }
 
     private void initPwCollection() {
@@ -235,19 +235,14 @@ public class MainActivity extends CommonActivity implements Communicable {
         mPwCollection = new PopupWindow(pwView);
         mPwCollection.setOnDismissListener(() -> {
             mRvCollection.scrollToPosition(0);
-            mBlurView.animate().alpha(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mBlurView.setVisibility(View.GONE);
-                }
-            }).start();
+            mBlurView.animate().alpha(0).setDuration(200).start();
         });
 
         mPwCollection.setAnimationStyle(R.style.AppPwCollection);
         mPwCollection.setFocusable(true);
         mPwCollection.setOutsideTouchable(true);
         mPwCollection.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        mPwCollection.setHeight(ConvertUtils.dp2px(490));
+        mPwCollection.setHeight(ConvertUtils.dp2px(480));
         mPwCollection.setElevation(ConvertUtils.dp2px(2));
     }
 }

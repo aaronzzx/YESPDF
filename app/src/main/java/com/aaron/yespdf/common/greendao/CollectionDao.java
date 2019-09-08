@@ -25,12 +25,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Cover1 = new Property(1, String.class, "cover1", false, "COVER1");
-        public final static Property Cover2 = new Property(2, String.class, "cover2", false, "COVER2");
-        public final static Property Cover3 = new Property(3, String.class, "cover3", false, "COVER3");
-        public final static Property Cover4 = new Property(4, String.class, "cover4", false, "COVER4");
-        public final static Property Name = new Property(5, String.class, "name", false, "NAME");
-        public final static Property Count = new Property(6, int.class, "count", false, "COUNT");
+        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
     }
 
 
@@ -47,12 +42,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"COLLECTION\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "\"COVER1\" TEXT," + // 1: cover1
-                "\"COVER2\" TEXT," + // 2: cover2
-                "\"COVER3\" TEXT," + // 3: cover3
-                "\"COVER4\" TEXT," + // 4: cover4
-                "\"NAME\" TEXT UNIQUE ," + // 5: name
-                "\"COUNT\" INTEGER NOT NULL );"); // 6: count
+                "\"NAME\" TEXT UNIQUE );"); // 1: name
     }
 
     /** Drops the underlying database table. */
@@ -70,31 +60,10 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
             stmt.bindLong(1, id);
         }
  
-        String cover1 = entity.getCover1();
-        if (cover1 != null) {
-            stmt.bindString(2, cover1);
-        }
- 
-        String cover2 = entity.getCover2();
-        if (cover2 != null) {
-            stmt.bindString(3, cover2);
-        }
- 
-        String cover3 = entity.getCover3();
-        if (cover3 != null) {
-            stmt.bindString(4, cover3);
-        }
- 
-        String cover4 = entity.getCover4();
-        if (cover4 != null) {
-            stmt.bindString(5, cover4);
-        }
- 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(6, name);
+            stmt.bindString(2, name);
         }
-        stmt.bindLong(7, entity.getCount());
     }
 
     @Override
@@ -106,31 +75,10 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
             stmt.bindLong(1, id);
         }
  
-        String cover1 = entity.getCover1();
-        if (cover1 != null) {
-            stmt.bindString(2, cover1);
-        }
- 
-        String cover2 = entity.getCover2();
-        if (cover2 != null) {
-            stmt.bindString(3, cover2);
-        }
- 
-        String cover3 = entity.getCover3();
-        if (cover3 != null) {
-            stmt.bindString(4, cover3);
-        }
- 
-        String cover4 = entity.getCover4();
-        if (cover4 != null) {
-            stmt.bindString(5, cover4);
-        }
- 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(6, name);
+            stmt.bindString(2, name);
         }
-        stmt.bindLong(7, entity.getCount());
     }
 
     @Override
@@ -142,12 +90,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
     public Collection readEntity(Cursor cursor, int offset) {
         Collection entity = new Collection( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // cover1
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // cover2
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // cover3
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // cover4
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // name
-            cursor.getInt(offset + 6) // count
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // name
         );
         return entity;
     }
@@ -155,12 +98,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
     @Override
     public void readEntity(Cursor cursor, Collection entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setCover1(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setCover2(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setCover3(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setCover4(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setCount(cursor.getInt(offset + 6));
+        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
      }
     
     @Override

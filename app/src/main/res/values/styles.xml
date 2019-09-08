@@ -6,10 +6,12 @@
         <item name="colorPrimary">@color/app_color_primary</item>
         <item name="colorPrimaryDark">@color/app_color_primary_dark</item>
         <item name="colorAccent">@color/app_color_accent</item>
+        <item name="android:windowBackground">@drawable/app_bg_launch</item>
     </style>
 
     <style name="AppToolbarStyle" parent="Widget.AppCompat.Toolbar">
         <item name="titleTextAppearance">@style/AppTitleStyle</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
 <!--        <item name="titleTextColor">@color/app_color_accent</item>-->
     </style>
 

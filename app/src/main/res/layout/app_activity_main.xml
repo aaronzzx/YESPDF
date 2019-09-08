@@ -50,8 +50,8 @@
         android:id="@+id/app_blur_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:realtimeBlurRadius="24dp"
-        app:realtimeOverlayColor="@color/base_white_shallow"
-        android:visibility="gone"/>
+        app:realtimeBlurRadius="16dp"
+        app:realtimeOverlayColor="#B3DBDBDB"
+        android:alpha="0.0"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

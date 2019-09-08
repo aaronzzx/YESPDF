@@ -29,18 +29,6 @@ public class PDF implements Parcelable {
 
     }
 
-    public PDF(String path, String dir, String name, String cover, String progress, int curPage, int totalPage, String bookmarkPage, long latestRead) {
-        this.path = path;
-        this.dir = dir;
-        this.name = name;
-        this.cover = cover;
-        this.progress = progress;
-        this.curPage = curPage;
-        this.totalPage = totalPage;
-        this.bookmarkPage = bookmarkPage;
-        this.latestRead = latestRead;
-    }
-
     @Generated(hash = 549187711)
     public PDF(Long id, String path, String dir, String name, String cover, String progress, int curPage, int totalPage, String bookmarkPage,
             long latestRead) {

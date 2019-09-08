@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
+    <item android:drawable="@color/base_white"/>
+
+    <item android:gravity="bottom|center_horizontal"
+        android:bottom="32dp">
+        <bitmap android:src="@drawable/app_splash_logo" />
+    </item>
+</layer-list>
