@@ -7,6 +7,12 @@
     android:background="#000000"
     tools:context=".preview.PreviewActivity">
 
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/app_pdfview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/base_transparent"/>
+
     <View
         android:id="@+id/app_pdfview_bg"
         android:layout_width="0dp"
@@ -15,24 +21,17 @@
         android:background="@color/base_white"
         android:visibility="gone"/>
 
-    <com.github.barteksc.pdfviewer.PDFView
-        android:id="@+id/app_pdfview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:background="@color/base_transparent"/>
+<!--    <View-->
+<!--        android:id="@+id/app_action_previous"-->
+<!--        android:layout_width="80dp"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_alignParentStart="true"/>-->
 
-    <View
-        android:id="@+id/app_action_previous"
-        android:layout_width="80dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"/>
-
-    <View
-        android:id="@+id/app_action_next"
-        android:layout_width="80dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"/>
+<!--    <View-->
+<!--        android:id="@+id/app_action_next"-->
+<!--        android:layout_width="80dp"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_alignParentEnd="true"/>-->
 
     <LinearLayout
         android:id="@+id/app_ll_bottombar"

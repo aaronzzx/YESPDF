@@ -5,6 +5,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -25,9 +29,15 @@ import com.aaron.yespdf.common.PdfUtils;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
 import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.UriUtils;
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnDrawListener;
+import com.github.barteksc.pdfviewer.listener.OnShowListener;
+import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
 import com.shockwave.pdfium.PdfDocument;
+import com.shockwave.pdfium.util.SizeF;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,11 +49,11 @@ import butterknife.ButterKnife;
 public class PreviewActivity extends CommonActivity {
 
     public static final String EXTRA_PDF = "EXTRA_PDF";
+    private static final float PREVIOUS  = ScreenUtils.getScreenWidth() * 0.3F;
+    private static final float NEXT      = ScreenUtils.getScreenWidth() * 0.7F;
 
     @BindView(R2.id.app_pdfview_bg) View mPDFViewBg;
     @BindView(R2.id.app_pdfview) PDFView mPDFView;
-    @BindView(R2.id.app_action_previous) View mActionPrevious;
-    @BindView(R2.id.app_action_next) View mActionNext;
     @BindView(R2.id.app_ll_quickbar) LinearLayout mLlQuickBar;
     @BindView(R2.id.app_ll_bottombar) LinearLayout mLlBottomBar;
     @BindView(R2.id.app_tv_pageinfo) TextView mTvPageinfo;
@@ -123,22 +133,6 @@ public class PreviewActivity extends CommonActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_white);
         }
-        mActionPrevious.setOnClickListener(v -> {
-            if (mToolbar.getVisibility() == View.VISIBLE) {
-                enterFullScreen();
-                return;
-            }
-            int currentPage = mPDFView.getCurrentPage();
-            mPDFView.jumpTo(--currentPage, true);
-        });
-        mActionNext.setOnClickListener(v -> {
-            if (mToolbar.getVisibility() == View.VISIBLE) {
-                enterFullScreen();
-                return;
-            }
-            int currentPage = mPDFView.getCurrentPage();
-            mPDFView.jumpTo(++currentPage, true);
-        });
 
         Intent intent = getIntent();
         Uri uri = intent.getData();
@@ -148,6 +142,7 @@ public class PreviewActivity extends CommonActivity {
         enterFullScreen();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void loadPdf(Uri uri, PDF pdf) {
         PDFView.Configurator configurator;
         if (uri != null) {
@@ -162,11 +157,13 @@ public class PreviewActivity extends CommonActivity {
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    mPDFViewBg.setVisibility(View.VISIBLE);
+
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                    mPDFViewBg.setVisibility(View.VISIBLE);
+                    TimerUtils.start(200, PreviewActivity.this, () -> mPDFViewBg.setVisibility(View.GONE));
                     int cur = seekBar.getProgress();
                     mPDFView.jumpTo(cur);
                 }
@@ -185,11 +182,13 @@ public class PreviewActivity extends CommonActivity {
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    mPDFViewBg.setVisibility(View.VISIBLE);
+
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                    mPDFViewBg.setVisibility(View.VISIBLE);
+                    TimerUtils.start(200, PreviewActivity.this, () -> mPDFViewBg.setVisibility(View.GONE));
                     int cur = seekBar.getProgress();
                     mPDFView.jumpTo(cur);
                 }
@@ -200,31 +199,50 @@ public class PreviewActivity extends CommonActivity {
         } else {
             return;
         }
+
         configurator.enableDoubletap(false)
+                .disableLongpress()
+                .enableDoubletap(false)
                 .pageFling(true)
                 .swipeHorizontal(true)
                 .pageSnap(true)
                 .fitEachPage(true)
                 .spacing(ConvertUtils.dp2px(4))
-                .onPageChange(((page, pageCount) -> {
-                    TimerUtils.start(500, PreviewActivity.this, () -> mPDFViewBg.setVisibility(View.GONE));
-                }))
-                .onDraw((canvas, pageWidth, pageHeight, displayedPage) -> {
-                    ViewGroup.LayoutParams lp = mPDFViewBg.getLayoutParams();
-                    lp.width = (int) pageWidth;
-                    lp.height = (int) pageHeight;
-                    mPDFViewBg.setLayoutParams(lp);
-                    mPDFViewBg.invalidate();
+                .onDrawAll(new OnDrawListener() {
+                    @Override
+                    public void onLayerDrawn(Canvas canvas, float pageWidth, float pageHeight, int displayedPage) {
+                        ViewGroup.LayoutParams lp = mPDFViewBg.getLayoutParams();
+                        lp.width = (int) pageWidth;
+                        lp.height = (int) pageHeight;
+                        mPDFViewBg.setLayoutParams(lp);
+                    }
                 })
                 .onLoad(nbPages -> {
                     mContentList = mPDFView.getTableOfContents();
                 })
                 .onTap(event -> {
-                    boolean visible = mToolbar.getVisibility() == View.VISIBLE && mLlBottomBar.getVisibility() == View.VISIBLE;
-                    if (visible) {
-                        enterFullScreen();
+                    float x = event.getRawX();
+                    if (x <= PREVIOUS) {
+                        if (mToolbar.getVisibility() == View.VISIBLE) {
+                            enterFullScreen();
+                            return true;
+                        }
+                        int currentPage = mPDFView.getCurrentPage();
+                        mPDFView.jumpTo(--currentPage, true);
+                    } else if (x >= NEXT) {
+                        if (mToolbar.getVisibility() == View.VISIBLE) {
+                            enterFullScreen();
+                            return true;
+                        }
+                        int currentPage = mPDFView.getCurrentPage();
+                        mPDFView.jumpTo(++currentPage, true);
                     } else {
-                        exitFullScreen();
+                        boolean visible = mToolbar.getVisibility() == View.VISIBLE && mLlBottomBar.getVisibility() == View.VISIBLE;
+                        if (visible) {
+                            enterFullScreen();
+                        } else {
+                            exitFullScreen();
+                        }
                     }
                     return true;
                 })
@@ -232,25 +250,25 @@ public class PreviewActivity extends CommonActivity {
     }
 
     private void enterFullScreen() {
-        mToolbar.animate().setDuration(200).alpha(0).setListener(new AnimatorListenerAdapter() {
+        mToolbar.animate().setDuration(250).alpha(0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mToolbar.setVisibility(View.GONE);
             }
         }).start();
-        mLlBottomBar.animate().setDuration(200).alpha(0).setListener(new AnimatorListenerAdapter() {
+        mLlBottomBar.animate().setDuration(250).alpha(0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mLlBottomBar.setVisibility(View.GONE);
             }
         }).start();
-        mTvPageinfo.animate().setDuration(200).alpha(0).setListener(new AnimatorListenerAdapter() {
+        mTvPageinfo.animate().setDuration(250).alpha(0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mTvPageinfo.setVisibility(View.GONE);
             }
         }).start();
-        mLlQuickBar.animate().setDuration(200).alpha(0).setListener(new AnimatorListenerAdapter() {
+        mLlQuickBar.animate().setDuration(250).alpha(0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mLlQuickBar.setVisibility(View.GONE);
@@ -266,25 +284,25 @@ public class PreviewActivity extends CommonActivity {
     }
 
     private void exitFullScreen() {
-        mToolbar.animate().setDuration(200).alpha(1).setListener(new AnimatorListenerAdapter() {
+        mToolbar.animate().setDuration(250).alpha(1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 mToolbar.setVisibility(View.VISIBLE);
             }
         }).start();
-        mLlBottomBar.animate().setDuration(200).alpha(1).setListener(new AnimatorListenerAdapter() {
+        mLlBottomBar.animate().setDuration(250).alpha(1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 mLlBottomBar.setVisibility(View.VISIBLE);
             }
         }).start();
-        mTvPageinfo.animate().setDuration(200).alpha(1).setListener(new AnimatorListenerAdapter() {
+        mTvPageinfo.animate().setDuration(250).alpha(1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 mTvPageinfo.setVisibility(View.VISIBLE);
             }
         }).start();
-        mLlQuickBar.animate().setDuration(200).alpha(1).setListener(new AnimatorListenerAdapter() {
+        mLlQuickBar.animate().setDuration(250).alpha(1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 mLlQuickBar.setVisibility(View.VISIBLE);
