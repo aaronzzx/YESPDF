@@ -22,8 +22,7 @@
             android:layout_marginEnd="8dp"
             android:padding="8dp"
             android:layout_gravity="end"
-            android:src="@drawable/app_sel_select_all"
-            android:checkable="false" />
+            android:src="@drawable/app_sel_select_all" />
 
     </androidx.appcompat.widget.Toolbar>
 

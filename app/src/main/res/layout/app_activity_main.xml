@@ -50,7 +50,7 @@
         android:id="@+id/app_blur_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:realtimeBlurRadius="16dp"
+        app:realtimeBlurRadius="20dp"
         app:realtimeOverlayColor="#B3DBDBDB"
         android:alpha="0.0"/>
 

@@ -16,6 +16,7 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.PDF;
+import com.aaron.yespdf.common.event.RecentPDFEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -50,11 +51,14 @@ public class RecentFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRecentPDFEvent(RecentPDFEvent event) {
-        if (mActivity == null) return;
         mRecentPDFList.clear();
         mRecentPDFList.addAll(DBHelper.queryRecentPDF());
         // 实时更新最新阅读列表
-        mRvRecent.postDelayed(() -> mAdapter.notifyDataSetChanged(), 500);
+        if (event.isReadStateChange()) {
+            mAdapter.notifyDataSetChanged();
+        } else {
+            mRvRecent.postDelayed(() -> mAdapter.notifyDataSetChanged(), 500);
+        }
     }
 
     @Nullable

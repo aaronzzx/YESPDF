@@ -193,7 +193,7 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         scrolling = true;
-        pdfView.callbacks.callOnScroll();
+//        pdfView.callbacks.callOnScroll();
         if (pdfView.isZooming() || pdfView.isSwipeEnabled()) {
             pdfView.moveRelativeTo(-distanceX, -distanceY);
         }

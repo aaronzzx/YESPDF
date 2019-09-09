@@ -16,6 +16,8 @@ import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.PDF;
+import com.aaron.yespdf.common.event.AllEvent;
+import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.preview.PreviewActivity;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.TimeUtils;
@@ -32,11 +34,13 @@ import java.util.List;
 class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private RecentPDFEvent mRecentPDFEvent;
+    private AllEvent mAllEvent;
     private List<PDF> mPDFList;
 
     PDFAdapter(List<PDF> pdfList) {
         mPDFList = pdfList;
-        mRecentPDFEvent = new RecentPDFEvent();
+        mRecentPDFEvent = new RecentPDFEvent(false);
+        mAllEvent = new AllEvent();
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -57,6 +61,7 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             DBHelper.insertRecent(pdf);
             PreviewActivity.start(context, pdf);
             EventBus.getDefault().post(mRecentPDFEvent);
+            EventBus.getDefault().post(mAllEvent);
         });
         return holder;
     }

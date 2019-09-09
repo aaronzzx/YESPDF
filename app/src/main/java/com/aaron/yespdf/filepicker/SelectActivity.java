@@ -2,7 +2,6 @@ package com.aaron.yespdf.filepicker;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -38,8 +37,9 @@ import butterknife.Unbinder;
 public class SelectActivity extends CommonActivity implements View.OnClickListener, Communicable {
 
     public static final String EXTRA_SELECTED = "EXTRA_SELECTED";
+    private static final String EXTRA_IMPORTED = "EXTRA_IMPORTED";
 
-    @BindView(R2.id.app_iv_check) ImageView mCbSelectAll;
+    @BindView(R2.id.app_iv_check) ImageView mIvSelectAll;
     @BindView(R2.id.app_horizontal_sv) HorizontalScrollView mHorizontalSv;
     @BindView(R2.id.app_ll) ViewGroup mVgPath;
     @BindView(R2.id.app_tv_path) TextView mTvPath;
@@ -55,19 +55,23 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
     private String mPreviousPath = "";
     private String mCurrentPath = PathUtils.getExternalStoragePath();
 
+    private boolean isAllDisable;
+
     private RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onChanged() {
-            mCbSelectAll.setSelected(false);
+            mIvSelectAll.setSelected(false);
             mTvImportCount.setText(R.string.app_import_count);
             mPathList.clear();
             ((AdapterComm) mAdapter).init();
             handleCbSelectAll();
+
         }
     };
 
-    public static void start(Activity activity, int requestCode) {
+    public static void start(Activity activity, int requestCode, ArrayList<String> imported) {
         Intent starter = new Intent(activity, SelectActivity.class);
+        starter.putStringArrayListExtra(EXTRA_IMPORTED, imported);
         activity.startActivityForResult(starter, requestCode);
     }
 
@@ -129,8 +133,14 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onSelectResult(List<String> pathList, int total) {
-        mCbSelectAll.setSelected(pathList.size() == total);
+    public void onSelectResult(List<String> pathList, int total, boolean isAllDisable) {
+        this.isAllDisable = isAllDisable;
+        if (isAllDisable) {
+            mIvSelectAll.setEnabled(false);
+            return;
+        }
+
+        mIvSelectAll.setSelected(pathList.size() == total);
         mTvImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
         mPathList.clear();
         mPathList.addAll(pathList);
@@ -173,10 +183,13 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black);
         }
-        mToolbar.setTitle(R.string.app_import_pdf);
+        mToolbar.setTitle(R.string.app_import_file);
     }
 
     private void initView(Bundle savedInstanceState) {
+        Intent data = getIntent();
+        List<String> imported = data.getStringArrayListExtra(EXTRA_IMPORTED);
+
         mTvPath.setOnClickListener(this);
         mTvPath.setTag(mCurrentPath);
         mTvImportCount.setOnClickListener(new OnClickListenerImpl() {
@@ -192,8 +205,8 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
                 }
             }
         });
-        mCbSelectAll.setOnClickListener(v -> {
-            mCbSelectAll.setSelected(!mCbSelectAll.isSelected());
+        mIvSelectAll.setOnClickListener(v -> {
+            mIvSelectAll.setSelected(!mIvSelectAll.isSelected());
             ((AdapterComm) mAdapter).selectAll();
         });
 
@@ -201,7 +214,7 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
         mRvSelect.setLayoutManager(lm);
         mListable = new ByNameListable();
         mFileList = mListable.listFile(PathUtils.getExternalStoragePath());
-        mAdapter = new SelectAdapter(mFileList);
+        mAdapter = new SelectAdapter(mFileList, imported);
         mAdapter.registerAdapterDataObserver(mDataObserver);
         mRvSelect.setAdapter(mAdapter);
     }
@@ -215,6 +228,6 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
         } else {
             noFile = true;
         }
-        mCbSelectAll.setEnabled(!noFile);
+        mIvSelectAll.setEnabled(!noFile);
     }
 }

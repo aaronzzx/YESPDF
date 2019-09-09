@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -22,7 +23,7 @@ import com.blankj.utilcode.util.ConvertUtils;
 @SuppressLint("AppCompatCustomView")
 public class BorderImageView extends ImageView {
 
-    private static final int BORDER_COLOR = App.getContext().getResources().getColor(R.color.base_black_hint);
+    private static final int BORDER_COLOR = Color.parseColor("#66000000");
     private static final float BORDER_RADIUS = ConvertUtils.dp2px(2);
 
     private int mBorderColor;

@@ -9,5 +9,5 @@ interface Communicable {
 
     void onDirTap(String path);
 
-    void onSelectResult(List<String> pathList, int total);
+    void onSelectResult(List<String> pathList, int total, boolean isAllDisable);
 }

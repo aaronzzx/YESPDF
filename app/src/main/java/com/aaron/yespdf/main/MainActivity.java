@@ -29,16 +29,22 @@ import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
+import com.aaron.yespdf.common.event.AllEvent;
 import com.aaron.yespdf.common.utils.DialogUtils;
 import com.aaron.yespdf.filepicker.SelectActivity;
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 import com.github.mmin18.widget.RealtimeBlurView;
 import com.google.android.material.tabs.TabLayout;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,11 +86,19 @@ public class MainActivity extends CommonActivity implements AllAdapterComm {
         return findViewById(R.id.app_toolbar);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAllEvent(AllEvent event) {
+        if (mPwCollection.isShowing()) {
+            mRvCollection.postDelayed(() -> mPwCollection.dismiss(), 500);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PermissionUtils.permission(PermissionConstants.STORAGE)
-                .request();
+        EventBus.getDefault().register(this);
+        // TODO: 2019/9/9 待添加权限提示
+        PermissionUtils.permission(PermissionConstants.STORAGE).request();
         mUnbinder = ButterKnife.bind(this);
         initView(savedInstanceState);
     }
@@ -92,6 +106,7 @@ public class MainActivity extends CommonActivity implements AllAdapterComm {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         mUnbinder.unbind();
         KeyboardUtils.unregisterSoftInputChangedListener(this);
     }
@@ -203,7 +218,13 @@ public class MainActivity extends CommonActivity implements AllAdapterComm {
         TextView tvAbout    = pwView.findViewById(R.id.app_tv_about);
         mPwMenu = new PopupWindow(pwView);
         tvImport.setOnClickListener(v -> {
-            SelectActivity.start(this, SELECT_REQUEST_CODE);
+            ArrayList<String> imported = new ArrayList<>();
+            List<PDF> pdfList = DBHelper.queryAllPDF();
+            for (PDF pdf : pdfList) {
+                imported.add(pdf.getPath());
+            }
+
+            SelectActivity.start(this, SELECT_REQUEST_CODE, imported);
             mPwMenu.dismiss();
         });
         tvSettings.setOnClickListener(v -> {
@@ -242,7 +263,7 @@ public class MainActivity extends CommonActivity implements AllAdapterComm {
         mPwCollection.setFocusable(true);
         mPwCollection.setOutsideTouchable(true);
         mPwCollection.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        mPwCollection.setHeight(ConvertUtils.dp2px(480));
+        mPwCollection.setHeight(ConvertUtils.dp2px(500));
         mPwCollection.setElevation(ConvertUtils.dp2px(2));
     }
 }

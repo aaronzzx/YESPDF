@@ -55,39 +55,30 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         ViewHolder holder = (ViewHolder) viewHolder;
-        switch (mCollections.size()) {
+        if (mCollections == null || mCollections.isEmpty()) return;
+        switch (DBHelper.queryPDF(mCollections.get(position).getName()).size()) {
             case 1:
-                holder.ivCover1.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
                 holder.ivCover2.clearBorder();
                 holder.ivCover3.clearBorder();
                 holder.ivCover4.clearBorder();
                 break;
             case 2:
-                holder.ivCover1.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover2.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
                 holder.ivCover3.clearBorder();
                 holder.ivCover4.clearBorder();
                 break;
             case 3:
-                holder.ivCover1.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover2.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover3.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover3.setBorderRadius(ConvertUtils.dp2px(1));
                 holder.ivCover4.clearBorder();
                 break;
             default:
-                holder.ivCover1.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover2.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover3.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover3.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover4.setBackground(new ColorDrawable(Color.WHITE));
                 holder.ivCover4.setBorderRadius(ConvertUtils.dp2px(1));
                 break;
         }

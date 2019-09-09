@@ -26,14 +26,16 @@ import java.util.List;
 class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements AdapterComm {
 
     private List<File> mFileList;
+    private List<String> mImportedList;
     private List<String> mPathList = new ArrayList<>();
     private List<CheckBox> mCbList = new ArrayList<>();
 
     private boolean isSelectAll = false;
     private Context mContext;
 
-    SelectAdapter(List<File> fileList) {
+    SelectAdapter(List<File> fileList, List<String> imported) {
         mFileList = fileList;
+        mImportedList = imported;
     }
 
     @Override
@@ -44,10 +46,22 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
 
     @Override
     public void selectAll() {
+        boolean isAllDisable = true;
+        for (CheckBox cb : mCbList) {
+            if (cb.isEnabled()) {
+                isAllDisable = false;
+                break;
+            }
+        }
+        if (isAllDisable) {
+            ((Communicable) mContext).onSelectResult(mPathList, fileCount(), true);
+            return;
+        }
+
         isSelectAll = !isSelectAll;
         if (isSelectAll) {
             for (CheckBox cb : mCbList) {
-                cb.setChecked(true);
+                if (cb.isEnabled()) cb.setChecked(true);
             }
             mPathList.clear();
             for (File file : mFileList) {
@@ -57,11 +71,11 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             }
         } else {
             for (CheckBox cb : mCbList) {
-                cb.setChecked(false);
+                if (cb.isEnabled()) cb.setChecked(false);
             }
             mPathList.clear();
         }
-        ((Communicable) mContext).onSelectResult(mPathList, fileCount());
+        ((Communicable) mContext).onSelectResult(mPathList, fileCount(), false);
     }
 
     private int fileCount() {
@@ -70,6 +84,15 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             if (file.isFile()) count++;
         }
         return count;
+    }
+
+    private void disableSelectAll() {
+        for (File file : mFileList) {
+            if (file.isFile() && !mImportedList.contains(file.getAbsolutePath())) {
+                return;
+            }
+        }
+        ((Communicable) mContext).onSelectResult(mPathList, fileCount(), true);
     }
 
     @NonNull
@@ -87,13 +110,14 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             if (isDir) {
                 ((Communicable) mContext).onDirTap(file.getAbsolutePath());
             } else {
+                if (!holder.cb.isEnabled()) return;
                 holder.cb.setChecked(!holder.cb.isChecked());
                 if (holder.cb.isChecked() && !mPathList.contains(file.getAbsolutePath())) {
                     mPathList.add(file.getAbsolutePath());
                 } else {
                     mPathList.remove(file.getAbsolutePath());
                 }
-                ((Communicable) mContext).onSelectResult(mPathList, fileCount());
+                ((Communicable) mContext).onSelectResult(mPathList, fileCount(), false);
             }
         });
         return holder;
@@ -103,6 +127,7 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if (mFileList == null) return;
+        disableSelectAll();
         ViewHolder holder = (ViewHolder) viewHolder;
         File file = mFileList.get(position);
         String name = file.getName();
@@ -124,13 +149,20 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             if (file.getName().endsWith(".pdf")) {
                 holder.ivIcon.setImageResource(R.drawable.app_ic_pdf_red_24dp);
             }
-            if (isSelectAll) {
-                holder.cb.setChecked(true);
-            } else {
-                if (mPathList.contains(file.getAbsolutePath())) {
+            if (mImportedList != null && !mImportedList.isEmpty()) {
+                if (mImportedList.contains(file.getAbsolutePath())) {
+                    holder.cb.setEnabled(false);
+                }
+            }
+            if (holder.cb.isEnabled()) {
+                if (isSelectAll) {
                     holder.cb.setChecked(true);
                 } else {
-                    holder.cb.setChecked(false);
+                    if (mPathList.contains(file.getAbsolutePath())) {
+                        holder.cb.setChecked(true);
+                    } else {
+                        holder.cb.setChecked(false);
+                    }
                 }
             }
         }

@@ -12,10 +12,11 @@
     <string name="app_previous_chapter">上一章</string>
     <string name="app_next_chapter">下一章</string>
     <string name="app_content">目录</string>
+    <string name="app_have_no_content">没有目录信息</string>
     <string name="app_read_method">阅读方式</string>
     <string name="app_bookmark">书签</string>
 
-    <string name="app_import_pdf">导入 PDF</string>
+    <string name="app_import_file">导入文件</string>
     <string name="app_internal_storage">内部存储设备</string>
     <string name="app_have_not_select">还没选择文件噢~</string>
     <string name="app_import_success">导入成功</string>

@@ -7,38 +7,28 @@
     android:background="#000000"
     tools:context=".preview.PreviewActivity">
 
+    <!-- PDFView 的背景 -->
+    <View
+        android:id="@+id/app_pdfview_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true"
+        android:background="@color/base_white"/>
+
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/app_pdfview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/base_transparent"/>
 
-    <View
-        android:id="@+id/app_pdfview_bg"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerInParent="true"
-        android:background="@color/base_white"
-        android:visibility="gone"/>
-
-<!--    <View-->
-<!--        android:id="@+id/app_action_previous"-->
-<!--        android:layout_width="80dp"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_alignParentStart="true"/>-->
-
-<!--    <View-->
-<!--        android:id="@+id/app_action_next"-->
-<!--        android:layout_width="80dp"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_alignParentEnd="true"/>-->
-
+    <!-- 底部操作栏 -->
     <LinearLayout
         android:id="@+id/app_ll_bottombar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:fitsSystemWindows="true"
+        android:alpha="0.0"
         android:orientation="vertical">
 
         <LinearLayout
@@ -51,6 +41,7 @@
             android:paddingBottom="12dp">
 
             <TextView
+                android:id="@+id/app_tv_previous_chapter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -75,6 +66,7 @@
                 android:progressDrawable="@drawable/app_seekbar_bg"/>
 
             <TextView
+                android:id="@+id/app_tv_next_chapter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -104,38 +96,38 @@
                 android:drawablePadding="8dp"
                 android:drawableTop="@drawable/app_ic_action_content_white"/>
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/app_read_method"
-                android:textSize="@dimen/base_text_small"
-                android:textColor="@color/base_white"
-                android:drawablePadding="8dp"
-                android:drawableTop="@drawable/app_ic_action_read_method_white"/>
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:gravity="center"-->
+<!--                android:text="@string/app_read_method"-->
+<!--                android:textSize="@dimen/base_text_small"-->
+<!--                android:textColor="@color/base_white"-->
+<!--                android:drawablePadding="8dp"-->
+<!--                android:drawableTop="@drawable/app_ic_action_read_method_white"/>-->
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/app_bookmark"
-                android:textSize="@dimen/base_text_small"
-                android:textColor="@color/base_white"
-                android:drawablePadding="8dp"
-                android:drawableTop="@drawable/app_ic_bookmark_border_white_24dp"/>
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:gravity="center"-->
+<!--                android:text="@string/app_bookmark"-->
+<!--                android:textSize="@dimen/base_text_small"-->
+<!--                android:textColor="@color/base_white"-->
+<!--                android:drawablePadding="8dp"-->
+<!--                android:drawableTop="@drawable/app_ic_bookmark_border_white_24dp"/>-->
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/app_settings"
-                android:textSize="@dimen/base_text_small"
-                android:textColor="@color/base_white"
-                android:drawablePadding="8dp"
-                android:drawableTop="@drawable/app_ic_action_settings_white"/>
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:gravity="center"-->
+<!--                android:text="@string/app_settings"-->
+<!--                android:textSize="@dimen/base_text_small"-->
+<!--                android:textColor="@color/base_white"-->
+<!--                android:drawablePadding="8dp"-->
+<!--                android:drawableTop="@drawable/app_ic_action_settings_white"/>-->
 
         </LinearLayout>
 
@@ -149,6 +141,7 @@
         android:background="@color/app_preview_bar_bg"
         app:titleTextColor="@color/base_white"
         style="@style/AppToolbarStyle"
+        android:alpha="0.0"
         tools:title="大话设计模式" >
 
         <CheckBox
@@ -163,6 +156,7 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <!-- 左上角页数提示 -->
     <TextView
         android:id="@+id/app_tv_pageinfo"
         android:layout_width="wrap_content"
@@ -174,16 +168,19 @@
         android:paddingBottom="6dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:alpha="0.0"
         android:background="@drawable/app_shape_pageinfo_bg"
         android:textColor="@color/base_white_shallow"
         tools:text="123 / 386"/>
 
+    <!-- 撤销跳转栏 -->
     <LinearLayout
-        android:id="@+id/app_ll_quickbar"
+        android:id="@+id/app_ll_undoredobar"
         android:layout_width="300dp"
         android:layout_height="54dp"
         android:layout_centerHorizontal="true"
         android:layout_above="@id/app_ll_bottombar"
+        android:alpha="0.0"
         android:background="@drawable/app_shape_round_rect">
 
         <LinearLayout
@@ -204,17 +201,15 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textColor="@color/base_white"
-                android:text="6.2.4 通过系统剪贴板传递 Java 成员变量"
                 tools:text="6.2.4 通过系统剪贴板传递 Java 成员变量"/>
 
             <TextView
-                android:id="@+id/app_tv_cur_page"
+                android:id="@+id/app_tv_pageinfo2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:textSize="@dimen/base_text_small"
                 android:textColor="@color/base_white_shallow"
-                android:text="146 / 891"
                 tools:text="146 / 891"/>
 
         </LinearLayout>
@@ -225,13 +220,13 @@
             android:background="#33FFFFFF"/>
 
         <ImageButton
-            android:id="@+id/app_quickbar_action"
+            android:id="@+id/app_ibtn_quickbar_action"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:background="@null"
-            android:src="@drawable/app_ic_undo_white_24dp"/>
+            android:src="@drawable/app_sel_undo_redo"/>
 
     </LinearLayout>
 
