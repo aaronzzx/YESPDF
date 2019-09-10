@@ -58,51 +58,42 @@ class AboutPresenter implements IAboutContract.P {
                 R.drawable.app_ic_gift};
 
         static final String[] LIBRARY_NAME = {
+                "AndroidTreeView",
+                "RealtimeBlurView",
+                "ParallaxBackLayout",
+                "greenDAO",
+                "ButterKnife",
                 "Glide",
-                "CircleImageView",
                 "StatusBarUtil",
-                "PhotoView",
-                "Matisse",
-                "uCrop",
-                "FloatingActionButton",
                 "EventBus",
-                "Gson",
-                "OkHttp",
-                "Retrofit",
                 "RxJava",
                 "RxAndroid",
-                "Aria"};
+                "AndroidPdfViewer"};
 
         static final String[] LIBRARY_AUTHOR = {
-                "bumptech",
-                "hdodenhof",
-                "Jaeger",
-                "bm-x",
-                "zhihu",
-                "Yalantis",
-                "Clans",
+                "bmelnychuk",
+                "mmin18",
+                "anzewei",
                 "greenrobot",
-                "Google",
-                "square",
-                "square",
+                "JakeWharton",
+                "bumptech",
+                "Jaeger",
+                "greenrobot",
                 "ReactiveX",
                 "ReactiveX",
-                "AriaLyy"};
+                "barteksc"};
 
         static final String[] LIBRARY_INTRODUCE = {
+                "AndroidTreeView. TreeView implementation for android",
+                "A realtime blurring overlay for Android (like iOS UIVisualEffectView)",
+                "无需改动原有activity只需要一个annotation轻松实现任意方向的滑动返回，默认提供微信滑动、跟随滑动、以及单个滑动，并且可以自定义滑动效果",
+                "greenDAO is a light & fast ORM solution for Android that maps objects to SQLite databases.",
+                "Bind Android views and callbacks to fields and methods.",
                 "An image loading and caching library for Android focused on smooth scrolling",
-                "A circular ImageView for Android",
                 "A util for setting status bar style on Android App",
-                "PhotoView 图片浏览缩放控件",
-                "A well-designed local image and video selector for Android",
-                "Image Cropping Library for Android",
-                "Android Floating Action Button based on Material Design specification",
                 "Event bus for Android and Java that simplifies communication between Activities, Fragments, Threads, Services, etc. Less code, better quality. ",
-                "A Java serialization/deserialization library to convert Java Objects into JSON and back",
-                "An HTTP+HTTP/2 client for Android and Java applications.",
-                "Type-safe HTTP client for Android and Java by Square, Inc.",
                 "RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
                 "RxJava bindings for Android",
-                "一个简洁的下载器，使用注解进行回调监听"};
+                "Android view for displaying PDFs rendered with PdfiumAndroid"};
     }
 }

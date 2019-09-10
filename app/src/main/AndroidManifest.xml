@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.aaron.yespdf">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <application
         android:name=".common.App"
         android:allowBackup="true"
@@ -14,9 +11,11 @@
         android:roundIcon="@mipmap/app_ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
-        <activity android:name=".main.MainActivity"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
+        tools:replace="icon,label,roundIcon,theme">
+        <activity android:name=".settings.SettingsActivity"></activity>
+        <activity
+            android:name=".main.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,18 +23,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".filepicker.SelectActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".preview.PreviewActivity" >
+        <activity
+            android:name=".filepicker.SelectActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".preview.PreviewActivity">
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="application/pdf" />
             </intent-filter>
         </activity>
         <activity android:name=".about.AboutActivity" />
-
     </application>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>

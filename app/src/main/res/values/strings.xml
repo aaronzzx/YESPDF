@@ -14,7 +14,10 @@
     <string name="app_content">目录</string>
     <string name="app_have_no_content">没有目录信息</string>
     <string name="app_read_method">阅读方式</string>
+    <string name="app_read_method_horizontal">水平阅读</string>
+    <string name="app_read_method_vertical">垂直阅读</string>
     <string name="app_bookmark">书签</string>
+    <string name="app_already_read">已读&#160;</string>
 
     <string name="app_import_file">导入文件</string>
     <string name="app_internal_storage">内部存储设备</string>

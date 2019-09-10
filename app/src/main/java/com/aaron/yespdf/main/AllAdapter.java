@@ -23,6 +23,7 @@ import com.aaron.yespdf.common.widgets.BorderImageView;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,47 +56,22 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         ViewHolder holder = (ViewHolder) viewHolder;
-        if (mCollections == null || mCollections.isEmpty()) return;
-        switch (DBHelper.queryPDF(mCollections.get(position).getName()).size()) {
-            case 1:
-                holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover2.clearBorder();
-                holder.ivCover3.clearBorder();
-                holder.ivCover4.clearBorder();
-                break;
-            case 2:
-                holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover3.clearBorder();
-                holder.ivCover4.clearBorder();
-                break;
-            case 3:
-                holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover3.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover4.clearBorder();
-                break;
-            default:
-                holder.ivCover1.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover2.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover3.setBorderRadius(ConvertUtils.dp2px(1));
-                holder.ivCover4.setBorderRadius(ConvertUtils.dp2px(1));
-                break;
-        }
-        Collection c = mCollections.get(position);
-        List<PDF> pdfList = DBHelper.queryPDF(c.getName());
-        int count = pdfList.size();
+        if (mCollections != null && !mCollections.isEmpty()) {
+            Collection c = mCollections.get(position);
+            List<PDF> pdfList = DBHelper.queryPDF(c.getName());
+            int count = pdfList.size();
 
-        holder.tvTitle.setText(c.getName());
-        holder.tvCount.setText("共 " + count + " 本");
-        if (count == 0) return;
-        setCover(holder.ivCover1, pdfList.get(0).getCover());
-        if (count == 1) return;
-        setCover(holder.ivCover2, pdfList.get(1).getCover());
-        if (count == 2) return;
-        setCover(holder.ivCover3, pdfList.get(2).getCover());
-        if (count == 3) return;
-        setCover(holder.ivCover4, pdfList.get(3).getCover());
+            holder.tvTitle.setText(c.getName());
+            holder.tvCount.setText("共 " + count + " 本");
+            if (count == 0) return;
+            setCover(holder.ivCover1, pdfList.get(0).getCover());
+            if (count == 1) return;
+            setCover(holder.ivCover2, pdfList.get(1).getCover());
+            if (count == 2) return;
+            setCover(holder.ivCover3, pdfList.get(2).getCover());
+            if (count == 3) return;
+            setCover(holder.ivCover4, pdfList.get(3).getCover());
+        }
     }
 
     @Override

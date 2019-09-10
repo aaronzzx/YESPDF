@@ -1,13 +1,18 @@
 package com.aaron.yespdf.preview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -15,7 +20,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
+import com.aaron.base.impl.OnClickListenerImpl;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
@@ -24,12 +33,16 @@ import com.aaron.yespdf.common.PdfUtils;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
+import com.aaron.yespdf.settings.SettingsActivity;
+import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.UriUtils;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.util.SizeF;
 
@@ -47,28 +60,53 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PreviewActivity extends CommonActivity {
+public class PreviewActivity extends CommonActivity implements ICommunicable {
 
     public static final String EXTRA_PDF = "EXTRA_PDF";
-    private static final float PREVIOUS  = ScreenUtils.getScreenWidth() * 0.3F;
-    private static final float NEXT      = ScreenUtils.getScreenWidth() * 0.7F;
+    private static final float PREVIOUS = ScreenUtils.getScreenWidth() * 0.3F;
+    private static final float NEXT = ScreenUtils.getScreenWidth() * 0.7F;
 
+    @BindView(R2.id.app_screen_cover) View mScreenCover; // 遮罩
+
+    // PDF 阅读器
     @BindView(R2.id.app_pdfview_bg) View mPDFViewBg;
     @BindView(R2.id.app_pdfview) PDFView mPDFView;
+
+    // 快速撤销栏
     @BindView(R2.id.app_ll_undoredobar) LinearLayout mLlQuickBar;
     @BindView(R2.id.app_quickbar_title) TextView mTvQuickbarTitle;
     @BindView(R2.id.app_tv_pageinfo2) TextView mTvQuickbarPageinfo;
     @BindView(R2.id.app_ibtn_quickbar_action) ImageButton mIbtnQuickbarAction;
+
+    // 底栏
     @BindView(R2.id.app_ll_bottombar) LinearLayout mLlBottomBar;
     @BindView(R2.id.app_tv_previous_chapter) TextView mTvPreviousChapter;
-    @BindView(R2.id.app_tv_next_chapter) TextView mTvNextChapter;
-    @BindView(R2.id.app_tv_pageinfo) TextView mTvPageinfo;
     @BindView(R.id.app_sb_progress) SeekBar mSbProgress;
+    @BindView(R2.id.app_tv_next_chapter) TextView mTvNextChapter;
+    @BindView(R.id.app_tv_content) TextView mTvContent;
+    @BindView(R.id.app_tv_read_method) TextView mTvReadMethod;
+    @BindView(R.id.app_tv_bookmark) TextView mTvBookmark;
+    @BindView(R.id.app_tv_settings) TextView mTvSettings;
 
-    private PDF mPDF;
+    // 左上角页码
+    @BindView(R2.id.app_tv_pageinfo) TextView mTvPageinfo;
+
+    // 目录书签页
+    @BindView(R2.id.app_ll_content) ViewGroup mVgContent;
+    @BindView(R2.id.app_tab_layout) TabLayout mTabLayout;
+    @BindView(R2.id.app_vp) ViewPager mVp;
+
+    @BindView(R.id.app_ll_read_method) LinearLayout mLlReadMethod;
+    @BindView(R.id.app_tv_horizontal) TextView mTvHorizontal;
+    @BindView(R.id.app_tv_vertical) TextView mTvVertical;
+
+    private PDF mPDF; // 本应用打开
+    private Uri mUri; // 一般是外部应用打开
+
     private Map<Long, PdfDocument.Bookmark> mContentMap = new HashMap<>();
     private List<Long> mPageList = new ArrayList<>();
 
+    // 记录 redo/undo的页码
     private int mPreviousPage;
     private int mNextPage;
 
@@ -98,10 +136,7 @@ public class PreviewActivity extends CommonActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        boolean visible = mToolbar.getAlpha() == 1.0F && mLlBottomBar.getAlpha() == 1.0F;
-        if (visible) {
-            enterFullScreen();
-        }
+        enterFullScreen();
     }
 
     @Override
@@ -119,6 +154,15 @@ public class PreviewActivity extends CommonActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        hideBar();
+        mVgContent.setTranslationX(-mVgContent.getMeasuredWidth());
+        mScreenCover.setAlpha(0);
+        mLlReadMethod.setTranslationY(ScreenUtils.getScreenHeight());
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mPDFView.recycle();
@@ -131,13 +175,24 @@ public class PreviewActivity extends CommonActivity {
         numberFormat.setMaximumFractionDigits(1);
         //计算x年x月的成功率
         String result = numberFormat.format((float) percent / (float) total * 100);
-        return result+"%";
+        return result + "%";
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mVgContent.getTranslationX() == 0) {
+            closeContent();
+        } else if (mLlReadMethod.getTranslationY() != ScreenUtils.getScreenHeight()) {
+            closeReadMethod();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -157,6 +212,23 @@ public class PreviewActivity extends CommonActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public void onJumpTo(int page) {
+        mVgContent.animate()
+                .setDuration(250)
+                .translationX(-mVgContent.getMeasuredWidth())
+                .setUpdateListener(valueAnimator -> {
+                    mScreenCover.setAlpha(1 - valueAnimator.getAnimatedFraction());
+                })
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        mPDFView.jumpTo(page);
+                    }
+                })
+                .start();
+    }
+
     @SuppressLint({"SwitchIntDef"})
     private void initView(Bundle savedInstanceState) {
         UiManager.setTransparentStatusBar(this, mToolbar);
@@ -169,23 +241,27 @@ public class PreviewActivity extends CommonActivity {
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_white);
         }
 
-        clickEvent();
+        mLlReadMethod.setTranslationY(ScreenUtils.getScreenHeight());
+        mVgContent.setTranslationX(-(ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(64)));
+
+        setListener();
 
         Intent intent = getIntent();
-        Uri uri = intent.getData();
+        mUri = intent.getData();
         PDF pdf = intent.getParcelableExtra(EXTRA_PDF);
         int pageCount;
-        if (uri == null) {
+        if (mUri == null) {
             pageCount = pdf != null ? pdf.getTotalPage() : 0;
         } else {
-            pageCount = PdfUtils.getPdfTotalPage(UriUtils.uri2File(uri).getAbsolutePath());
+            pageCount = PdfUtils.getPdfTotalPage(UriUtils.uri2File(mUri).getAbsolutePath());
         }
 
-        loadPdf(uri, pdf, pageCount);
+        initPdf(mUri, pdf, pageCount);
         enterFullScreen();
     }
 
-    private void clickEvent() {
+    @SuppressLint("ClickableViewAccessibility")
+    private void setListener() {
         mIbtnQuickbarAction.setOnClickListener(v -> {
             if (v.isSelected()) {
                 mPreviousPage = mPDFView.getCurrentPage();
@@ -197,8 +273,17 @@ public class PreviewActivity extends CommonActivity {
             v.setSelected(!v.isSelected());
         });
         mTvPreviousChapter.setOnClickListener(v -> {
-            if (mLlQuickBar.getAlpha() != 1.0F) {
-                mLlQuickBar.animate().setDuration(50).alpha(1).start();
+            if (mLlQuickBar.getVisibility() != View.VISIBLE) {
+                mLlQuickBar.animate()
+                        .setDuration(50)
+                        .alpha(1)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                mLlQuickBar.setVisibility(View.VISIBLE);
+                            }
+                        })
+                        .start();
             }
             mIbtnQuickbarAction.setSelected(false);
             int targetPage = mPDFView.getCurrentPage() - 1;
@@ -212,8 +297,17 @@ public class PreviewActivity extends CommonActivity {
             mPDFView.jumpTo(targetPage);
         });
         mTvNextChapter.setOnClickListener(v -> {
-            if (mLlQuickBar.getAlpha() != 1.0F) {
-                mLlQuickBar.animate().setDuration(50).alpha(1).start();
+            if (mLlQuickBar.getVisibility() != View.VISIBLE) {
+                mLlQuickBar.animate()
+                        .setDuration(50)
+                        .alpha(1)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                mLlQuickBar.setVisibility(View.VISIBLE);
+                            }
+                        })
+                        .start();
             }
             mIbtnQuickbarAction.setSelected(false);
             int targetPage = mPDFView.getCurrentPage() + 1;
@@ -226,10 +320,88 @@ public class PreviewActivity extends CommonActivity {
             mPreviousPage = mPDFView.getCurrentPage();
             mPDFView.jumpTo(targetPage);
         });
+        mTvContent.setOnClickListener(new OnClickListenerImpl() {
+            @Override
+            public void onViewClick(View v, long interval) {
+                mTabLayout.getTabAt(0).select();
+                hideBar();
+                enterFullScreen();
+                openContent();
+            }
+        });
+        mTvReadMethod.setOnClickListener(new OnClickListenerImpl() {
+            @Override
+            public void onViewClick(View v, long interval) {
+                hideBar();
+                enterFullScreen();
+                openReadMethod();
+            }
+        });
+        mTvBookmark.setOnClickListener(v -> {
+            v.setSelected(!v.isSelected());
+        });
+        mTvBookmark.setOnLongClickListener(view -> {
+            mTabLayout.getTabAt(1).select();
+            hideBar();
+            enterFullScreen();
+            openContent();
+            return true;
+        });
+        mTvSettings.setOnClickListener(new OnClickListenerImpl() {
+            @Override
+            public void onViewClick(View v, long interval) {
+                hideBar();
+                SettingsActivity.start(PreviewActivity.this);
+            }
+        });
+        mScreenCover.setOnTouchListener((view, event) -> {
+            if (mVgContent.getTranslationX() == 0) {
+                closeContent();
+                return true;
+            }
+            return false;
+        });
+        mTvHorizontal.setOnClickListener(view -> {
+            mPDFView.fromFile(new File(mPDF.getPath()))
+                    .swipeHorizontal(true)
+                    .load();
+            closeReadMethod();
+        });
+        mTvVertical.setOnClickListener(view -> {
+            mPDFView.fromFile(new File(mPDF.getPath()))
+                    .swipeHorizontal(false)
+                    .load();
+            closeReadMethod();
+        });
+    }
+
+    private void openReadMethod() {
+        int screenHeight = ScreenUtils.getScreenHeight();
+        mLlReadMethod.animate()
+                .setDuration(200)
+                .setStartDelay(100)
+                .translationY(screenHeight - mLlReadMethod.getMeasuredHeight())
+                .start();
+    }
+
+    private void closeReadMethod() {
+        int screenHeight = ScreenUtils.getScreenHeight();
+        mLlReadMethod.animate()
+                .setDuration(200)
+                .translationY(screenHeight)
+                .start();
+    }
+
+    private void loadPdf(Uri uri, int pageCount) {
+
+    }
+
+    private void loadPdf(String path, int pageCount) {
+
     }
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
-    private void loadPdf(Uri uri, PDF pdf, int pageCount) {
+    private void initPdf(Uri uri, PDF pdf, int pageCount) {
         mSbProgress.setMax(pageCount - 1);
         mSbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -246,13 +418,21 @@ public class PreviewActivity extends CommonActivity {
                 mIbtnQuickbarAction.setSelected(false);
                 mPreviousPage = seekBar.getProgress();
 
-                mLlQuickBar.animate().setDuration(50).alpha(1).start();
+                mLlQuickBar.animate()
+                        .setDuration(50)
+                        .alpha(1)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                mLlQuickBar.setVisibility(View.VISIBLE);
+                            }
+                        })
+                        .start();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mNextPage = seekBar.getProgress();
-
                 mPDFView.jumpTo(seekBar.getProgress());
             }
         });
@@ -302,7 +482,19 @@ public class PreviewActivity extends CommonActivity {
                     mSbProgress.setProgress(page);
                 })
                 .onLoad(nbPages -> {
-                    findContent(mPDFView.getTableOfContents());
+                    List<PdfDocument.Bookmark> list = mPDFView.getTableOfContents();
+                    findContent(list);
+
+                    // 目录书签侧滑页初始化
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentPagerAdapter adapter = new PagerAdapter(fm, list);
+                    mVp.setAdapter(adapter);
+                    mTabLayout.setupWithViewPager(mVp);
+                    TabLayout.Tab tab1 = mTabLayout.getTabAt(0);
+                    TabLayout.Tab tab2 = mTabLayout.getTabAt(1);
+                    tab1.setCustomView(R.layout.app_tab_content);
+                    tab2.setCustomView(R.layout.app_tab_bookmark);
+
                     Set<Long> keySet = mContentMap.keySet();
                     mPageList.addAll(keySet);
                     Collections.sort(mPageList);
@@ -315,32 +507,62 @@ public class PreviewActivity extends CommonActivity {
                     mPDFViewBg.setLayoutParams(lp);
                 })
                 .onTap(event -> {
+                    if (mLlReadMethod.getTranslationY() != ScreenUtils.getScreenHeight()) {
+                        closeReadMethod();
+                        return true;
+                    }
                     float x = event.getRawX();
                     if (x <= PREVIOUS) {
                         if (mToolbar.getAlpha() == 1.0F) {
+                            hideBar();
                             enterFullScreen();
-                            return true;
+                        } else {
+                            int currentPage = mPDFView.getCurrentPage();
+                            mPDFView.jumpTo(--currentPage, true);
                         }
-                        int currentPage = mPDFView.getCurrentPage();
-                        mPDFView.jumpTo(--currentPage, true);
                     } else if (x >= NEXT) {
                         if (mToolbar.getAlpha() == 1.0F) {
+                            hideBar();
                             enterFullScreen();
-                            return true;
+                        } else {
+                            int currentPage = mPDFView.getCurrentPage();
+                            mPDFView.jumpTo(++currentPage, true);
                         }
-                        int currentPage = mPDFView.getCurrentPage();
-                        mPDFView.jumpTo(++currentPage, true);
                     } else {
-                        boolean visible = mToolbar.getAlpha() == 1.0F && mLlBottomBar.getAlpha() == 1.0F;
+                        boolean visible = mToolbar.getAlpha() == 1.0F
+                                && mLlBottomBar.getAlpha() == 1.0F;
                         if (visible) {
+                            hideBar();
                             enterFullScreen();
                         } else {
                             exitFullScreen();
+                            showBar();
                         }
                     }
                     return true;
                 })
                 .load();
+    }
+
+    private void openContent() {
+        mVgContent.animate()
+                .setDuration(250)
+                .setStartDelay(100)
+                .translationX(0)
+                .setUpdateListener(valueAnimator -> {
+                    mScreenCover.setAlpha(valueAnimator.getAnimatedFraction());
+                })
+                .start();
+    }
+
+    private void closeContent() {
+        mVgContent.animate()
+                .setDuration(250)
+                .translationX(-mVgContent.getMeasuredWidth())
+                .setUpdateListener(valueAnimator -> {
+                    mScreenCover.setAlpha(1 - valueAnimator.getAnimatedFraction());
+                })
+                .start();
     }
 
     private void findContent(List<PdfDocument.Bookmark> list) {
@@ -371,13 +593,63 @@ public class PreviewActivity extends CommonActivity {
         return title;
     }
 
-    private void enterFullScreen() {
-        mToolbar.animate().setDuration(250).alpha(0).start();
-        mLlBottomBar.animate().setDuration(250).alpha(0).start();
-        mTvPageinfo.animate().setDuration(250).alpha(0).start();
-        mLlQuickBar.animate().setDuration(250).alpha(0).start();
-        mIbtnQuickbarAction.setSelected(false); // 初始化为 Undo 状态
+    private void showBar() {
+        mToolbar.animate().setDuration(250).alpha(1)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        mToolbar.setVisibility(View.VISIBLE);
+                    }
+                }).start();
+        mLlBottomBar.animate().setDuration(250).alpha(1)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        mLlBottomBar.setVisibility(View.VISIBLE);
+                    }
+                }).start();
+        mTvPageinfo.animate().setDuration(250).alpha(1)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        mTvPageinfo.setVisibility(View.VISIBLE);
+                    }
+                }).start();
+    }
 
+    private void hideBar() {
+        mToolbar.animate().setDuration(250).alpha(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mToolbar.setVisibility(View.GONE);
+                    }
+                }).start();
+        mLlBottomBar.animate().setDuration(250).alpha(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mLlBottomBar.setVisibility(View.GONE);
+                    }
+                }).start();
+        mTvPageinfo.animate().setDuration(250).alpha(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mTvPageinfo.setVisibility(View.GONE);
+                    }
+                }).start();
+        mLlQuickBar.animate().setDuration(250).alpha(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mLlQuickBar.setVisibility(View.GONE);
+                    }
+                }).start();
+        mIbtnQuickbarAction.setSelected(false); // 初始化为 Undo 状态
+    }
+
+    private void enterFullScreen() {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -387,10 +659,6 @@ public class PreviewActivity extends CommonActivity {
     }
 
     private void exitFullScreen() {
-        mToolbar.animate().setDuration(250).alpha(1).start();
-        mLlBottomBar.animate().setDuration(250).alpha(1).start();
-        mTvPageinfo.animate().setDuration(250).alpha(1).start();
-
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);

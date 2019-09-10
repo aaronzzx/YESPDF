@@ -32,6 +32,7 @@ import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.AllEvent;
 import com.aaron.yespdf.common.utils.DialogUtils;
 import com.aaron.yespdf.filepicker.SelectActivity;
+import com.aaron.yespdf.settings.SettingsActivity;
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -228,6 +229,7 @@ public class MainActivity extends CommonActivity implements AllAdapterComm {
             mPwMenu.dismiss();
         });
         tvSettings.setOnClickListener(v -> {
+            SettingsActivity.start(this);
             mPwMenu.dismiss();
         });
         tvAbout.setOnClickListener(v -> {

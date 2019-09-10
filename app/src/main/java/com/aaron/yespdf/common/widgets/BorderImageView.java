@@ -24,7 +24,7 @@ import com.blankj.utilcode.util.ConvertUtils;
 public class BorderImageView extends ImageView {
 
     private static final int BORDER_COLOR = Color.parseColor("#66000000");
-    private static final float BORDER_RADIUS = ConvertUtils.dp2px(2);
+    private static final float BORDER_RADIUS = ConvertUtils.dp2px(1);
 
     private int mBorderColor;
     private float mBorderRadius;
@@ -72,7 +72,7 @@ public class BorderImageView extends ImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (drawBorder) {
+        if (getDrawable() != null && drawBorder) {
             //画边框
             Rect rect = canvas.getClipBounds();
             RectF rectF = new RectF(rect);

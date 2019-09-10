@@ -10,8 +10,8 @@
     <!-- PDFView 的背景 -->
     <View
         android:id="@+id/app_pdfview_bg"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="540dp"
         android:layout_centerInParent="true"
         android:background="@color/base_white"/>
 
@@ -86,6 +86,7 @@
             android:paddingBottom="24dp">
 
             <TextView
+                android:id="@+id/app_tv_content"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -96,38 +97,41 @@
                 android:drawablePadding="8dp"
                 android:drawableTop="@drawable/app_ic_action_content_white"/>
 
-<!--            <TextView-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:gravity="center"-->
-<!--                android:text="@string/app_read_method"-->
-<!--                android:textSize="@dimen/base_text_small"-->
-<!--                android:textColor="@color/base_white"-->
-<!--                android:drawablePadding="8dp"-->
-<!--                android:drawableTop="@drawable/app_ic_action_read_method_white"/>-->
+            <TextView
+                android:id="@+id/app_tv_read_method"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/app_read_method"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white"
+                android:drawablePadding="8dp"
+                android:drawableTop="@drawable/app_ic_action_read_method_white"/>
 
-<!--            <TextView-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:gravity="center"-->
-<!--                android:text="@string/app_bookmark"-->
-<!--                android:textSize="@dimen/base_text_small"-->
-<!--                android:textColor="@color/base_white"-->
-<!--                android:drawablePadding="8dp"-->
-<!--                android:drawableTop="@drawable/app_ic_bookmark_border_white_24dp"/>-->
+            <TextView
+                android:id="@+id/app_tv_bookmark"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/app_bookmark"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white"
+                android:drawablePadding="8dp"
+                android:drawableTop="@drawable/app_sel_bookmark"/>
 
-<!--            <TextView-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:gravity="center"-->
-<!--                android:text="@string/app_settings"-->
-<!--                android:textSize="@dimen/base_text_small"-->
-<!--                android:textColor="@color/base_white"-->
-<!--                android:drawablePadding="8dp"-->
-<!--                android:drawableTop="@drawable/app_ic_action_settings_white"/>-->
+            <TextView
+                android:id="@+id/app_tv_settings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/app_settings"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white"
+                android:drawablePadding="8dp"
+                android:drawableTop="@drawable/app_ic_action_settings_white"/>
 
         </LinearLayout>
 
@@ -229,5 +233,51 @@
             android:src="@drawable/app_sel_undo_redo"/>
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/app_screen_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.0"
+        android:background="@color/base_black_shallow"/>
+
+    <!-- 隐藏目录页 -->
+    <LinearLayout
+        android:id="@+id/app_ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="64dp"
+        android:orientation="vertical"
+        android:background="@color/base_white">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/app_tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:layout_marginEnd="48dp"
+            android:layout_marginBottom="4dp"
+            style="@style/AppTabStyle">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/app_ic_action_content_white" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/app_ic_bookmark_border_white_24dp"/>
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/app_vp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <include layout="@layout/app_include_read_method"/>
 
 </RelativeLayout>

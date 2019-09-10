@@ -1,6 +1,7 @@
 package com.aaron.yespdf.main;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.image.DefaultOption;
@@ -20,6 +22,7 @@ import com.aaron.yespdf.common.event.AllEvent;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.preview.PreviewActivity;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -69,13 +72,14 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+        Context context = viewHolder.itemView.getContext();
         ViewHolder holder = (ViewHolder) viewHolder;
         PDF pdf = mPDFList.get(position);
 
         String cover = pdf.getCover();
         String bookName = pdf.getName();
         holder.tvTitle.setText(bookName);
-        holder.tvProgress.setText("已读 " + pdf.getProgress());
+        holder.tvProgress.setText(context.getString(R.string.app_already_read) + pdf.getProgress());
         ImageLoader.load(holder.itemView.getContext(), new DefaultOption.Builder(cover)
                 .into(holder.ivCover));
     }

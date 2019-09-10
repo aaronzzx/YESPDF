@@ -44,6 +44,7 @@
         android:paddingBottom="16dp"
         android:text="@string/app_import_count"
         android:textSize="@dimen/base_text_large"
+        android:textStyle="bold"
         android:textColor="@color/app_color_accent"
         android:background="@color/base_white"/>
 

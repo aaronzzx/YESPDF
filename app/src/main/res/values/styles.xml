@@ -9,6 +9,22 @@
         <item name="android:windowBackground">@drawable/app_bg_launch</item>
     </style>
 
+    <style name="AppBottomDialogAnim">
+        <item name="android:windowEnterAnimation">@anim/app_window_enter</item>
+        <item name="android:windowExitAnimation">@anim/app_window_exit</item>
+    </style>
+
+    <!-- 目录标题加粗 -->
+    <style name="AppContentTitle">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTreeNode">
+        <item name="android:paddingStart">16dp</item>
+<!--        <item name="android:showDividers">middle</item>-->
+        <!--<item name="android:divider">@android:drawable/divider_horizontal_bright</item>-->
+    </style>
+
     <style name="AppToolbarStyle" parent="Widget.AppCompat.Toolbar">
         <item name="titleTextAppearance">@style/AppTitleStyle</item>
         <item name="contentInsetStartWithNavigation">0dp</item>
