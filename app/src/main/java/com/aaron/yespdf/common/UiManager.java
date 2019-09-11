@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
@@ -11,6 +14,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 
 import com.aaron.base.util.StatusBarUtils;
+import com.aaron.yespdf.R;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
@@ -29,10 +33,7 @@ public final class UiManager {
         int version = Build.VERSION.SDK_INT;
         if (version >= Build.VERSION_CODES.M) {
             StatusBarUtils.setTransparent(activity, true);
-//            StatusBarUtils.setColor(activity, Color.WHITE, 0);
-//            StatusBarUtils.setStatusBarLight(activity, true);
         } else {
-//            StatusBarUtils.setColor(activity, Color.WHITE, 60);
             StatusBarUtils.setTranslucent(activity, 60);
         }
     }
@@ -51,11 +52,17 @@ public final class UiManager {
     }
 
     public static void showShort(CharSequence text) {
-        ToastUtils.showShort(text);
+        ToastUtils.setGravity(Gravity.BOTTOM, 0, 200);
+        View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
+        TextView tv    = toastView.findViewById(R.id.app_tv);
+        tv.setText(text);
     }
 
     public static void showShort(@StringRes int res) {
-        ToastUtils.showShort(res);
+        ToastUtils.setGravity(Gravity.BOTTOM, 0, 200);
+        View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
+        TextView tv = toastView.findViewById(R.id.app_tv);
+        tv.setText(res);
     }
 
     private UiManager() {}

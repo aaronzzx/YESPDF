@@ -5,5 +5,6 @@ package com.aaron.yespdf.common;
  */
 public interface AppConfig {
 
-    String DB_NAME = "yespdf.db";
+    String DB_NAME     = "yespdf.db";
+    String BUGLY_APPID = "fd084373ed";
 }

@@ -18,7 +18,9 @@
     <string name="app_read_method_vertical">垂直阅读</string>
     <string name="app_bookmark">书签</string>
     <string name="app_already_read">已读&#160;</string>
+    <string name="app_item">项&#160; - &#160;</string>
 
+    <string name="app_have_no_storage_permission">导入文件需要存储权限噢 :)</string>
     <string name="app_import_file">导入文件</string>
     <string name="app_internal_storage">内部存储设备</string>
     <string name="app_have_not_select">还没选择文件噢~</string>
@@ -33,4 +35,15 @@
     <string name="app_github">GITHUB</string>
     <string name="app_gift">捐赠(微信)</string>
     <string name="app_feedback_title">请尽可能详细描述您的问题或建议，请不要删除或修改下列设备信息。</string>
+
+    <!-- 设置项 -->
+    <string name="app_color_reverse">颜色反转</string>
+    <string name="app_volume_control">音量键翻页</string>
+
+    <!-- 热修复对话框 -->
+    <string name="app_find_update">检测到更新</string>
+    <string name="app_restart_to_update">是否重启应用完成更新？</string>
+    <string name="app_later">稍后</string>
+    <string name="app_restart_right_now">重启应用</string>
+
 </resources>

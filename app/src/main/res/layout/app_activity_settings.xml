@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/base_white"
     tools:context=".settings.SettingsActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -13,5 +14,10 @@
         android:layout_height="wrap_content"
         android:background="@color/base_white"
         style="@style/AppToolbarStyle"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/app_rv_settings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

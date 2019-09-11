@@ -2,6 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
 
+apply plugin: 'bugly'
+apply from: 'tinker-support.gradle'
+
+// 上传符号表插件
+bugly {
+    debug  = false
+    appId  = 'fd084373ed' // 注册时分配的App ID
+    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.0"
@@ -14,6 +24,7 @@ android {
         versionCode 1
         versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
 
         ndk {
             // 选择要添加的对应cpu类型的.so库。
@@ -22,12 +33,32 @@ android {
         }
     }
 
-    buildTypes {
+    signingConfigs {
+        Properties properties = new Properties()
+        InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream()
+        properties.load(inputStream)
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            storeFile     file(properties.getProperty("STORE_FILE_NAME"))
+            storePassword properties.getProperty("KEYSTORE_PASSWORD")
+            keyAlias      properties.getProperty("STORE_ALIAS")
+            keyPassword   properties.getProperty("KEY_PASSWORD")
         }
     }
+
+    buildTypes {
+        release {
+            lintOptions {
+                checkReleaseBuilds false
+                abortOnError false
+            }
+
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
@@ -47,12 +78,14 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0-alpha10'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.multidex:multidex:2.0.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 //    implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1'
     implementation project(':android-pdf-viewer')
+    implementation project(':bugly')
     implementation 'com.aaron:base:1.1.5-beta9'
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
@@ -61,4 +94,7 @@ dependencies {
     implementation 'com.github.mmin18:realtimeblurview:1.2.1'
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.github.bmelnychuk:atv:1.2.9'
+    implementation 'com.tencent.bugly:crashreport_upgrade:1.4.1'
+    implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
+    implementation 'com.tencent.tinker:tinker-android-lib:1.9.13.2'
 }

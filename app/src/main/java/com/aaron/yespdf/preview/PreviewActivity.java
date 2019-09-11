@@ -5,21 +5,26 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -30,19 +35,23 @@ import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.PdfUtils;
+import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.settings.SettingsActivity;
 import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.GsonUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.UriUtils;
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnDrawListener;
 import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
-import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.reflect.TypeToken;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.util.SizeF;
 
@@ -60,9 +69,14 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PreviewActivity extends CommonActivity implements ICommunicable {
+/**
+ * 注意点：显示到界面上的页数需要加 1 ，因为 PDFView 获取到的页数是从 0 计数的。
+ */
+public class PreviewActivity extends CommonActivity implements IActivityComm {
 
-    public static final String EXTRA_PDF = "EXTRA_PDF";
+    private static final String EXTRA_PDF = "EXTRA_PDF";
+    private static final int REQUEST_CODE_SETTINGS = 101;
+
     private static final float PREVIOUS = ScreenUtils.getScreenWidth() * 0.3F;
     private static final float NEXT = ScreenUtils.getScreenWidth() * 0.7F;
 
@@ -102,13 +116,22 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
 
     private PDF mPDF; // 本应用打开
     private Uri mUri; // 一般是外部应用打开
+    private int mPageCount;
+
+    private IContetnFragComm mIContentFragComm;
+    private IBkFragComm mIBkFragComm;
 
     private Map<Long, PdfDocument.Bookmark> mContentMap = new HashMap<>();
     private List<Long> mPageList = new ArrayList<>();
+    private Map<Long, Bookmark> mBookmarkMap = new HashMap<>();
 
     // 记录 redo/undo的页码
     private int mPreviousPage;
     private int mNextPage;
+
+    private Canvas mCanvas; // AndroidPDFView 的画布
+    private Paint mPaint; // 画书签的画笔
+    private float mPageWidth;
 
     public static void start(Context context, PDF pdf) {
         Intent starter = new Intent(context, PreviewActivity.class);
@@ -130,7 +153,7 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
-        initView(savedInstanceState);
+        initView();
     }
 
     @Override
@@ -148,6 +171,7 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
             String progress = getPercent(curPage + 1, pageCount);
             mPDF.setCurPage(curPage);
             mPDF.setProgress(progress);
+            mPDF.setBookmark(GsonUtils.toJson(mBookmarkMap.values()));
             DBHelper.updatePDF(mPDF);
         }
         EventBus.getDefault().post(new RecentPDFEvent(true));
@@ -197,7 +221,7 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (mToolbar.getAlpha() == 0.0F) {
+        if (Settings.isVolumeControl() && mToolbar.getAlpha() == 0.0F) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_VOLUME_UP:
                     int currentPage1 = mPDFView.getCurrentPage();
@@ -213,7 +237,16 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SETTINGS && resultCode == RESULT_OK) {
+            initPdf(mUri, mPDF, mPageCount);
+        }
+    }
+
+    @Override
     public void onJumpTo(int page) {
+        mPDFViewBg.setVisibility(View.VISIBLE);
         mVgContent.animate()
                 .setDuration(250)
                 .translationX(-mVgContent.getMeasuredWidth())
@@ -230,9 +263,12 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
     }
 
     @SuppressLint({"SwitchIntDef"})
-    private void initView(Bundle savedInstanceState) {
+    private void initView() {
         UiManager.setTransparentStatusBar(this, mToolbar);
         UiManager.setNavigationBarColor(this, R.color.base_black);
+        if (Settings.isNightMode()) {
+            mPDFViewBg.setBackground(new ColorDrawable(Color.BLACK));
+        }
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -244,19 +280,28 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
         mLlReadMethod.setTranslationY(ScreenUtils.getScreenHeight());
         mVgContent.setTranslationX(-(ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(64)));
 
+        // 目录书签侧滑页初始化
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentPagerAdapter adapter = new PagerAdapter(fm);
+        mVp.setAdapter(adapter);
+        mTabLayout.setupWithViewPager(mVp);
+        TabLayout.Tab tab1 = mTabLayout.getTabAt(0);
+        TabLayout.Tab tab2 = mTabLayout.getTabAt(1);
+        tab1.setCustomView(R.layout.app_tab_content);
+        tab2.setCustomView(R.layout.app_tab_bookmark);
+
         setListener();
 
         Intent intent = getIntent();
         mUri = intent.getData();
         PDF pdf = intent.getParcelableExtra(EXTRA_PDF);
-        int pageCount;
         if (mUri == null) {
-            pageCount = pdf != null ? pdf.getTotalPage() : 0;
+            mPageCount = pdf != null ? pdf.getTotalPage() : 0;
         } else {
-            pageCount = PdfUtils.getPdfTotalPage(UriUtils.uri2File(mUri).getAbsolutePath());
+            mPageCount = PdfUtils.getPdfTotalPage(UriUtils.uri2File(mUri).getAbsolutePath());
         }
 
-        initPdf(mUri, pdf, pageCount);
+        initPdf(mUri, pdf, mPageCount);
         enterFullScreen();
     }
 
@@ -273,6 +318,7 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
             v.setSelected(!v.isSelected());
         });
         mTvPreviousChapter.setOnClickListener(v -> {
+            mPDFViewBg.setVisibility(View.VISIBLE);
             if (mLlQuickBar.getVisibility() != View.VISIBLE) {
                 mLlQuickBar.animate()
                         .setDuration(50)
@@ -297,6 +343,7 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
             mPDFView.jumpTo(targetPage);
         });
         mTvNextChapter.setOnClickListener(v -> {
+            mPDFViewBg.setVisibility(View.VISIBLE);
             if (mLlQuickBar.getVisibility() != View.VISIBLE) {
                 mLlQuickBar.animate()
                         .setDuration(50)
@@ -339,6 +386,18 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
         });
         mTvBookmark.setOnClickListener(v -> {
             v.setSelected(!v.isSelected());
+            int curPage = mPDFView.getCurrentPage();
+            if (v.isSelected()) {
+                drawBookmark(mCanvas, mPageWidth);
+                String title = getTitle(curPage);
+                long time = System.currentTimeMillis();
+                Bookmark bk = new Bookmark(curPage, title, time);
+                mBookmarkMap.put((long) curPage, bk);
+            } else {
+                mBookmarkMap.remove((long) curPage);
+            }
+            mIBkFragComm.update(mBookmarkMap.values());
+            mPDFView.invalidate();
         });
         mTvBookmark.setOnLongClickListener(view -> {
             mTabLayout.getTabAt(1).select();
@@ -351,7 +410,7 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
             @Override
             public void onViewClick(View v, long interval) {
                 hideBar();
-                SettingsActivity.start(PreviewActivity.this);
+                SettingsActivity.start(PreviewActivity.this, REQUEST_CODE_SETTINGS);
             }
         });
         mScreenCover.setOnTouchListener((view, event) -> {
@@ -362,15 +421,13 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
             return false;
         });
         mTvHorizontal.setOnClickListener(view -> {
-            mPDFView.fromFile(new File(mPDF.getPath()))
-                    .swipeHorizontal(true)
-                    .load();
+            Settings.setSwipeHorizontal(true);
+            initPdf(mUri, mPDF, mPageCount);
             closeReadMethod();
         });
         mTvVertical.setOnClickListener(view -> {
-            mPDFView.fromFile(new File(mPDF.getPath()))
-                    .swipeHorizontal(false)
-                    .load();
+            Settings.setSwipeHorizontal(false);
+            initPdf(mUri, mPDF, mPageCount);
             closeReadMethod();
         });
     }
@@ -392,14 +449,6 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
                 .start();
     }
 
-    private void loadPdf(Uri uri, int pageCount) {
-
-    }
-
-    private void loadPdf(String path, int pageCount) {
-
-    }
-
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     private void initPdf(Uri uri, PDF pdf, int pageCount) {
         mSbProgress.setMax(pageCount - 1);
@@ -415,6 +464,7 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                mPDFViewBg.setVisibility(View.VISIBLE);
                 mIbtnQuickbarAction.setSelected(false);
                 mPreviousPage = seekBar.getProgress();
 
@@ -445,6 +495,13 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
             configurator = mPDFView.fromUri(uri);
         } else if (pdf != null) {
             mPDF = pdf;
+            String bkJson = pdf.getBookmark(); // 获取书签 json
+            List<Bookmark> bkList = GsonUtils.fromJson(bkJson, new TypeToken<List<Bookmark>>(){}.getType());
+            if (bkList != null) {
+                for (Bookmark bk : bkList) {
+                    mBookmarkMap.put((long) bk.getPageId(), bk);
+                }
+            }
             int curPage = pdf.getCurPage(); // 因为从0计数
             mSbProgress.setProgress(curPage);
             mTvPageinfo.setText((curPage + 1) + " / " + pageCount);
@@ -454,27 +511,43 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
             return;
         }
 
-        configurator.enableDoubletap(false)
-                .disableLongpress()
+        mPaint = new Paint();
+
+        configurator.disableLongpress()
+                .swipeHorizontal(Settings.isSwipeHorizontal())
+                .nightMode(Settings.isNightMode())
+                .pageFling(Settings.isSwipeHorizontal())
+                .pageSnap(Settings.isSwipeHorizontal())
                 .enableDoubletap(false)
-                .pageFling(true)
-                .swipeHorizontal(true)
-                .pageSnap(true)
                 .fitEachPage(true)
-                .autoSpacing(true)
+//                .spacing(ConvertUtils.dp2px(4))
                 .onError(new OnErrorListener() {
                     @Override
                     public void onError(Throwable t) {
-
+                        // TODO: 2019/9/11 要提示
+                        LogUtils.e(t.getMessage());
                     }
                 })
                 .onPageError(new OnPageErrorListener() {
                     @Override
                     public void onPageError(int page, Throwable t) {
-
+                        // TODO: 2019/9/11 要提示
+                        LogUtils.e(t.getMessage());
+                    }
+                })
+                .onDrawAll(new OnDrawListener() {
+                    @Override
+                    public void onLayerDrawn(Canvas canvas, float pageWidth, float pageHeight, int displayedPage) {
+                        mCanvas = canvas;
+                        mPageWidth = pageWidth;
+                        if (mBookmarkMap.containsKey((long) displayedPage)) {
+                            drawBookmark(canvas, pageWidth);
+                        }
                     }
                 })
                 .onPageChange((page, pageCount1) -> {
+                    mTvBookmark.setSelected(mBookmarkMap.containsKey((long) page)); // 如果是书签则标红
+
                     mTvQuickbarTitle.setText(getTitle(page));
                     mTvQuickbarPageinfo.setText((page + 1) + " / " + pageCount);
 
@@ -485,26 +558,39 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
                     List<PdfDocument.Bookmark> list = mPDFView.getTableOfContents();
                     findContent(list);
 
-                    // 目录书签侧滑页初始化
-                    FragmentManager fm = getSupportFragmentManager();
-                    FragmentPagerAdapter adapter = new PagerAdapter(fm, list);
-                    mVp.setAdapter(adapter);
-                    mTabLayout.setupWithViewPager(mVp);
-                    TabLayout.Tab tab1 = mTabLayout.getTabAt(0);
-                    TabLayout.Tab tab2 = mTabLayout.getTabAt(1);
-                    tab1.setCustomView(R.layout.app_tab_content);
-                    tab2.setCustomView(R.layout.app_tab_bookmark);
+                    List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+                    for (Fragment f : fragmentList) {
+                        if (f instanceof IContetnFragComm) {
+                            mIContentFragComm = (IContetnFragComm) f;
+                        } else if (f instanceof IBkFragComm) {
+                            mIBkFragComm = (IBkFragComm) f;
+                        }
+                    }
+                    mIContentFragComm.update(list);
+                    mIBkFragComm.update(mBookmarkMap.values());
 
                     Set<Long> keySet = mContentMap.keySet();
                     mPageList.addAll(keySet);
                     Collections.sort(mPageList);
 
-                    int page = Math.round(mPDFView.getPageCount() / 2);
-                    SizeF sizeF = mPDFView.getPageSize(page);
-                    ViewGroup.LayoutParams lp = mPDFViewBg.getLayoutParams();
-                    lp.width = (int) sizeF.getWidth();
-                    lp.height = (int) sizeF.getHeight();
-                    mPDFViewBg.setLayoutParams(lp);
+                    if (!Settings.isNightMode()) {
+                        mPDFViewBg.setBackground(new ColorDrawable(Color.WHITE));
+                        if (Settings.isSwipeHorizontal()) {
+                            int page = Math.round(mPDFView.getPageCount() / 2);
+                            SizeF sizeF = mPDFView.getPageSize(page);
+                            ViewGroup.LayoutParams lp = mPDFViewBg.getLayoutParams();
+                            lp.width = (int) sizeF.getWidth();
+                            lp.height = (int) sizeF.getHeight();
+                            mPDFViewBg.setLayoutParams(lp);
+                        } else {
+                            ViewGroup.LayoutParams lp = mPDFViewBg.getLayoutParams();
+                            lp.width = ScreenUtils.getScreenWidth();
+                            lp.height = ScreenUtils.getScreenHeight();
+                            mPDFViewBg.setLayoutParams(lp);
+                        }
+                    } else {
+                        mPDFViewBg.setBackground(new ColorDrawable(Color.BLACK));
+                    }
                 })
                 .onTap(event -> {
                     if (mLlReadMethod.getTranslationY() != ScreenUtils.getScreenHeight()) {
@@ -542,6 +628,12 @@ public class PreviewActivity extends CommonActivity implements ICommunicable {
                     return true;
                 })
                 .load();
+    }
+
+    private void drawBookmark(Canvas canvas, float pageWidth) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_img_bookmark);
+        float left = pageWidth - ConvertUtils.dp2px(36);
+        canvas.drawBitmap(bitmap, left, 0, mPaint);
     }
 
     private void openContent() {

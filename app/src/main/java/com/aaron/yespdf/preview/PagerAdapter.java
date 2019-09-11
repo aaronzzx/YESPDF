@@ -17,19 +17,16 @@ import java.util.List;
  */
 class PagerAdapter extends FragmentPagerAdapter {
 
-    private List<PdfDocument.Bookmark> mContentList;
-
     @SuppressLint("WrongConstant")
-    PagerAdapter(@NonNull FragmentManager fm, List<PdfDocument.Bookmark> list) {
+    PagerAdapter(@NonNull FragmentManager fm) {
         super(fm, FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT);
-        mContentList = list;
     }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return ContentFragment.newInstance(mContentList);
+            return ContentFragment.newInstance();
         }
         return BookmarkFragment.newInstance();
     }

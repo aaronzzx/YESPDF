@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.aaron.base.impl.OnClickListenerImpl;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.about.AboutActivity;
@@ -30,6 +32,7 @@ import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.AllEvent;
+import com.aaron.yespdf.common.event.HotfixEvent;
 import com.aaron.yespdf.common.utils.DialogUtils;
 import com.aaron.yespdf.filepicker.SelectActivity;
 import com.aaron.yespdf.settings.SettingsActivity;
@@ -94,12 +97,49 @@ public class MainActivity extends CommonActivity implements AllAdapterComm {
         }
     }
 
+    /**
+     * 热修复完成，提示用户重启应用
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onHotfixSuccess(HotfixEvent event) {
+        hotfixRemind();
+    }
+
+    private void hotfixRemind() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.app_dialog_normal_alert, null);
+        Dialog hotfixDialog = DialogUtils.createDialog(this, dialogView);
+        hotfixDialog.setCanceledOnTouchOutside(false);
+        TextView tvTitle = dialogView.findViewById(R.id.app_tv_title);
+        TextView tvContent = dialogView.findViewById(R.id.app_tv_content);
+        Button btnLeft = dialogView.findViewById(R.id.app_btn_left);
+        Button btnRight = dialogView.findViewById(R.id.app_btn_right);
+        tvTitle.setText(R.string.app_find_update);
+        tvContent.setText(R.string.app_restart_to_update);
+        btnLeft.setText(R.string.app_later);
+        btnRight.setText(R.string.app_restart_right_now);
+        btnLeft.setOnClickListener(new OnClickListenerImpl() {
+            @Override
+            public void onViewClick(View v, long interval) {
+                hotfixDialog.dismiss();
+            }
+        });
+        btnRight.setOnClickListener(new OnClickListenerImpl() {
+            @Override
+            public void onViewClick(View v, long interval) {
+                final Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+        hotfixDialog.show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        // TODO: 2019/9/9 待添加权限提示
-        PermissionUtils.permission(PermissionConstants.STORAGE).request();
         mUnbinder = ButterKnife.bind(this);
         initView(savedInstanceState);
     }
@@ -219,13 +259,24 @@ public class MainActivity extends CommonActivity implements AllAdapterComm {
         TextView tvAbout    = pwView.findViewById(R.id.app_tv_about);
         mPwMenu = new PopupWindow(pwView);
         tvImport.setOnClickListener(v -> {
-            ArrayList<String> imported = new ArrayList<>();
-            List<PDF> pdfList = DBHelper.queryAllPDF();
-            for (PDF pdf : pdfList) {
-                imported.add(pdf.getPath());
-            }
+            PermissionUtils.permission(PermissionConstants.STORAGE)
+                    .callback(new PermissionUtils.SimpleCallback() {
+                        @Override
+                        public void onGranted() {
+                            ArrayList<String> imported = new ArrayList<>();
+                            List<PDF> pdfList = DBHelper.queryAllPDF();
+                            for (PDF pdf : pdfList) {
+                                imported.add(pdf.getPath());
+                            }
+                            SelectActivity.start(MainActivity.this, SELECT_REQUEST_CODE, imported);
+                        }
 
-            SelectActivity.start(this, SELECT_REQUEST_CODE, imported);
+                        @Override
+                        public void onDenied() {
+                            UiManager.showShort(R.string.app_have_no_storage_permission);
+                        }
+                    })
+                    .request();
             mPwMenu.dismiss();
         });
         tvSettings.setOnClickListener(v -> {

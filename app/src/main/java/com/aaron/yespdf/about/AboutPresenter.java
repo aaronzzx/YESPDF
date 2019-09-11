@@ -48,14 +48,14 @@ class AboutPresenter implements IAboutContract.P {
     }
 
     static class Element {
-        static final String[] TITLE = {App.getContext().getString(R.string.app_introduce), App.getContext().getString(R.string.app_feedback), App.getContext().getString(R.string.app_source_code), App.getContext().getString(R.string.app_github), App.getContext().getString(R.string.app_gift)};
+        static final String[] TITLE = {App.getContext().getString(R.string.app_introduce), App.getContext().getString(R.string.app_feedback), App.getContext().getString(R.string.app_source_code), App.getContext().getString(R.string.app_github)/*, App.getContext().getString(R.string.app_gift)*/};
 
         static final int[] ICON_ID = {
                 R.drawable.app_ic_introduce,
                 R.drawable.app_ic_email,
                 R.drawable.app_ic_source_code,
-                R.drawable.app_ic_github,
-                R.drawable.app_ic_gift};
+                R.drawable.app_ic_github/*,
+                R.drawable.app_ic_gift*/};
 
         static final String[] LIBRARY_NAME = {
                 "AndroidTreeView",

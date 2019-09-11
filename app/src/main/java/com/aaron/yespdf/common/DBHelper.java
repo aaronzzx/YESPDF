@@ -3,9 +3,6 @@ package com.aaron.yespdf.common;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.bean.RecentPDF;
@@ -14,7 +11,6 @@ import com.aaron.yespdf.common.greendao.DaoSession;
 import com.aaron.yespdf.common.greendao.PDFDao;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -130,7 +126,7 @@ public final class DBHelper {
             pdf.setPath(path);
             pdf.setProgress(progress);
             pdf.setCurPage(curPage);
-            pdf.setBookmarkPage(bookmarkPage);
+            pdf.setBookmark(bookmarkPage);
             pdf.setTotalPage(totalPage);
             pdf.setLatestRead(0);
             sDaoSession.insertOrReplace(pdf);

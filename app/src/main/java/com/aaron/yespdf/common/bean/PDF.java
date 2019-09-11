@@ -22,26 +22,11 @@ public class PDF implements Parcelable {
     String progress;
     int curPage;
     int totalPage;
-    String bookmarkPage;
+    String bookmark;
     long latestRead;
 
     public PDF() {
 
-    }
-
-    @Generated(hash = 549187711)
-    public PDF(Long id, String path, String dir, String name, String cover, String progress, int curPage, int totalPage, String bookmarkPage,
-            long latestRead) {
-        this.id = id;
-        this.path = path;
-        this.dir = dir;
-        this.name = name;
-        this.cover = cover;
-        this.progress = progress;
-        this.curPage = curPage;
-        this.totalPage = totalPage;
-        this.bookmarkPage = bookmarkPage;
-        this.latestRead = latestRead;
     }
 
     @Override
@@ -55,7 +40,7 @@ public class PDF implements Parcelable {
                 ", progress='" + progress + '\'' +
                 ", curPage=" + curPage +
                 ", totalPage=" + totalPage +
-                ", bookmarkPage=" + bookmarkPage +
+                ", bookmark=" + bookmark +
                 ", latestRead=" + latestRead +
                 '}';
     }
@@ -120,12 +105,12 @@ public class PDF implements Parcelable {
         this.totalPage = totalPage;
     }
 
-    public String getBookmarkPage() {
-        return bookmarkPage;
+    public String getBookmark() {
+        return bookmark;
     }
 
-    public void setBookmarkPage(String bookmarkPage) {
-        this.bookmarkPage = bookmarkPage;
+    public void setBookmark(String bookmark) {
+        this.bookmark = bookmark;
     }
 
     public void setId(Long id) {
@@ -155,7 +140,7 @@ public class PDF implements Parcelable {
         dest.writeString(this.progress);
         dest.writeInt(this.curPage);
         dest.writeInt(this.totalPage);
-        dest.writeString(this.bookmarkPage);
+        dest.writeString(this.bookmark);
         dest.writeLong(this.latestRead);
     }
 
@@ -168,8 +153,23 @@ public class PDF implements Parcelable {
         this.progress = in.readString();
         this.curPage = in.readInt();
         this.totalPage = in.readInt();
-        this.bookmarkPage = in.readString();
+        this.bookmark = in.readString();
         this.latestRead = in.readLong();
+    }
+
+    @Generated(hash = 1041541261)
+    public PDF(Long id, String path, String dir, String name, String cover, String progress,
+            int curPage, int totalPage, String bookmark, long latestRead) {
+        this.id = id;
+        this.path = path;
+        this.dir = dir;
+        this.name = name;
+        this.cover = cover;
+        this.progress = progress;
+        this.curPage = curPage;
+        this.totalPage = totalPage;
+        this.bookmark = bookmark;
+        this.latestRead = latestRead;
     }
 
     public static final Parcelable.Creator<PDF> CREATOR = new Parcelable.Creator<PDF>() {

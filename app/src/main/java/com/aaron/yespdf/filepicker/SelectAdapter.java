@@ -65,7 +65,7 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             }
             mPathList.clear();
             for (File file : mFileList) {
-                if (file.isFile()) {
+                if (file.isFile() && !mImportedList.contains(file.getAbsolutePath())) {
                     mPathList.add(file.getAbsolutePath());
                 }
             }
@@ -111,13 +111,15 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
                 ((Communicable) mContext).onDirTap(file.getAbsolutePath());
             } else {
                 if (!holder.cb.isEnabled()) return;
-                holder.cb.setChecked(!holder.cb.isChecked());
-                if (holder.cb.isChecked() && !mPathList.contains(file.getAbsolutePath())) {
-                    mPathList.add(file.getAbsolutePath());
-                } else {
-                    mPathList.remove(file.getAbsolutePath());
+                if (!mImportedList.contains(file.getAbsolutePath())) {
+                    holder.cb.setChecked(!holder.cb.isChecked());
+                    if (holder.cb.isChecked() && !mPathList.contains(file.getAbsolutePath())) {
+                        mPathList.add(file.getAbsolutePath());
+                    } else {
+                        mPathList.remove(file.getAbsolutePath());
+                    }
+                    ((Communicable) mContext).onSelectResult(mPathList, fileCount(), false);
                 }
-                ((Communicable) mContext).onSelectResult(mPathList, fileCount(), false);
             }
         });
         return holder;
@@ -127,18 +129,19 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if (mFileList == null) return;
+        Context context = viewHolder.itemView.getContext();
         disableSelectAll();
         ViewHolder holder = (ViewHolder) viewHolder;
         File file = mFileList.get(position);
         String name = file.getName();
-        String desc = "0项  -  ";
+        String desc = 0 + context.getString(R.string.app_item);
         String lastModified = TimeUtils.millis2String(file.lastModified(), new SimpleDateFormat("yyyy/MM/dd HH:mm"));
         if (file.isDirectory()) {
             holder.ivIcon.setImageResource(R.drawable.app_ic_folder_yellow_24dp);
             holder.ivNext.setVisibility(View.VISIBLE);
             holder.cb.setVisibility(View.GONE);
             File[] files = file.listFiles(new FileFilterImpl());
-            if (files != null) desc = files.length + "项  -  ";
+            if (files != null) desc = files.length + context.getString(R.string.app_item);
         } else {
             // 大小 MB 留小数点后一位
             String size = String.valueOf((double) file.length() / 1024 / 1024);
@@ -147,7 +150,7 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             holder.ivNext.setVisibility(View.GONE);
             holder.cb.setVisibility(View.VISIBLE);
             if (file.getName().endsWith(".pdf")) {
-                holder.ivIcon.setImageResource(R.drawable.app_ic_pdf_red_24dp);
+                holder.ivIcon.setImageResource(R.drawable.app_ic_pdf);
             }
             if (mImportedList != null && !mImportedList.isEmpty()) {
                 if (mImportedList.contains(file.getAbsolutePath())) {
