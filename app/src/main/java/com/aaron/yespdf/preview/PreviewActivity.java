@@ -83,9 +83,6 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     private static final String EXTRA_PDF = "EXTRA_PDF";
     private static final int REQUEST_CODE_SETTINGS = 101;
 
-    private static final float PREVIOUS = ScreenUtils.getScreenWidth() * 0.3F;
-    private static final float NEXT = ScreenUtils.getScreenWidth() * 0.7F;
-
     @BindView(R2.id.app_screen_cover) View mScreenCover; // 遮罩
 
     // PDF 阅读器
@@ -233,7 +230,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     public void onBackPressed() {
         if (mVgContent.getTranslationX() == 0) {
             // 等于 0 表示正处于打开状态，需要隐藏
-            closeContent();
+            closeContent(null);
         } else if (mLlReadMethod.getTranslationY() != ScreenUtils.getScreenHeight()) {
             // 不等于屏幕高度表示正处于显示状态，需要隐藏
             closeReadMethod();
@@ -275,19 +272,12 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     @Override
     public void onJumpTo(int page) {
         mPDFViewBg.setVisibility(View.VISIBLE);
-        mVgContent.animate()
-                .setDuration(250)
-                .translationX(-mVgContent.getMeasuredWidth())
-                .setUpdateListener(valueAnimator -> {
-                    mScreenCover.setAlpha(1 - valueAnimator.getAnimatedFraction());
-                })
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        mPDFView.jumpTo(page);
-                    }
-                })
-                .start();
+        closeContent(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mPDFView.jumpTo(page);
+            }
+        });
     }
 
     @SuppressLint({"SwitchIntDef"})
@@ -308,7 +298,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
         // 移动到屏幕下方
         mLlReadMethod.setTranslationY(ScreenUtils.getScreenHeight());
         // 移动到屏幕左边
-        mVgContent.setTranslationX(-(ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(64)));
+        mVgContent.post(() -> mVgContent.setTranslationX(-mVgContent.getMeasuredWidth()));
 
         if (Settings.isSwipeHorizontal()) {
             mTvHorizontal.setTextColor(getResources().getColor(R.color.app_color_accent));
@@ -444,7 +434,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
         });
         mScreenCover.setOnTouchListener((view, event) -> {
             if (mVgContent.getTranslationX() == 0) {
-                closeContent();
+                closeContent(null);
                 return true;
             }
             return false;
@@ -638,7 +628,10 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                         return true;
                     }
                     float x = event.getRawX();
-                    if (x <= PREVIOUS) {
+
+                    float previous = ScreenUtils.getScreenWidth() * 0.3F;
+                    float next = ScreenUtils.getScreenWidth() * 0.7F;
+                    if (x <= previous) {
                         if (mToolbar.getAlpha() == 1.0F) {
                             hideBar();
                             enterFullScreen();
@@ -646,7 +639,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                             int currentPage = mPDFView.getCurrentPage();
                             mPDFView.jumpTo(--currentPage, true);
                         }
-                    } else if (x >= NEXT) {
+                    } else if (x >= next) {
                         if (mToolbar.getAlpha() == 1.0F) {
                             hideBar();
                             enterFullScreen();
@@ -741,13 +734,14 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                 .start();
     }
 
-    private void closeContent() {
+    private void closeContent(Animator.AnimatorListener listener) {
         mVgContent.animate()
                 .setDuration(250)
                 .translationX(-mVgContent.getMeasuredWidth())
                 .setUpdateListener(valueAnimator -> {
                     mScreenCover.setAlpha(1 - valueAnimator.getAnimatedFraction());
                 })
+                .setListener(listener)
                 .start();
     }
 

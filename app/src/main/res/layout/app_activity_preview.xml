@@ -244,9 +244,8 @@
     <!-- 隐藏目录页 -->
     <LinearLayout
         android:id="@+id/app_ll_content"
-        android:layout_width="match_parent"
+        android:layout_width="330dp"
         android:layout_height="match_parent"
-        android:layout_marginEnd="64dp"
         android:orientation="vertical"
         android:background="@color/base_white">
 

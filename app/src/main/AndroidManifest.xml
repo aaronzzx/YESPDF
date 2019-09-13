@@ -21,8 +21,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:replace="icon,label,theme">
-        <activity android:name=".settings.SettingsActivity"
-            android:screenOrientation="portrait"/>
+        <activity android:name=".settings.SettingsActivity" />
         <activity
             android:name=".main.MainActivity"
             android:screenOrientation="portrait">
@@ -35,8 +34,7 @@
         <activity
             android:name=".filepicker.SelectActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".preview.PreviewActivity"
-            android:screenOrientation="portrait">
+        <activity android:name=".preview.PreviewActivity">
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -47,20 +45,6 @@
         </activity>
         <activity android:name=".about.AboutActivity"
             android:screenOrientation="portrait"/>
-<!--        <activity-->
-<!--            android:name="com.tencent.bugly.beta.ui.BetaActivity"-->
-<!--            android:configChanges="keyboardHidden|orientation|screenSize|locale"-->
-<!--            android:theme="@android:style/Theme.Translucent" />-->
-
-<!--        <provider-->
-<!--            android:name="androidx.core.content.FileProvider"-->
-<!--            android:authorities="${applicationId}.fileprovider"-->
-<!--            android:exported="false"-->
-<!--            android:grantUriPermissions="true">-->
-<!--            <meta-data-->
-<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--                android:resource="@xml/app_file_paths" />-->
-<!--        </provider>-->
 
     </application>
 
