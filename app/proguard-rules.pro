@@ -21,7 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 # YES PDF!
--keep class com.aaron.yespdf.common.event.RecentPDFEvent {*;}
+-keep class com.aaron.yespdf.common.event.RecentPDFEvent { *; }
 
 # AndroidPdfViewer
 -keep class com.shockwave.**

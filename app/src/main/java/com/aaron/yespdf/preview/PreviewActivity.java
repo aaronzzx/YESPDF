@@ -298,7 +298,8 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
         if (mUri == null) {
             mPageCount = pdf != null ? pdf.getTotalPage() : 0;
         } else {
-            mPageCount = PdfUtils.getPdfTotalPage(UriUtils.uri2File(mUri).getAbsolutePath());
+            File file = UriUtils.uri2File(mUri);
+            mPageCount = file != null ? PdfUtils.getPdfTotalPage(file.getAbsolutePath()) : 0;
         }
 
         initPdf(mUri, pdf, mPageCount);
@@ -488,7 +489,8 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
         });
         PDFView.Configurator configurator;
         if (uri != null) {
-            String path = UriUtils.uri2File(uri).getAbsolutePath();
+            File file = UriUtils.uri2File(uri);
+            String path = file != null ? UriUtils.uri2File(uri).getAbsolutePath() : "";
             mTvPageinfo.setText("1 / " + pageCount);
             String bookName = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
             mToolbar.post(() -> mToolbar.setTitle(bookName));

@@ -60,7 +60,7 @@
                     android:background="@null"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:textColor="@color/app_color_accent"
+                    android:textColor="@color/base_black_hint"
                     android:textSize="@dimen/base_text_large"
                     tools:text="不用了"/>
 
