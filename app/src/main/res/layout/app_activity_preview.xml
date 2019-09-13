@@ -110,6 +110,18 @@
                 android:drawableTop="@drawable/app_ic_action_read_method_white"/>
 
             <TextView
+                android:id="@+id/app_tv_auto_scroll"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/app_auto_scroll"
+                android:textSize="@dimen/base_text_small"
+                android:textColor="@color/base_white"
+                android:drawablePadding="10dp"
+                android:drawableTop="@drawable/app_sel_autoscroll" />
+
+            <TextView
                 android:id="@+id/app_tv_bookmark"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

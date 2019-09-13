@@ -52,14 +52,13 @@ import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.UriUtils;
 import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnDrawListener;
-import com.github.barteksc.pdfviewer.listener.OnErrorListener;
-import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.reflect.TypeToken;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfPasswordException;
 import com.shockwave.pdfium.util.SizeF;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -71,9 +70,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * 注意点：显示到界面上的页数需要加 1 ，因为 PDFView 获取到的页数是从 0 计数的。
@@ -82,6 +86,8 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
     private static final String EXTRA_PDF = "EXTRA_PDF";
     private static final int REQUEST_CODE_SETTINGS = 101;
+
+    private static final float OFFSET_Y = -0.5F; // 自动滚动的偏离值
 
     @BindView(R2.id.app_screen_cover) View mScreenCover; // 遮罩
 
@@ -100,10 +106,16 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     @BindView(R2.id.app_tv_previous_chapter) TextView mTvPreviousChapter;
     @BindView(R.id.app_sb_progress) SeekBar mSbProgress;
     @BindView(R2.id.app_tv_next_chapter) TextView mTvNextChapter;
-    @BindView(R.id.app_tv_content) TextView mTvContent;
-    @BindView(R.id.app_tv_read_method) TextView mTvReadMethod;
-    @BindView(R.id.app_tv_bookmark) TextView mTvBookmark;
-    @BindView(R.id.app_tv_settings) TextView mTvSettings;
+    @BindView(R2.id.app_tv_content)
+    TextView mTvContent;
+    @BindView(R2.id.app_tv_read_method)
+    TextView mTvReadMethod;
+    @BindView(R2.id.app_tv_auto_scroll)
+    TextView mTvAutoScroll;
+    @BindView(R2.id.app_tv_bookmark)
+    TextView mTvBookmark;
+    @BindView(R2.id.app_tv_settings)
+    TextView mTvSettings;
 
     // 左上角页码
     @BindView(R2.id.app_tv_pageinfo) TextView mTvPageinfo;
@@ -129,6 +141,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
     private IContetnFragComm mIContentFragComm;
     private IBkFragComm mIBkFragComm;
+    private Disposable mAutoDisp; // 自动滚动
 
     private Map<Long, PdfDocument.Bookmark> mContentMap = new HashMap<>();
     private Map<Long, Bookmark> mBookmarkMap = new HashMap<>();
@@ -242,7 +255,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // 如果非全屏状态是无法使用音量键翻页的
-        if (isVolumeControl && mToolbar.getAlpha() == 0.0F) {
+        if (ScreenUtils.isPortrait() && isVolumeControl && mToolbar.getAlpha() == 0.0F) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_VOLUME_UP:
                     int currentPage1 = mPDFView.getCurrentPage();
@@ -329,11 +342,9 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
         Intent intent = getIntent();
         mUri = intent.getData();
         mPDF = intent.getParcelableExtra(EXTRA_PDF);
-        if (mUri == null) {
-            mDefaultPage = mPDF != null ? mPDF.getCurPage() : 0;
-            mPageCount = mPDF != null ? mPDF.getTotalPage() : 0;
-        } else {
-            File file = UriUtils.uri2File(mUri);
+        if (mPDF != null) {
+            mDefaultPage = mPDF.getCurPage();
+            mPageCount = mPDF.getTotalPage();
         }
     }
 
@@ -351,7 +362,6 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
             v.setSelected(!v.isSelected());
         });
         mTvPreviousChapter.setOnClickListener(v -> {
-//            mPDFViewBg.setVisibility(View.VISIBLE);
             if (mLlQuickBar.getVisibility() != View.VISIBLE) {
                 showQuickbar();
             }
@@ -400,6 +410,25 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                 hideBar();
                 enterFullScreen();
                 openReadMethod();
+            }
+        });
+        mTvAutoScroll.setOnClickListener(v -> {
+            v.setSelected(!v.isSelected());
+            if (v.isSelected()) {
+                hideBar();
+                enterFullScreen();
+                mAutoDisp = Observable.interval(5, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(PreviewActivity.this)))
+                        .subscribe(aLong -> {
+                            if (!mPDFView.isRecycled()) {
+                                mPDFView.moveRelativeTo(0, OFFSET_Y);
+                                mPDFView.loadPageByOffset();
+                            }
+                        });
+            } else {
+                if (!mAutoDisp.isDisposed()) mAutoDisp.dispose();
             }
         });
         mTvBookmark.setOnClickListener(v -> {
@@ -483,7 +512,6 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 mTvPageinfo.setText((i + 1) + " / " + mPageCount);
-
                 // Quickbar
                 mTvQuickbarTitle.setText(getTitle(i));
                 mTvQuickbarPageinfo.setText((i + 1) + " / " + mPageCount);
@@ -491,7 +519,6 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-//                mPDFViewBg.setVisibility(View.VISIBLE);
                 mIbtnQuickbarAction.setSelected(false);
                 mPreviousPage = seekBar.getProgress();
 
@@ -541,35 +568,26 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                 .enableDoubletap(false)
                 .fitEachPage(true)
 //                .spacing(ConvertUtils.dp2px(4))
-                .onError(new OnErrorListener() {
-                    @Override
-                    public void onError(Throwable t) {
-                        LogUtils.e(t.getMessage());
-                        if (t instanceof PdfPasswordException) {
-                            if (!StringUtils.isEmpty(mPassword)) {
-                                UiManager.showShort(R.string.app_password_error);
-                            }
-                            showInputDialog();
-                        } else {
-                            showAlertDialog();
+                .onError(throwable -> {
+                    LogUtils.e(throwable.getMessage());
+                    if (throwable instanceof PdfPasswordException) {
+                        if (!StringUtils.isEmpty(mPassword)) {
+                            UiManager.showShort(R.string.app_password_error);
                         }
+                        showInputDialog();
+                    } else {
+                        showAlertDialog();
                     }
                 })
-                .onPageError(new OnPageErrorListener() {
-                    @Override
-                    public void onPageError(int page, Throwable t) {
-                        LogUtils.e(t.getMessage());
-                        UiManager.showShort(getString(R.string.app_cur_page) + page + getString(R.string.app_parse_error));
-                    }
+                .onPageError((page, throwable) -> {
+                    LogUtils.e(throwable.getMessage());
+                    UiManager.showShort(getString(R.string.app_cur_page) + page + getString(R.string.app_parse_error));
                 })
-                .onDrawAll(new OnDrawListener() {
-                    @Override
-                    public void onLayerDrawn(Canvas canvas, float pageWidth, float pageHeight, int displayedPage) {
-                        mCanvas = canvas;
-                        mPageWidth = pageWidth;
-                        if (mBookmarkMap.containsKey((long) displayedPage)) {
-                            drawBookmark(canvas, pageWidth);
-                        }
+                .onDrawAll((canvas, pageWidth, pageHeight, displayedPage) -> {
+                    mCanvas = canvas;
+                    mPageWidth = pageWidth;
+                    if (mBookmarkMap.containsKey((long) displayedPage)) {
+                        drawBookmark(canvas, pageWidth);
                     }
                 })
                 .onPageChange((page, pageCount) -> {
@@ -631,7 +649,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
                     float previous = ScreenUtils.getScreenWidth() * 0.3F;
                     float next = ScreenUtils.getScreenWidth() * 0.7F;
-                    if (x <= previous) {
+                    if (ScreenUtils.isPortrait() && x <= previous) {
                         if (mToolbar.getAlpha() == 1.0F) {
                             hideBar();
                             enterFullScreen();
@@ -639,7 +657,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                             int currentPage = mPDFView.getCurrentPage();
                             mPDFView.jumpTo(--currentPage, true);
                         }
-                    } else if (x >= next) {
+                    } else if (ScreenUtils.isPortrait() && x >= next) {
                         if (mToolbar.getAlpha() == 1.0F) {
                             hideBar();
                             enterFullScreen();
