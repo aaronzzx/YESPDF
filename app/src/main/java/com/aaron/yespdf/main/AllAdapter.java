@@ -2,8 +2,6 @@ package com.aaron.yespdf.main;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
-import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.widgets.BorderImageView;
-import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,7 +43,7 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             String name = mCollections.get(pos).getName();
-            ((AllAdapterComm) context).onTap(name);
+            ((IAllAdapterComm) context).onTap(name);
         });
         return holder;
     }

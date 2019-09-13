@@ -5,20 +5,20 @@ package com.aaron.yespdf.common.event;
  */
 public class RecentPDFEvent {
 
-    private boolean readStateChange;
+    private boolean fromPreviewActivity;
 
     public RecentPDFEvent() {
     }
 
-    public RecentPDFEvent(boolean readStateChange) {
-        this.readStateChange = readStateChange;
+    public RecentPDFEvent(boolean fromPreviewActivity) {
+        this.fromPreviewActivity = fromPreviewActivity;
     }
 
-    public boolean isReadStateChange() {
-        return readStateChange;
+    public boolean isFromPreviewActivity() {
+        return fromPreviewActivity;
     }
 
-    public void setReadStateChange(boolean readStateChange) {
-        this.readStateChange = readStateChange;
+    public void setFromPreviewActivity(boolean fromPreviewActivity) {
+        this.fromPreviewActivity = fromPreviewActivity;
     }
 }

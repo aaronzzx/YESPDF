@@ -54,9 +54,11 @@ public class RecentFragment extends BaseFragment {
         mRecentPDFList.clear();
         mRecentPDFList.addAll(DBHelper.queryRecentPDF());
         // 实时更新最新阅读列表
-        if (event.isReadStateChange()) {
+        if (event.isFromPreviewActivity()) {
+            // 由 PreviewActivity 发出而接收
             mAdapter.notifyDataSetChanged();
         } else {
+            // 由于还在 MainActivity 界面，所以不立即更新界面
             mRvRecent.postDelayed(() -> mAdapter.notifyDataSetChanged(), 500);
         }
     }

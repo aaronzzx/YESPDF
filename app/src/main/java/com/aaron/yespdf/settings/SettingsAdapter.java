@@ -33,7 +33,6 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             holder.switcher.setChecked(!holder.switcher.isChecked());
-            ((IComm) context).onColorReverse(true);
             tapOptions(holder.switcher, pos);
         });
         return holder;

@@ -3,7 +3,7 @@ package com.aaron.yespdf.main;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-interface AllAdapterComm {
+interface IAllFragmentComm {
 
-    void onTap(String name);
+    void update();
 }

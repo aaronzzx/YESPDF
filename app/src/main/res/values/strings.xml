@@ -4,6 +4,16 @@
     <string name="app_all">全部</string>
     <string name="app_more">更多</string>
     <string name="app_select_all">全选</string>
+    <string name="app_file_is_empty">文件为空</string>
+    <string name="app_cur_page">当前页面：</string>
+    <string name="app_parse_error">解析错误</string>
+    <string name="app_need_verify_password">需要验证密码</string>
+    <string name="app_password_error">密码错误</string>
+    <string name="app_cancel">取消</string>
+    <string name="app_confirm">确认</string>
+    <string name="app_oop_error">哎呀，出错了</string>
+    <string name="app_doc_parse_error">文档解析错误</string>
+    <string name="app_exit_cur_content">退出当前页面</string>
 
     <string name="app_import">导入</string>
     <string name="app_import_count">导入(0)</string>

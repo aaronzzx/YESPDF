@@ -29,7 +29,7 @@
                 android:layout_marginRight="16dp"
                 android:gravity="center"
                 android:textSize="@dimen/base_text_hlarge"
-                tools:text="修复现有问题"/>
+                tools:text="哎呀，出错了" />
 
             <TextView
                 android:id="@+id/app_tv_content"
@@ -37,9 +37,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginRight="16dp"
-                tools:text="是否重启应用完成修复？"/>
+                android:textSize="@dimen/base_text_large"
+                tools:text="文档解析出现错误" />
 
             <View
                 android:layout_width="match_parent"
@@ -47,41 +48,16 @@
                 android:layout_marginTop="16dp"
                 android:background="@color/base_black_divider_shallow" />
 
-            <LinearLayout
+            <Button
+                android:id="@+id/app_btn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/app_btn_left"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:textColor="@color/base_black_hint"
-                    android:textSize="@dimen/base_text_large"
-                    tools:text="不用了"/>
-
-                <View
-                    android:layout_width="0.7dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/base_black_divider_shallow" />
-
-                <Button
-                    android:id="@+id/app_btn_right"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:textColor="@color/app_color_accent"
-                    android:textSize="@dimen/base_text_large"
-                    tools:text="立即重启"/>
-
-            </LinearLayout>
+                android:background="@null"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/app_color_accent"
+                android:textSize="@dimen/base_text_large"
+                tools:text="退出当前页面" />
 
         </LinearLayout>
 

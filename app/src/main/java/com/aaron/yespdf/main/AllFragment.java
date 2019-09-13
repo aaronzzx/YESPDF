@@ -15,9 +15,7 @@ import com.aaron.base.base.BaseFragment;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
-import com.aaron.yespdf.common.PdfUtils;
 import com.aaron.yespdf.common.bean.Collection;
-import com.blankj.utilcode.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +27,7 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class AllFragment extends BaseFragment implements AllFragmentComm {
+public class AllFragment extends BaseFragment implements IAllFragmentComm {
 
     @BindView(R2.id.app_rv_all) RecyclerView mRvAll;
 
@@ -47,7 +45,7 @@ public class AllFragment extends BaseFragment implements AllFragmentComm {
     }
 
     @Override
-    public void update(List<String> pathList) {
+    public void update() {
         mCollections.clear();
         mCollections.addAll(DBHelper.queryAllCollection());
         mAdapter.notifyDataSetChanged();

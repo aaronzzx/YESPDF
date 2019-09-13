@@ -23,14 +23,13 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 @ParallaxBack
-public class SettingsActivity extends CommonActivity implements IComm {
+public class SettingsActivity extends CommonActivity {
 
     private static final String EXTRA_FROM_PREVIEW = "EXTRA_FROM_PREVIEW";
 
     @BindView(R2.id.app_rv_settings) RecyclerView mRvSettings;
 
     private Unbinder mUnbinder;
-    private boolean mColorReverseChange;
 
     public static void start(Context context) {
         Intent starter = new Intent(context, SettingsActivity.class);
@@ -51,11 +50,6 @@ public class SettingsActivity extends CommonActivity implements IComm {
     @Override
     protected Toolbar createToolbar() {
         return findViewById(R.id.app_toolbar);
-    }
-
-    @Override
-    public void onColorReverse(boolean change) {
-        mColorReverseChange = change;
     }
 
     @Override
@@ -83,9 +77,6 @@ public class SettingsActivity extends CommonActivity implements IComm {
 
     @Override
     public void onBackPressed() {
-        if (mColorReverseChange) {
-            setResult(RESULT_OK);
-        }
         finish();
     }
 
