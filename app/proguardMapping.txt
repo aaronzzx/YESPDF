@@ -17212,7 +17212,7 @@ com.aaron.yespdf.preview.PreviewActivity_ViewBinding -> com.aaron.yespdf.preview
 com.aaron.yespdf.settings.-$$Lambda$SettingsAdapter$83GpbTfDshCARYXabVZT5Ethk2A -> c.a.b.h.a:
     android.content.Context f$2 -> c
     com.aaron.yespdf.settings.SettingsAdapter f$0 -> a
-    com.aaron.yespdf.settings.SettingsAdapter$ViewHolder f$1 -> b
+    com.aaron.yespdf.settings.SettingsAdapter$SwitchHolder f$1 -> b
 com.aaron.yespdf.settings.IComm -> c.a.b.h.b:
     void onColorReverse(boolean) -> a
 com.aaron.yespdf.settings.SettingsActivity -> com.aaron.yespdf.settings.SettingsActivity:
@@ -17236,14 +17236,14 @@ com.aaron.yespdf.settings.SettingsActivity_ViewBinding -> com.aaron.yespdf.setti
     32:33:void unbind() -> unbind
 com.aaron.yespdf.settings.SettingsAdapter -> c.a.b.h.c:
     19:19:void <init>() -> <init>
-    29:39:com.aaron.yespdf.settings.SettingsAdapter$ViewHolder onCreateViewHolder(android.view.ViewGroup,int) -> a
-    34:38:void lambda$onCreateViewHolder$0(com.aaron.yespdf.settings.SettingsAdapter$ViewHolder,android.content.Context,android.view.View) -> a
+    29:39:com.aaron.yespdf.settings.SettingsAdapter$SwitchHolder onCreateViewHolder(android.view.ViewGroup,int) -> a
+    34:38:void lambda$onCreateViewHolder$0(com.aaron.yespdf.settings.SettingsAdapter$SwitchHolder,android.content.Context,android.view.View) -> a
     43:51:void tapOptions(android.widget.Switch,int) -> a
-    55:65:void onBindViewHolder(com.aaron.yespdf.settings.SettingsAdapter$ViewHolder,int) -> a
+    55:65:void onBindViewHolder(com.aaron.yespdf.settings.SettingsAdapter$SwitchHolder,int) -> a
     69:69:int getItemCount() -> a
     19:19:void onBindViewHolder(androidx.recyclerview.widget.RecyclerView$ViewHolder,int) -> b
     19:19:androidx.recyclerview.widget.RecyclerView$ViewHolder onCreateViewHolder(android.view.ViewGroup,int) -> b
-com.aaron.yespdf.settings.SettingsAdapter$ViewHolder -> c.a.b.h.c$a:
+com.aaron.yespdf.settings.SettingsAdapter$SwitchHolder -> c.a.b.h.c$a:
     android.widget.TextView tvTitle -> t
     android.widget.Switch switcher -> u
     77:80:void <init>(android.view.View) -> <init>

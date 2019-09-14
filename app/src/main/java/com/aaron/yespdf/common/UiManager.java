@@ -1,14 +1,12 @@
 package com.aaron.yespdf.common;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
@@ -52,14 +50,14 @@ public final class UiManager {
     }
 
     public static void showShort(CharSequence text) {
-        ToastUtils.setGravity(Gravity.BOTTOM, 0, 200);
+        ToastUtils.setGravity(Gravity.CENTER, 0, 0);
         View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
         TextView tv    = toastView.findViewById(R.id.app_tv);
         tv.setText(text);
     }
 
     public static void showShort(@StringRes int res) {
-        ToastUtils.setGravity(Gravity.BOTTOM, 0, 200);
+        ToastUtils.setGravity(Gravity.CENTER, 0, 0);
         View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
         TextView tv = toastView.findViewById(R.id.app_tv);
         tv.setText(res);

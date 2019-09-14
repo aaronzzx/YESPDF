@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/app_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/base_black"
+        android:textSize="@dimen/base_text_large"
+        tools:text="自动滚动" />
+
+    <SeekBar
+        android:id="@+id/app_sb_scroll_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="3dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:thumb="@drawable/app_sel_seekbar"
+        android:progressDrawable="@drawable/app_seekbar_bg" />
+
+</LinearLayout>

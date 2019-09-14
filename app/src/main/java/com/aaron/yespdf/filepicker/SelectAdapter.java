@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.yespdf.R;
+import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.TimeUtils;
 
 import java.io.File;
@@ -149,12 +150,14 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             desc = size + " MB  -  ";
             holder.ivNext.setVisibility(View.GONE);
             holder.cb.setVisibility(View.VISIBLE);
+            holder.cb.setPadding(0, 0, 0, 0);
             if (file.getName().endsWith(".pdf")) {
                 holder.ivIcon.setImageResource(R.drawable.app_ic_pdf);
             }
             if (mImportedList != null && !mImportedList.isEmpty()) {
                 if (mImportedList.contains(file.getAbsolutePath())) {
                     holder.cb.setEnabled(false);
+                    holder.cb.setPadding(0, 0, ConvertUtils.dp2px(2), 0);
                 }
             }
             if (holder.cb.isEnabled()) {

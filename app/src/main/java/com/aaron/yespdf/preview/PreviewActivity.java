@@ -142,6 +142,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     private IContetnFragComm mIContentFragComm;
     private IBkFragComm mIBkFragComm;
     private Disposable mAutoDisp; // 自动滚动
+    private boolean isPause;
 
     private Map<Long, PdfDocument.Bookmark> mContentMap = new HashMap<>();
     private Map<Long, Bookmark> mBookmarkMap = new HashMap<>();
@@ -254,6 +255,11 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mAutoDisp != null && !mAutoDisp.isDisposed()) {
+            exitFullScreen();
+            showBar();
+            return true;
+        }
         // 如果非全屏状态是无法使用音量键翻页的
         if (ScreenUtils.isPortrait() && isVolumeControl && mToolbar.getAlpha() == 0.0F) {
             switch (keyCode) {
@@ -306,6 +312,13 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_white);
+        }
+
+        if (!Settings.isSwipeHorizontal()) {
+            ViewGroup.LayoutParams lp = mPDFViewBg.getLayoutParams();
+            lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            mPDFViewBg.setLayoutParams(lp);
         }
 
         // 移动到屏幕下方
@@ -413,16 +426,24 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
             }
         });
         mTvAutoScroll.setOnClickListener(v -> {
+            if (Settings.isSwipeHorizontal()) {
+                UiManager.showShort(R.string.app_horizontal_does_not_support_auto_scroll);
+                return;
+            }
             v.setSelected(!v.isSelected());
             if (v.isSelected()) {
                 hideBar();
                 enterFullScreen();
-                mAutoDisp = Observable.interval(5, TimeUnit.MILLISECONDS)
+                mAutoDisp = Observable.interval(Settings.getScrollLevel(), TimeUnit.MILLISECONDS)
+                        .doOnDispose(() -> {
+                            mTvAutoScroll.setSelected(false);
+                            isPause = false;
+                        })
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(PreviewActivity.this)))
                         .subscribe(aLong -> {
-                            if (!mPDFView.isRecycled()) {
+                            if (!mPDFView.isRecycled() && !isPause) {
                                 mPDFView.moveRelativeTo(0, OFFSET_Y);
                                 mPDFView.loadPageByOffset();
                             }
@@ -458,6 +479,9 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
             @Override
             public void onViewClick(View v, long interval) {
                 hideBar();
+                if (mAutoDisp != null && !mAutoDisp.isDisposed()) {
+                    mAutoDisp.dispose();
+                }
                 SettingsActivity.start(PreviewActivity.this, REQUEST_CODE_SETTINGS);
             }
         });
@@ -471,6 +495,11 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
         mTvHorizontal.setOnClickListener(view -> {
             closeReadMethod();
             if (!Settings.isSwipeHorizontal()) {
+                if (mAutoDisp != null && !mAutoDisp.isDisposed()) {
+                    mAutoDisp.dispose();
+                    UiManager.showShort(R.string.app_horizontal_does_not_support_auto_scroll);
+                    return;
+                }
                 mTvHorizontal.setTextColor(getResources().getColor(R.color.app_color_accent));
                 mTvVertical.setTextColor(getResources().getColor(R.color.base_white));
                 Settings.setSwipeHorizontal(true);
@@ -641,6 +670,17 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                     }
                 })
                 .onTap(event -> {
+                    if (mAutoDisp != null && !mAutoDisp.isDisposed()) {
+                        if (mToolbar.getAlpha() == 1.0F) {
+                            hideBar();
+                            enterFullScreen();
+                        } else if (mLlReadMethod.getTranslationY() != ScreenUtils.getScreenHeight()) {
+                            closeReadMethod();
+                        } else {
+                            isPause = !isPause;
+                        }
+                        return true;
+                    }
                     if (mLlReadMethod.getTranslationY() != ScreenUtils.getScreenHeight()) {
                         closeReadMethod();
                         return true;
