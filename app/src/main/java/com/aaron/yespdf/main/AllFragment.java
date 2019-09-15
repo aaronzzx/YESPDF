@@ -71,7 +71,16 @@ public class AllFragment extends BaseFragment implements IAllFragmentComm {
 
         mRvAll.addItemDecoration(new XGridDecoration());
         mRvAll.addItemDecoration(new YGridDecoration());
-        RecyclerView.LayoutManager lm = new GridLayoutManager(mActivity, 3);
+        GridLayoutManager lm = new GridLayoutManager(mActivity, 3);
+        lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (mCollections.isEmpty()) {
+                    return 3;
+                }
+                return 0;
+            }
+        });
         mRvAll.setLayoutManager(lm);
         mAdapter = new AllAdapter(mCollections);
         mRvAll.setAdapter(mAdapter);

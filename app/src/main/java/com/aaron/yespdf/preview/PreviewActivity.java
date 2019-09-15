@@ -895,7 +895,6 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     }
 
     private void exitFullScreen() {
-
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);

@@ -85,7 +85,16 @@ public class RecentFragment extends BaseFragment {
 
         mRvRecent.addItemDecoration(new XGridDecoration());
         mRvRecent.addItemDecoration(new YGridDecoration());
-        RecyclerView.LayoutManager lm = new GridLayoutManager(mActivity, 3);
+        GridLayoutManager lm = new GridLayoutManager(mActivity, 3);
+        lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (mRecentPDFList.isEmpty()) {
+                    return 3;
+                }
+                return 0;
+            }
+        });
         mRvRecent.setLayoutManager(lm);
         mAdapter = new PDFAdapter(mRecentPDFList);
         mRvRecent.setAdapter(mAdapter);

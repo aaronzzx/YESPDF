@@ -27,7 +27,9 @@
     <string name="app_read_method_horizontal">水平阅读</string>
     <string name="app_read_method_vertical">垂直阅读</string>
     <string name="app_bookmark">书签</string>
-    <string name="app_have_no_add_bookmark">还没有添加书签</string>
+    <string name="app_have_no_add_bookmark">没有添加书签</string>
+    <string name="app_have_no_recent">没有阅读记录</string>
+    <string name="app_have_no_all">没有添加文件</string>
     <string name="app_auto_scroll">自动滚动</string>
     <string name="app_already_read">已读&#160;</string>
     <string name="app_item">项&#160; - &#160;</string>

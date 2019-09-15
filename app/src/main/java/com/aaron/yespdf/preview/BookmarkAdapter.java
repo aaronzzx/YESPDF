@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.yespdf.R;
-import com.aaron.yespdf.common.widgets.ImageTextView;
+import com.aaron.yespdf.common.EmptyHolder;
 import com.blankj.utilcode.util.TimeUtils;
 
 import java.text.DateFormat;
@@ -95,15 +95,6 @@ class BookmarkAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvTitle = itemView.findViewById(R.id.app_tv_title);
             tvPageId = itemView.findViewById(R.id.app_tv_page_id);
             tvTime = itemView.findViewById(R.id.app_tv_time);
-        }
-    }
-
-    static class EmptyHolder extends RecyclerView.ViewHolder {
-        ImageTextView itvEmpty;
-
-        EmptyHolder(@NonNull View itemView) {
-            super(itemView);
-            itvEmpty = itemView.findViewById(R.id.app_itv_placeholder);
         }
     }
 }
