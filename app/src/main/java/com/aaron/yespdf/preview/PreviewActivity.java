@@ -255,13 +255,14 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (mAutoDisp != null && !mAutoDisp.isDisposed()) {
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)
+                && mAutoDisp != null && !mAutoDisp.isDisposed()) {
             exitFullScreen();
             showBar();
             return true;
-        }
-        // 如果非全屏状态是无法使用音量键翻页的
-        if (ScreenUtils.isPortrait() && isVolumeControl && mToolbar.getAlpha() == 0.0F) {
+        } else if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)
+                && ScreenUtils.isPortrait() && isVolumeControl && mToolbar.getAlpha() == 0.0F) {
+            // 如果非全屏状态是无法使用音量键翻页的
             switch (keyCode) {
                 case KeyEvent.KEYCODE_VOLUME_UP:
                     int currentPage1 = mPDFView.getCurrentPage();

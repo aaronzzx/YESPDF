@@ -92,7 +92,7 @@ public class RecentFragment extends BaseFragment {
                 if (mRecentPDFList.isEmpty()) {
                     return 3;
                 }
-                return 0;
+                return 1;
             }
         });
         mRvRecent.setLayoutManager(lm);
