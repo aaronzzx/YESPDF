@@ -3,6 +3,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:background="@color/base_white">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -12,6 +14,7 @@
         android:overScrollMode="never"
         android:padding="8dp"
         android:clipToPadding="false"
+        android:clipChildren="false"
         android:scrollbars="vertical"/>
 
 </LinearLayout>

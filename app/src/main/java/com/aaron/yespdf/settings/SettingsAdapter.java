@@ -20,14 +20,15 @@ import com.aaron.yespdf.common.UiManager;
  */
 class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int ITEM_COUNT = 3;
+    private static final int ITEM_COUNT = 4;
 
     private static final int TYPE_SWITCH = 0;
     private static final int TYPE_SEEKBAR = 1;
 
-    private static final int POS_COLOR_REVERSE  = 0;
+    private static final int POS_COLOR_REVERSE = 0;
     private static final int POS_VOLUME_CONTROL = 1;
-    private static final int POS_SCROLL_LEVEL = 2;
+    private static final int POS_SHOW_STATUS_BAR = 2;
+    private static final int POS_SCROLL_LEVEL = 3;
 
     @NonNull
     @Override
@@ -76,6 +77,9 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case POS_VOLUME_CONTROL:
                 Settings.setVolumeControl(switcher.isChecked());
                 break;
+            case POS_SHOW_STATUS_BAR:
+                Settings.setShowStatusBar(switcher.isChecked());
+                break;
         }
     }
 
@@ -84,18 +88,22 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewHolder instanceof SwitchHolder) {
             SwitchHolder holder = (SwitchHolder) viewHolder;
             switch (position) {
-                case 0:
+                case POS_COLOR_REVERSE:
                     holder.tvTitle.setText(R.string.app_color_reverse);
                     holder.switcher.setChecked(Settings.isNightMode());
                     break;
-                case 1:
+                case POS_VOLUME_CONTROL:
                     holder.tvTitle.setText(R.string.app_volume_control);
                     holder.switcher.setChecked(Settings.isVolumeControl());
+                    break;
+                case POS_SHOW_STATUS_BAR:
+                    holder.tvTitle.setText(R.string.app_show_status_bar);
+                    holder.switcher.setChecked(Settings.isShowStatusBar());
                     break;
             }
         } else if (viewHolder instanceof SeekbarHolder) {
             SeekbarHolder holder = (SeekbarHolder) viewHolder;
-            holder.tvTitle.setText(R.string.app_auto_scroll);
+            holder.tvTitle.setText(R.string.app_scroll_velocity);
             holder.seekBar.setProgress((int) Settings.getScrollLevel() - 1);
         }
     }

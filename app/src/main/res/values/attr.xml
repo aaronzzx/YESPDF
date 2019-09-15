@@ -6,4 +6,24 @@
         <attr name="borderRadius" format="dimension" />
     </declare-styleable>
 
+    <!-- 自定义带 icon 的 TextView -->
+    <declare-styleable name="ImageTextView" tools:ignore="ResourceName">
+        <attr name="iconLeft" format="reference|color" />
+        <attr name="iconRight" format="reference|color" />
+        <attr name="iconTop" format="reference|color" />
+        <attr name="iconBottom" format="reference|color" />
+        <attr name="iconLeftTint" format="color" />
+        <attr name="iconRightTint" format="color" />
+        <attr name="iconTopTint" format="color" />
+        <attr name="iconBottomTint" format="color" />
+        <attr name="iconLeftWidth" format="dimension" />
+        <attr name="iconLeftHeight" format="dimension" />
+        <attr name="iconRightWidth" format="dimension" />
+        <attr name="iconRightHeight" format="dimension" />
+        <attr name="iconTopWidth" format="dimension" />
+        <attr name="iconTopHeight" format="dimension" />
+        <attr name="iconBottomWidth" format="dimension" />
+        <attr name="iconBottomHeight" format="dimension" />
+    </declare-styleable>
+
 </resources>

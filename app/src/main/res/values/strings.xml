@@ -27,11 +27,14 @@
     <string name="app_read_method_horizontal">水平阅读</string>
     <string name="app_read_method_vertical">垂直阅读</string>
     <string name="app_bookmark">书签</string>
+    <string name="app_have_no_add_bookmark">还没有添加书签</string>
     <string name="app_auto_scroll">自动滚动</string>
     <string name="app_already_read">已读&#160;</string>
     <string name="app_item">项&#160; - &#160;</string>
     <string name="app_horizontal_does_not_support_auto_scroll">水平阅读不支持自动滚动</string>
+    <string name="app_scroll_velocity">滚动速度</string>
     <string name="app_cur_level_is">当前等级：</string>
+    <string name="app_show_status_bar">显示状态栏</string>
 
     <string name="app_have_no_storage_permission">导入文件需要存储权限噢 :)</string>
     <string name="app_import_file">导入文件</string>

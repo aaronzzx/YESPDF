@@ -5,9 +5,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 
@@ -21,9 +21,14 @@ import com.blankj.utilcode.util.ToastUtils;
  */
 public final class UiManager {
 
-    public static void setNavigationBarColor(Activity activity, @ColorRes int colorRes) {
-        int color = activity.getResources().getColor(colorRes);
+    public static void setNavigationBarColor(Activity activity, int color) {
         activity.getWindow().setNavigationBarColor(color);
+    }
+
+    public static void setStatusBarBlack(Activity activity, Toolbar toolbar) {
+        toolbar.setPadding(0, 0, 0, 0);
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        activity.getWindow().setStatusBarColor(Color.BLACK);
     }
 
     public static void setStatusBar(Activity activity, Toolbar toolbar) {

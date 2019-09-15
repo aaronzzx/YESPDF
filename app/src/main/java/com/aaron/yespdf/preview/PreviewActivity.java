@@ -301,8 +301,6 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
     @SuppressLint({"SwitchIntDef"})
     private void initView() {
-        UiManager.setTransparentStatusBar(this, mToolbar);
-        UiManager.setNavigationBarColor(this, R.color.base_black);
         if (isNightMode) {
             mPDFViewBg.setBackground(new ColorDrawable(Color.BLACK));
         }
@@ -897,8 +895,10 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     }
 
     private void exitFullScreen() {
+
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        mToolbar.post(() -> UiManager.setNavigationBarColor(this, getResources().getColor(R.color.base_black)));
     }
 }

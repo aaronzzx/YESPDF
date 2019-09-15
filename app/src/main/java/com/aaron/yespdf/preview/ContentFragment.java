@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.aaron.base.base.BaseFragment;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.common.widgets.ImageTextView;
 import com.shockwave.pdfium.PdfDocument;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -31,14 +32,14 @@ import butterknife.Unbinder;
 public class ContentFragment extends BaseFragment implements IContetnFragComm {
 
     @BindView(R2.id.app_ll) LinearLayout mLl;
+    @BindView(R2.id.app_itv_placeholder)
+    ImageTextView mItvEmpty;
 
     private Unbinder mUnbinder;
     private List<PdfDocument.Bookmark> mContentList = new ArrayList<>();
 
     static Fragment newInstance() {
-        Fragment fragment = new ContentFragment();
-//        mContentList = list;
-        return fragment;
+        return new ContentFragment();
     }
 
     @Override
@@ -53,7 +54,8 @@ public class ContentFragment extends BaseFragment implements IContetnFragComm {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.app_fragment_content, container, false);
         mUnbinder = ButterKnife.bind(this, layout);
-//        initView();
+        mItvEmpty.setText(R.string.app_have_no_content);
+        mItvEmpty.setIconTop(R.drawable.app_ic_content_emptyview);
         return layout;
     }
 
@@ -63,12 +65,9 @@ public class ContentFragment extends BaseFragment implements IContetnFragComm {
         mUnbinder.unbind();
     }
 
-    private void initView() {
-        initContent();
-    }
-
     private void initContent() {
-        if (mContentList != null) {
+        if (!mContentList.isEmpty()) {
+            mItvEmpty.setVisibility(View.GONE);
             for (PdfDocument.Bookmark bk : mContentList) {
                 int icon = bk.hasChildren() ? R.drawable.app_ic_can_down_grey : R.drawable.app_ic_cannot_down_grey;
                 String title = bk.getTitle();
@@ -111,6 +110,8 @@ public class ContentFragment extends BaseFragment implements IContetnFragComm {
                 //将树形视图添加到layout中
                 mLl.addView(treeView.getView());
             }
+        } else {
+            mItvEmpty.setVisibility(View.VISIBLE);
         }
     }
 
