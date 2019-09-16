@@ -426,7 +426,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
         });
         mTvAutoScroll.setOnClickListener(v -> {
             if (Settings.isSwipeHorizontal()) {
-                UiManager.showShort(R.string.app_horizontal_does_not_support_auto_scroll);
+                UiManager.showCenterShort(R.string.app_horizontal_does_not_support_auto_scroll);
                 return;
             }
             v.setSelected(!v.isSelected());
@@ -496,7 +496,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
             if (!Settings.isSwipeHorizontal()) {
                 if (mAutoDisp != null && !mAutoDisp.isDisposed()) {
                     mAutoDisp.dispose();
-                    UiManager.showShort(R.string.app_horizontal_does_not_support_auto_scroll);
+                    UiManager.showCenterShort(R.string.app_horizontal_does_not_support_auto_scroll);
                     return;
                 }
                 mTvHorizontal.setTextColor(getResources().getColor(R.color.app_color_accent));
@@ -518,10 +518,14 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
     private void openReadMethod() {
         int screenHeight = ScreenUtils.getScreenHeight();
+        int viewHeight = mLlReadMethod.getMeasuredHeight();
+        if (mLlReadMethod.getTranslationY() < viewHeight) {
+            viewHeight += ConvertUtils.dp2px(24);
+        }
         mLlReadMethod.animate()
                 .setDuration(200)
                 .setStartDelay(100)
-                .translationY(screenHeight - mLlReadMethod.getMeasuredHeight())
+                .translationY(screenHeight - viewHeight)
                 .start();
     }
 
@@ -580,7 +584,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
             mToolbar.post(() -> mToolbar.setTitle(pdf.getName()));
             configurator = mPDFView.fromFile(new File(pdf.getPath())).defaultPage(mDefaultPage);
         } else {
-            UiManager.showShort(R.string.app_file_is_empty);
+            UiManager.showCenterShort(R.string.app_file_is_empty);
             finish();
             return;
         }
@@ -600,7 +604,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                     LogUtils.e(throwable.getMessage());
                     if (throwable instanceof PdfPasswordException) {
                         if (!StringUtils.isEmpty(mPassword)) {
-                            UiManager.showShort(R.string.app_password_error);
+                            UiManager.showCenterShort(R.string.app_password_error);
                         }
                         showInputDialog();
                     } else {
@@ -887,18 +891,38 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
     }
 
     private void enterFullScreen() {
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        if (Settings.isShowStatusBar()) {
+            UiManager.setTranslucentStatusBar(this);
+            mVgContent.setPadding(0, ConvertUtils.dp2px(25), 0, 0);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        } else {
+            UiManager.setTransparentStatusBar(this);
+            mVgContent.setPadding(0, 0, 0, 0);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     }
 
     private void exitFullScreen() {
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        if (Settings.isShowStatusBar()) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+//            mToolbar.post(() -> UiManager.setBlackNavigationBar(this));
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
         mToolbar.post(() -> UiManager.setNavigationBarColor(this, getResources().getColor(R.color.base_black)));
     }
 }

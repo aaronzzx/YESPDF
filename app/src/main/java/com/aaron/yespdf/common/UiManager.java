@@ -1,11 +1,9 @@
 package com.aaron.yespdf.common;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
@@ -25,12 +23,6 @@ public final class UiManager {
         activity.getWindow().setNavigationBarColor(color);
     }
 
-    public static void setStatusBarBlack(Activity activity, Toolbar toolbar) {
-        toolbar.setPadding(0, 0, 0, 0);
-        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        activity.getWindow().setStatusBarColor(Color.BLACK);
-    }
-
     public static void setStatusBar(Activity activity, Toolbar toolbar) {
         toolbar.setPadding(0, ConvertUtils.dp2px(25), 0, 0);
         int version = Build.VERSION.SDK_INT;
@@ -41,27 +33,29 @@ public final class UiManager {
         }
     }
 
-    public static void setTransparentStatusBar(Activity activity, Toolbar toolbar) {
-        toolbar.setPadding(0, ConvertUtils.dp2px(25), 0, 0);
+    public static void setTransparentStatusBar(Activity activity) {
         StatusBarUtils.setTransparent(activity);
     }
 
-    public static void setBlackNavigationBar(Activity activity) {
-        activity.getWindow().setNavigationBarColor(Color.BLACK);
-    }
-
-    public static void setTransparentNavigationBar(Activity activity) {
-        activity.getWindow().setNavigationBarColor(Color.TRANSPARENT);
+    public static void setTranslucentStatusBar(Activity activity) {
+        StatusBarUtils.setTranslucent(activity, 100);
     }
 
     public static void showShort(CharSequence text) {
-        ToastUtils.setGravity(Gravity.CENTER, 0, 0);
+        ToastUtils.setGravity(Gravity.CENTER, 0, 200);
         View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
         TextView tv    = toastView.findViewById(R.id.app_tv);
         tv.setText(text);
     }
 
     public static void showShort(@StringRes int res) {
+        ToastUtils.setGravity(Gravity.BOTTOM, 0, 200);
+        View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
+        TextView tv = toastView.findViewById(R.id.app_tv);
+        tv.setText(res);
+    }
+
+    public static void showCenterShort(@StringRes int res) {
         ToastUtils.setGravity(Gravity.CENTER, 0, 0);
         View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
         TextView tv = toastView.findViewById(R.id.app_tv);
