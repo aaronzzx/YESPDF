@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.App;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.EmptyHolder;
+import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.AllEvent;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
@@ -38,11 +40,13 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private RecentPDFEvent mRecentPDFEvent;
     private AllEvent mAllEvent;
     private List<PDF> mPDFList;
+    private boolean mRecent;
 
-    PDFAdapter(List<PDF> pdfList) {
+    PDFAdapter(List<PDF> pdfList, boolean recent) {
         mPDFList = pdfList;
         mRecentPDFEvent = new RecentPDFEvent(false);
         mAllEvent = new AllEvent();
+        mRecent = recent;
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -76,7 +80,7 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         Context context = viewHolder.itemView.getContext();
-        if (viewHolder instanceof ViewHolder) {
+        if (viewHolder instanceof ViewHolder && position < getItemCount()) {
             ViewHolder holder = (ViewHolder) viewHolder;
             PDF pdf = mPDFList.get(position);
             String cover = pdf.getCover();
@@ -97,6 +101,17 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int getItemCount() {
         if (mPDFList.isEmpty()) {
             return 1;
+        } else if (mRecent) {
+            String[] array = App.getContext().getResources().getStringArray(R.array.max_recent_count);
+            String infinite = array[array.length - 1];
+            String maxRecent = Settings.getMaxRecentCount();
+            if (!maxRecent.equals(infinite)) {
+                int count = Integer.parseInt(maxRecent);
+                if (count <= mPDFList.size()) {
+                    return count;
+                }
+                return mPDFList.size();
+            }
         }
         return mPDFList.size();
     }

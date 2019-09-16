@@ -103,7 +103,7 @@ public final class DBHelper {
             int totalPage       = PdfUtils.getPdfTotalPage(path);
             String name         = path.substring(path.lastIndexOf("/"), path.length() - 4);
             String progress     = "0.0%";
-            String cover        = PathUtils.getInternalAppCachePath() + name + ".jpg";
+            String cover = PathUtils.getInternalAppDataPath() + name + ".jpg";
             // 制作 PDF 封面并缓存
             try {
                 long start = System.currentTimeMillis();

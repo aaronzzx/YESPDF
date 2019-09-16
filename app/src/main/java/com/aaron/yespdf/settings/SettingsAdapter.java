@@ -4,7 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -12,23 +14,41 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.App;
 import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.UiManager;
+import com.aaron.yespdf.common.event.MaxRecentEvent;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
 class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int ITEM_COUNT = 4;
+    private static final int ITEM_COUNT = 5;
 
     private static final int TYPE_SWITCH = 0;
     private static final int TYPE_SEEKBAR = 1;
+    private static final int TYPE_NUM_PICKER = 2;
 
     private static final int POS_COLOR_REVERSE = 0;
     private static final int POS_VOLUME_CONTROL = 1;
     private static final int POS_SHOW_STATUS_BAR = 2;
-    private static final int POS_SCROLL_LEVEL = 3;
+    private static final int POS_NUM_PICKER = 3;
+    private static final int POS_SCROLL_LEVEL = 4;
+
+    private MaxRecentEvent mMaxRecentEvent;
+    private List<String> mMaxRecentCounts;
+
+    SettingsAdapter() {
+        mMaxRecentEvent = new MaxRecentEvent();
+        String[] array = App.getContext().getResources().getStringArray(R.array.max_recent_count);
+        mMaxRecentCounts = Arrays.asList(array);
+    }
 
     @NonNull
     @Override
@@ -42,6 +62,24 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 int pos = holder.getAdapterPosition();
                 holder.switcher.setChecked(!holder.switcher.isChecked());
                 tapOptions(holder.switcher, pos);
+            });
+            return holder;
+        } else if (viewType == TYPE_NUM_PICKER) {
+            View itemView = inflater.inflate(R.layout.app_recycler_item_settings_recent_count, parent, false);
+            MaxRecentHolder holder = new MaxRecentHolder(itemView);
+            holder.itemView.setOnClickListener(v -> holder.spinner.performClick());
+            holder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String maxRecentCount = mMaxRecentCounts.get(position);
+                    holder.tvCount.setText(maxRecentCount);
+                    Settings.setMaxRecentCount(maxRecentCount);
+                    EventBus.getDefault().post(mMaxRecentEvent);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
             });
             return holder;
         }
@@ -105,6 +143,11 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             SeekbarHolder holder = (SeekbarHolder) viewHolder;
             holder.tvTitle.setText(R.string.app_scroll_velocity);
             holder.seekBar.setProgress((int) Settings.getScrollLevel() - 1);
+        } else if (viewHolder instanceof MaxRecentHolder) {
+            MaxRecentHolder holder = (MaxRecentHolder) viewHolder;
+            holder.tvTitle.setText(R.string.app_max_recent_count);
+            holder.tvCount.setText(Settings.getMaxRecentCount());
+            holder.spinner.setSelection(mMaxRecentCounts.indexOf(Settings.getMaxRecentCount()));
         }
     }
 
@@ -112,6 +155,8 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int getItemViewType(int position) {
         if (position == POS_SCROLL_LEVEL) {
             return TYPE_SEEKBAR;
+        } else if (position == POS_NUM_PICKER) {
+            return TYPE_NUM_PICKER;
         }
         return TYPE_SWITCH;
     }
@@ -140,6 +185,19 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.app_tv_title);
             seekBar = itemView.findViewById(R.id.app_sb_scroll_level);
+        }
+    }
+
+    static class MaxRecentHolder extends RecyclerView.ViewHolder {
+        TextView tvTitle;
+        TextView tvCount;
+        Spinner spinner;
+
+        MaxRecentHolder(@NonNull View itemView) {
+            super(itemView);
+            tvTitle = itemView.findViewById(R.id.app_tv_title);
+            tvCount = itemView.findViewById(R.id.app_tv_count);
+            spinner = itemView.findViewById(R.id.app_spinner);
         }
     }
 }

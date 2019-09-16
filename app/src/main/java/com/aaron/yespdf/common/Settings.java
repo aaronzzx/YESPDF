@@ -7,12 +7,14 @@ import com.blankj.utilcode.util.SPStaticUtils;
  */
 public final class Settings {
 
+    private static final String SP_MAX_RECENT_COUNT = "SP_MAX_RECENT_COUNT";
     private static final String SP_SWIPE_HORIZONTAL = "SP_SWIPE_HORIZONTAL";
     private static final String SP_NIGHT_MODE       = "SP_NIGHT_MODE";
     private static final String SP_VOLUME_CONTROL   = "SP_VOLUME_CONTROL";
     private static final String SP_SHOW_STATUS_BAR = "SP_SHOW_STATUS_BAR";
     private static final String SP_SCROLL_LEVEL = "SP_SCROLL_LEVEL";
 
+    private static String maxRecentCount;
     private static boolean swipeHorizontal;
     private static boolean nightMode;
     private static boolean volumeControl;
@@ -20,11 +22,17 @@ public final class Settings {
     private static long scrollLevel;
 
     static void querySettings() {
+        Settings.maxRecentCount = SPStaticUtils.getString(SP_MAX_RECENT_COUNT, "9");
         Settings.swipeHorizontal = SPStaticUtils.getBoolean(SP_SWIPE_HORIZONTAL, true);
         Settings.nightMode       = SPStaticUtils.getBoolean(SP_NIGHT_MODE, false);
         Settings.volumeControl   = SPStaticUtils.getBoolean(SP_VOLUME_CONTROL, true);
         Settings.showStatusBar = SPStaticUtils.getBoolean(SP_SHOW_STATUS_BAR, false);
         Settings.scrollLevel = SPStaticUtils.getLong(SP_SCROLL_LEVEL, 5L);
+    }
+
+    public static void setMaxRecentCount(String maxRecentCount) {
+        Settings.maxRecentCount = maxRecentCount;
+        SPStaticUtils.put(SP_MAX_RECENT_COUNT, maxRecentCount);
     }
 
     public static void setSwipeHorizontal(boolean swipeHorizontal) {
@@ -50,6 +58,10 @@ public final class Settings {
     public static void setScrollLevel(long scrollLevel) {
         Settings.scrollLevel = scrollLevel;
         SPStaticUtils.put(SP_SCROLL_LEVEL, scrollLevel);
+    }
+
+    public static String getMaxRecentCount() {
+        return maxRecentCount;
     }
 
     public static boolean isSwipeHorizontal() {

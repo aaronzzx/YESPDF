@@ -16,6 +16,7 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.PDF;
+import com.aaron.yespdf.common.event.MaxRecentEvent;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -63,6 +64,11 @@ public class RecentFragment extends BaseFragment {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMaxRecentEvent(MaxRecentEvent event) {
+        mAdapter.notifyDataSetChanged();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -96,7 +102,7 @@ public class RecentFragment extends BaseFragment {
             }
         });
         mRvRecent.setLayoutManager(lm);
-        mAdapter = new PDFAdapter(mRecentPDFList);
+        mAdapter = new PDFAdapter(mRecentPDFList, true);
         mRvRecent.setAdapter(mAdapter);
     }
 

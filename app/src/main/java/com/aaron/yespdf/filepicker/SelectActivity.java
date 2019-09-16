@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.impl.OnClickListenerImpl;
-import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.UiManager;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
@@ -54,8 +54,6 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
 
     private String mPreviousPath = "";
     private String mCurrentPath = PathUtils.getExternalStoragePath();
-
-    private boolean isAllDisable;
 
     private RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
@@ -134,7 +132,6 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
     @SuppressLint("SetTextI18n")
     @Override
     public void onSelectResult(List<String> pathList, int total, boolean isAllDisable) {
-        this.isAllDisable = isAllDisable;
         if (isAllDisable) {
             mIvSelectAll.setEnabled(false);
             return;

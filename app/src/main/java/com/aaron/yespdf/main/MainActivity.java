@@ -285,7 +285,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
         RecyclerView.LayoutManager lm = new GridLayoutManager(this, 3);
         mRvCollection.setLayoutManager(lm);
 
-        mCollectionAdapter = new PDFAdapter(mPDFList);
+        mCollectionAdapter = new PDFAdapter(mPDFList, false);
         mRvCollection.setAdapter(mCollectionAdapter);
         mPwCollection = new PopupWindow(pwView);
         mPwCollection.setOnDismissListener(() -> {
