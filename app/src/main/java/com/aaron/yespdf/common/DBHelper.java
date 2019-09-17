@@ -9,6 +9,7 @@ import com.aaron.yespdf.common.bean.RecentPDF;
 import com.aaron.yespdf.common.greendao.DaoMaster;
 import com.aaron.yespdf.common.greendao.DaoSession;
 import com.aaron.yespdf.common.greendao.PDFDao;
+import com.aaron.yespdf.common.utils.PdfUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
 

@@ -16408,7 +16408,7 @@ com.aaron.yespdf.common.DBHelper -> c.a.b.d.b:
     42:49:java.util.List queryRecentPDF() -> c
 com.aaron.yespdf.common.IContract$P -> c.a.b.d.c:
 com.aaron.yespdf.common.IContract$V -> c.a.b.d.d:
-com.aaron.yespdf.common.PdfUtils -> c.a.b.d.e:
+com.aaron.yespdf.common.utils.PdfUtils -> c.a.b.d.e:
     20:24:android.graphics.Bitmap pdfToBitmap(java.lang.String,int) -> a
     28:39:void saveBitmap(android.graphics.Bitmap,java.lang.String) -> a
     42:51:int getPdfTotalPage(java.lang.String) -> a

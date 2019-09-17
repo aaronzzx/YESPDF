@@ -18,6 +18,7 @@ import com.aaron.yespdf.common.App;
 import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.event.MaxRecentEvent;
+import com.blankj.utilcode.util.ConvertUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -68,6 +69,7 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View itemView = inflater.inflate(R.layout.app_recycler_item_settings_recent_count, parent, false);
             MaxRecentHolder holder = new MaxRecentHolder(itemView);
             holder.itemView.setOnClickListener(v -> holder.spinner.performClick());
+            holder.spinner.setDropDownHorizontalOffset(-ConvertUtils.dp2px(46));
             holder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

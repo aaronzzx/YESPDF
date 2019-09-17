@@ -88,7 +88,7 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         mUnbinder = ButterKnife.bind(this);
         initToolbar();
-        initView(savedInstanceState);
+        initView();
     }
 
     @Override
@@ -183,7 +183,7 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
         mToolbar.setTitle(R.string.app_import_file);
     }
 
-    private void initView(Bundle savedInstanceState) {
+    private void initView() {
         Intent data = getIntent();
         List<String> imported = data.getStringArrayListExtra(EXTRA_IMPORTED);
 
