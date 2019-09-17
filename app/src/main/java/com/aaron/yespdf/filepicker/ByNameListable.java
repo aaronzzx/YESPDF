@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class ByNameListable implements Listable {
+class ByNameListable implements IListable {
 
     @Override
     public List<File> listFile(String path) {

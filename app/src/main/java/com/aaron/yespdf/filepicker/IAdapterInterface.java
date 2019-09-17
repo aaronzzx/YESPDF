@@ -3,7 +3,7 @@ package com.aaron.yespdf.filepicker;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-interface AdapterComm {
+interface IAdapterInterface {
 
     void init();
 

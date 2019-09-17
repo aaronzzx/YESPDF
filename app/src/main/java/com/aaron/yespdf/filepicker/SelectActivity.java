@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 @ParallaxBack
-public class SelectActivity extends CommonActivity implements View.OnClickListener, Communicable {
+public class SelectActivity extends CommonActivity implements View.OnClickListener, IActivityInterface {
 
     public static final String EXTRA_SELECTED = "EXTRA_SELECTED";
     private static final String EXTRA_IMPORTED = "EXTRA_IMPORTED";
@@ -47,7 +47,7 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
     @BindView(R2.id.app_tv_import_count) TextView mTvImportCount;
 
     private Unbinder mUnbinder;
-    private Listable mListable;
+    private IListable mListable;
     private RecyclerView.Adapter mAdapter;
     private List<File> mFileList = new ArrayList<>();
     private List<String> mPathList = new ArrayList<>();
@@ -61,7 +61,7 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
             mIvSelectAll.setSelected(false);
             mTvImportCount.setText(R.string.app_import_count);
             mPathList.clear();
-            ((AdapterComm) mAdapter).init();
+            ((IAdapterInterface) mAdapter).init();
             handleCbSelectAll();
 
         }
@@ -204,7 +204,7 @@ public class SelectActivity extends CommonActivity implements View.OnClickListen
         });
         mIvSelectAll.setOnClickListener(v -> {
             mIvSelectAll.setSelected(!mIvSelectAll.isSelected());
-            ((AdapterComm) mAdapter).selectAll();
+            ((IAdapterInterface) mAdapter).selectAll();
         });
 
         RecyclerView.LayoutManager lm = new LinearLayoutManager(this);

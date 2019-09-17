@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public interface Listable {
+public interface IListable {
 
     List<File> listFile(String path);
 }

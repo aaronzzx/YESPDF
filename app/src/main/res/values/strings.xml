@@ -41,7 +41,7 @@
 
     <string name="app_have_no_storage_permission">导入文件需要存储权限噢 :)</string>
     <string name="app_import_file">导入文件</string>
-    <string name="app_internal_storage">内部存储设备</string>
+    <string name="app_storage_device">存储设备</string>
     <string name="app_have_not_select">还没选择文件噢~</string>
     <string name="app_import_success">导入成功</string>
     <string name="app_import_failure">导入失败</string>

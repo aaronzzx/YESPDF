@@ -35,7 +35,7 @@ import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.AllEvent;
 import com.aaron.yespdf.common.event.HotfixEvent;
 import com.aaron.yespdf.common.utils.DialogUtils;
-import com.aaron.yespdf.filepicker.SelectActivity;
+import com.aaron.yespdf.filepicker.TestActivity;
 import com.aaron.yespdf.settings.SettingsActivity;
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
@@ -248,7 +248,8 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
                             for (PDF pdf : pdfList) {
                                 imported.add(pdf.getPath());
                             }
-                            SelectActivity.start(MainActivity.this, SELECT_REQUEST_CODE, imported);
+                            // FIXME: 2019/9/17
+                            TestActivity.start(MainActivity.this, SELECT_REQUEST_CODE, imported);
                         }
 
                         @Override

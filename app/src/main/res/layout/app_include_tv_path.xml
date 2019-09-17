@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:gravity="center"
-    android:text="@string/app_internal_storage"
+    android:text="@string/app_storage_device"
     android:maxLines="1"
     android:singleLine="true"
     android:ellipsize="end"

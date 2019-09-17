@@ -24,76 +24,20 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements IAdapterInterface {
+class TestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ITestAdapterInterface {
 
     private List<File> mFileList;
     private List<String> mImportedList;
-    private List<String> mPathList = new ArrayList<>();
+
+    private List<String> mSelectList = new ArrayList<>();
     private List<CheckBox> mCbList = new ArrayList<>();
 
-    private boolean isSelectAll = false;
+    private boolean isSelectAll;
     private Context mContext;
 
-    SelectAdapter(List<File> fileList, List<String> imported) {
+    TestAdapter(List<File> fileList, List<String> imported) {
         mFileList = fileList;
         mImportedList = imported;
-    }
-
-    @Override
-    public void init() {
-        isSelectAll = false;
-        mPathList.clear();
-    }
-
-    @Override
-    public void selectAll() {
-        boolean isAllDisable = true;
-        for (CheckBox cb : mCbList) {
-            if (cb.isEnabled()) {
-                isAllDisable = false;
-                break;
-            }
-        }
-        if (isAllDisable) {
-            ((IActivityInterface) mContext).onSelectResult(mPathList, fileCount(), true);
-            return;
-        }
-
-        isSelectAll = !isSelectAll;
-        if (isSelectAll) {
-            for (CheckBox cb : mCbList) {
-                if (cb.isEnabled()) cb.setChecked(true);
-            }
-            mPathList.clear();
-            for (File file : mFileList) {
-                if (file.isFile() && !mImportedList.contains(file.getAbsolutePath())) {
-                    mPathList.add(file.getAbsolutePath());
-                }
-            }
-        } else {
-            for (CheckBox cb : mCbList) {
-                if (cb.isEnabled()) cb.setChecked(false);
-            }
-            mPathList.clear();
-        }
-        ((IActivityInterface) mContext).onSelectResult(mPathList, fileCount(), false);
-    }
-
-    private int fileCount() {
-        int count = 0;
-        for (File file : mFileList) {
-            if (file.isFile()) count++;
-        }
-        return count;
-    }
-
-    private void disableSelectAll() {
-        for (File file : mFileList) {
-            if (file.isFile() && !mImportedList.contains(file.getAbsolutePath())) {
-                return;
-            }
-        }
-        ((IActivityInterface) mContext).onSelectResult(mPathList, fileCount(), true);
     }
 
     @NonNull
@@ -103,23 +47,20 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View itemView = inflater.inflate(R.layout.app_recycler_item_filepicker, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
-        mCbList.add(holder.cb);
+        mCbList.add(holder.cb); // 将所有 CheckBox 收集起来方便全选
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             File file = mFileList.get(pos);
-            boolean isDir = file.isDirectory();
-            if (isDir) {
-                ((IActivityInterface) mContext).onDirTap(file.getAbsolutePath());
+            if (file.isDirectory()) {
+                ((ITestActivityInterface) mContext).onDirTap(file.getAbsolutePath());
             } else {
-                if (!holder.cb.isEnabled()) return;
-                if (!mImportedList.contains(file.getAbsolutePath())) {
+                if (holder.cb.isEnabled() && !mImportedList.contains(file.getAbsolutePath())) {
                     holder.cb.setChecked(!holder.cb.isChecked());
-                    if (holder.cb.isChecked() && !mPathList.contains(file.getAbsolutePath())) {
-                        mPathList.add(file.getAbsolutePath());
+                    if (holder.cb.isChecked() && !mSelectList.contains(file.getAbsolutePath())) {
+                        mSelectList.add(file.getAbsolutePath());
                     } else {
-                        mPathList.remove(file.getAbsolutePath());
+                        mSelectList.remove(file.getAbsolutePath());
                     }
-                    ((IActivityInterface) mContext).onSelectResult(mPathList, fileCount(), false);
                 }
             }
         });
@@ -129,9 +70,7 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
     @SuppressLint("SetTextI18n,SimpleDateFormat")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        if (mFileList == null) return;
         Context context = viewHolder.itemView.getContext();
-        disableSelectAll();
         ViewHolder holder = (ViewHolder) viewHolder;
         File file = mFileList.get(position);
         String name = file.getName();
@@ -154,17 +93,19 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             if (file.getName().endsWith(".pdf")) {
                 holder.ivIcon.setImageResource(R.drawable.app_ic_pdf);
             }
+            //判断是否已导入
             if (mImportedList != null && !mImportedList.isEmpty()) {
                 if (mImportedList.contains(file.getAbsolutePath())) {
                     holder.cb.setEnabled(false);
                     holder.cb.setPadding(0, 0, ConvertUtils.dp2px(2), 0);
                 }
             }
+            // 为了避免复用混乱
             if (holder.cb.isEnabled()) {
                 if (isSelectAll) {
                     holder.cb.setChecked(true);
                 } else {
-                    if (mPathList.contains(file.getAbsolutePath())) {
+                    if (mSelectList.contains(file.getAbsolutePath())) {
                         holder.cb.setChecked(true);
                     } else {
                         holder.cb.setChecked(false);
@@ -178,10 +119,78 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
 
     @Override
     public int getItemCount() {
-        if (mFileList != null) {
-            return mFileList.size();
+        return mFileList.size();
+    }
+
+    @Override
+    public void selectAll(boolean flag) {
+        isSelectAll = flag;
+        // 如果有一个 CheckBox 是启用状态，就还能使用全选
+        boolean selectAllDisable = true;
+        for (CheckBox cb : mCbList) {
+            if (cb.isEnabled()) {
+                selectAllDisable = false;
+                break;
+            }
         }
-        return 0;
+        if (selectAllDisable) {
+            ((ITestActivityInterface) mContext).getViewSelectAll().setEnabled(false);
+            return;
+        }
+        // 全选
+        if (isSelectAll) {
+            mSelectList.clear();
+            for (CheckBox cb : mCbList) {
+                if (cb.isEnabled()) cb.setChecked(true);
+            }
+            for (File file : mFileList) {
+                if (file.isFile() && !mImportedList.contains(file.getAbsolutePath())) {
+                    mSelectList.add(file.getAbsolutePath());
+                }
+            }
+        } else {
+            mSelectList.clear();
+            for (CheckBox cb : mCbList) {
+                if (cb.isEnabled()) cb.setChecked(false);
+            }
+        }
+        ((ITestActivityInterface) mContext).getViewSelectAll().setSelected(mSelectList.size() == fileCount());
+    }
+
+    @Override
+    public List<String> selectResult() {
+        return mSelectList;
+    }
+
+    @Override
+    public void reset() {
+        isSelectAll = false;
+        mSelectList.clear();
+        checkSelectAllStatus();
+    }
+
+    private int fileCount() {
+        int count = 0;
+        for (File file : mFileList) {
+            if (file.isFile()) count++;
+        }
+        return count;
+    }
+
+    private void checkSelectAllStatus() {
+        boolean enable = false;
+        for (File file : mFileList) {
+            if (file.isFile() && !mImportedList.contains(file.getAbsolutePath())) {
+                enable = true;
+                break;
+            }
+        }
+        if (mContext != null) {
+            View view = ((ITestActivityInterface) mContext).getViewSelectAll();
+            if (view != null) {
+                view.setEnabled(enable);
+            }
+        }
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {

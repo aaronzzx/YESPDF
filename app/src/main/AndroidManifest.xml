@@ -45,6 +45,7 @@
         </activity>
         <activity android:name=".about.AboutActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".filepicker.TestActivity" />
 
     </application>
 
