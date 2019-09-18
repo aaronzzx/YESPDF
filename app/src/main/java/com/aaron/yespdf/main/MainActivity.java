@@ -73,6 +73,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
     private RecyclerView mRvCollection;
     private RecyclerView.Adapter mCollectionAdapter;
 
+    private boolean receiveHotfix = false;
     private List<PDF> mPDFList = new ArrayList<>();
 
     @Override
@@ -100,6 +101,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onHotfixSuccess(HotfixEvent event) {
+        receiveHotfix = true;
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.app_dialog_double_btn, null);
         Dialog hotfixDialog = DialogUtils.createDialog(this, dialogView);
@@ -172,6 +174,14 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
             mPwMenu.showAtLocation(parent, Gravity.TOP | Gravity.END, x, y);
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (receiveHotfix) {
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
     }
 
     @Override

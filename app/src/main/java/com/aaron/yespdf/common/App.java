@@ -8,6 +8,7 @@ import androidx.multidex.MultiDex;
 
 import com.aaron.yespdf.BuildConfig;
 import com.aaron.yespdf.common.event.HotfixEvent;
+import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PathUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
 import com.tencent.bugly.Bugly;
@@ -82,7 +83,11 @@ public class App extends Application {
             @Override
             public void onApplySuccess(String msg) {
                 Log.e(TAG, "补丁应用成功: ");
-                EventBus.getDefault().postSticky(new HotfixEvent());
+                if (AppUtils.isAppForeground()) {
+                    EventBus.getDefault().postSticky(new HotfixEvent());
+                } else {
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
             }
 
             @Override
