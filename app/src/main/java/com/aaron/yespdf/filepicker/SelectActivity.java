@@ -1,5 +1,6 @@
 package com.aaron.yespdf.filepicker;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.UiManager;
+import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,13 +35,14 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
+@ParallaxBack
 public class SelectActivity extends CommonActivity implements ISelectContract.V, IActivityInterface {
 
     public static final String EXTRA_SELECTED = "EXTRA_SELECTED";
     private static final String EXTRA_IMPORTED = "EXTRA_IMPORTED";
 
-    @BindView(R2.id.app_iv_check)
-    ImageView ivSelectAll;
+    @BindView(R2.id.app_ibtn_check)
+    ImageButton ibtnSelectAll;
     @BindView(R2.id.app_horizontal_sv)
     HorizontalScrollView horizontalSv;
     @BindView(R2.id.app_ll)
@@ -69,7 +72,7 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
     private RecyclerView.AdapterDataObserver dataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onChanged() {
-            ivSelectAll.setSelected(false);
+            ibtnSelectAll.setSelected(false);
             tvImportCount.setText(R.string.app_import_count);
             ((IAdapterInterface) adapter).reset();
         }
@@ -161,9 +164,16 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
         presenter.listFile(dirPath);
     }
 
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onSelectResult(List<String> pathList, int total) {
+        ibtnSelectAll.setSelected(pathList.size() == total);
+        tvImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
+    }
+
     @Override
     public View getViewSelectAll() {
-        return ivSelectAll;
+        return ibtnSelectAll;
     }
 
     private void initView() {
@@ -173,6 +183,7 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
         tvPath.setOnClickListener(onClickListener);
         tvPath.setTag(ISelectContract.P.ROOT_PATH); // 原始路径
         tvImportCount.setOnClickListener(new OnClickListenerImpl() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onViewClick(View v, long interval) {
                 List<String> selectResult = ((IAdapterInterface) adapter).selectResult();
@@ -186,11 +197,12 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
                 }
             }
         });
-        ivSelectAll.setOnClickListener(v -> {
-            ivSelectAll.setSelected(!ivSelectAll.isSelected());
-            ((IAdapterInterface) adapter).selectAll(ivSelectAll.isSelected());
+        ibtnSelectAll.setOnClickListener(v -> {
+            ibtnSelectAll.setSelected(!ibtnSelectAll.isSelected());
+            ((IAdapterInterface) adapter).selectAll(ibtnSelectAll.isSelected());
         });
 
+        ibtnSelectAll.setEnabled(false); // XML 设置无效，只能这里初始化
         RecyclerView.LayoutManager lm = new LinearLayoutManager(this);
         rvSelect.setLayoutManager(lm);
         adapter = new SelectAdapter(fileList, importeds);

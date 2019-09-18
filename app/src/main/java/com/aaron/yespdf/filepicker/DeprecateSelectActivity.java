@@ -39,7 +39,7 @@ public class DeprecateSelectActivity extends CommonActivity implements View.OnCl
     public static final String EXTRA_SELECTED = "EXTRA_SELECTED";
     private static final String EXTRA_IMPORTED = "EXTRA_IMPORTED";
 
-    @BindView(R2.id.app_iv_check)
+    @BindView(R2.id.app_ibtn_check)
     ImageView mIvSelectAll;
     @BindView(R2.id.app_horizontal_sv)
     HorizontalScrollView mHorizontalSv;

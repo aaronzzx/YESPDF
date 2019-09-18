@@ -14,13 +14,14 @@
         style="@style/AppToolbarStyle"
         tools:title="@string/app_name_en">
 
-        <ImageView
-            android:id="@+id/app_iv_check"
+        <ImageButton
+            android:id="@+id/app_ibtn_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:padding="8dp"
             android:layout_gravity="end"
+            android:background="@null"
             android:src="@drawable/app_sel_select_all" />
 
     </androidx.appcompat.widget.Toolbar>

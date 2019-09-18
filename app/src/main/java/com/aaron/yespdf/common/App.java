@@ -6,12 +6,10 @@ import android.util.Log;
 
 import androidx.multidex.MultiDex;
 
-import com.aaron.yespdf.BuildConfig;
 import com.aaron.yespdf.common.event.HotfixEvent;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PathUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
-import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.interfaces.BetaPatchListener;
 
@@ -168,9 +166,9 @@ public class App extends Application {
 //            public void onDestroy(Context context, View view, UpgradeInfo upgradeInfo) {
 //            }
 //        };
-        // TODO: 2019/9/11 正式版关闭
-        Bugly.setIsDevelopmentDevice(app, true); // 是否开发设备
-        Bugly.init(app, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
+        // TODO: 2019/9/11 正式版加上
+//        Bugly.setIsDevelopmentDevice(app, true); // 是否开发设备
+//        Bugly.init(app, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
     }
 
     private void tinker() {

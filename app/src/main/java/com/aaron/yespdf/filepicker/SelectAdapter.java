@@ -62,6 +62,7 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
                         mSelectList.remove(file.getAbsolutePath());
                     }
                 }
+                ((IActivityInterface) mContext).onSelectResult(mSelectList, fileCount());
             }
         });
         return holder;
@@ -155,6 +156,7 @@ class SelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implem
             }
         }
         ((IActivityInterface) mContext).getViewSelectAll().setSelected(mSelectList.size() == fileCount());
+        ((IActivityInterface) mContext).onSelectResult(mSelectList, fileCount());
     }
 
     @Override
