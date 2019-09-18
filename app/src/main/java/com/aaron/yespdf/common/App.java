@@ -81,6 +81,7 @@ public class App extends Application {
 
             @Override
             public void onApplySuccess(String msg) {
+                Log.e(TAG, msg);
                 Log.e(TAG, "补丁应用成功: ");
                 EventBus.getDefault().postSticky(new HotfixEvent());
             }
@@ -163,7 +164,7 @@ public class App extends Application {
 //            }
 //        };
         // TODO: 2019/9/11 正式版关闭
-        Bugly.setIsDevelopmentDevice(app, false); // 是否开发设备
+        Bugly.setIsDevelopmentDevice(app, true); // 是否开发设备
         Bugly.init(app, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
     }
 
