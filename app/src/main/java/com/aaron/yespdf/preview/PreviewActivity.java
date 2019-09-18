@@ -374,37 +374,41 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
             v.setSelected(!v.isSelected());
         });
         mTvPreviousChapter.setOnClickListener(v -> {
-            if (mLlQuickBar.getVisibility() != View.VISIBLE) {
-                showQuickbar();
-            }
-            mIbtnQuickbarAction.setSelected(false); // 将状态调为 Undo
             // 减 1 是为了防止当前页面有标题的情况下无法跳转，因为是按标题来跳转
             int targetPage = mPDFView.getCurrentPage() - 1;
-            while (!mPageList.contains((long) targetPage)) {
-                if (targetPage < mPageList.get(0)) {
-                    return; // 如果实在匹配不到就跳出方法，不执行跳转
+            if (!mPageList.isEmpty() && targetPage < mPageList.size()) {
+                if (mLlQuickBar.getVisibility() != View.VISIBLE) {
+                    showQuickbar();
                 }
-                targetPage--; // 如果匹配不到会一直减 1 搜索
+                mIbtnQuickbarAction.setSelected(false); // 将状态调为 Undo
+                while (!mPageList.contains((long) targetPage)) {
+                    if (targetPage < mPageList.get(0)) {
+                        return; // 如果实在匹配不到就跳出方法，不执行跳转
+                    }
+                    targetPage--; // 如果匹配不到会一直减 1 搜索
+                }
+                mPreviousPage = mPDFView.getCurrentPage();
+                mPDFView.jumpTo(targetPage);
             }
-            mPreviousPage = mPDFView.getCurrentPage();
-            mPDFView.jumpTo(targetPage);
         });
         mTvNextChapter.setOnClickListener(v -> {
-            mPDFViewBg.setVisibility(View.VISIBLE);
-            if (mLlQuickBar.getVisibility() != View.VISIBLE) {
-                showQuickbar();
-            }
-            mIbtnQuickbarAction.setSelected(false);
             // 这里的原理和上面跳转上一章节一样
             int targetPage = mPDFView.getCurrentPage() + 1;
-            while (!mPageList.contains((long) targetPage)) {
-                if (targetPage > mPageList.get(mPageList.size() - 1)) {
-                    return;
+            if (!mPageList.isEmpty() && targetPage < mPageList.size()) {
+                mPDFViewBg.setVisibility(View.VISIBLE);
+                if (mLlQuickBar.getVisibility() != View.VISIBLE) {
+                    showQuickbar();
                 }
-                targetPage++;
+                mIbtnQuickbarAction.setSelected(false);
+                while (!mPageList.contains((long) targetPage)) {
+                    if (targetPage > mPageList.get(mPageList.size() - 1)) {
+                        return;
+                    }
+                    targetPage++;
+                }
+                mPreviousPage = mPDFView.getCurrentPage();
+                mPDFView.jumpTo(targetPage);
             }
-            mPreviousPage = mPDFView.getCurrentPage();
-            mPDFView.jumpTo(targetPage);
         });
         mTvContent.setOnClickListener(new OnClickListenerImpl() {
             @Override
@@ -539,7 +543,6 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     private void initPdf(Uri uri, PDF pdf) {
-        mSbProgress.setMax(mPageCount - 1);
         mSbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -634,7 +637,7 @@ public class PreviewActivity extends CommonActivity implements IActivityComm {
                 })
                 .onLoad(nbPages -> {
                     mPageCount = mPDFView.getPageCount();
-                    mSbProgress.setMax(mPageCount);
+                    mSbProgress.setMax(mPageCount - 1);
                     List<PdfDocument.Bookmark> list = mPDFView.getTableOfContents();
                     findContent(list);
 
