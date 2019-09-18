@@ -36,15 +36,15 @@ interface ISelectContract {
     abstract class P {
         static final String ROOT_PATH = "/storage/emulated";
 
-        protected V mV;
-        protected M mM;
+        protected V view;
+        protected M model;
 
-        protected List<File> mFileList;
+        protected List<File> fileList;
 
-        P(V v) {
-            mV = v;
-            mM = model();
-            mFileList = new ArrayList<>();
+        P(V view) {
+            this.view = view;
+            model = model();
+            fileList = new ArrayList<>();
         }
 
         abstract M model();

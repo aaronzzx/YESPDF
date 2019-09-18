@@ -11,7 +11,7 @@ import java.util.List;
  */
 class SelectP extends ISelectContract.P {
 
-    private String mCurPath = ROOT_PATH;
+    private String curPath = ROOT_PATH;
 
     SelectP(ISelectContract.V v) {
         super(v);
@@ -24,53 +24,53 @@ class SelectP extends ISelectContract.P {
 
     @Override
     void detachV() {
-        mV = null;
-        mM = null;
+        view = null;
+        model = null;
     }
 
     @Override
     boolean canFinish() {
-        return mCurPath.equals(ROOT_PATH);
+        return curPath.equals(ROOT_PATH);
     }
 
     @Override
     void goBack() {
-        String prePath = mCurPath.substring(0, mCurPath.lastIndexOf("/"));
+        String prePath = curPath.substring(0, curPath.lastIndexOf("/"));
         listFile(prePath);
     }
 
     @Override
     void listStorage() {
-        mM.listStorage(new ISelectContract.FileCallback<List<SDCardUtils.SDCardInfo>>() {
+        model.listStorage(new ISelectContract.FileCallback<List<SDCardUtils.SDCardInfo>>() {
             @Override
             public void onResult(List<SDCardUtils.SDCardInfo> result) {
-                mFileList.clear();
+                fileList.clear();
                 for (SDCardUtils.SDCardInfo info : result) {
                     if (info.getState().equals("mounted")) {
-                        mFileList.add(new File(info.getPath()));
+                        fileList.add(new File(info.getPath()));
                     }
                 }
-                mV.onShowFileList(mFileList);
+                view.onShowFileList(fileList);
             }
         });
     }
 
     @Override
     void listFile(final String path) {
-        mCurPath = path;
+        curPath = path;
         if (path.equals(ROOT_PATH)) {
             listStorage();
             return;
         }
-        mM.listFile(path, new ISelectContract.FileCallback<List<File>>() {
+        model.listFile(path, new ISelectContract.FileCallback<List<File>>() {
             @Override
             public void onResult(List<File> result) {
                 if (path.length() > 18) {
                     String path1 = path.substring(18); // 去除 /storage/emulated/
                     List<String> paths = Arrays.asList(path1.split("/"));
-                    mV.onShowPath(paths);
+                    view.onShowPath(paths);
                 }
-                mV.onShowFileList(result);
+                view.onShowFileList(result);
             }
         });
     }

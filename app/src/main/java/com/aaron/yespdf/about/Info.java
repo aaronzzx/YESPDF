@@ -21,7 +21,7 @@ interface Info {
     String SOURCE_CODE = "https://github.com/Aaronzzx/YESPDF";
     String MY_GITHUB   = "https://github.com/Aaronzzx";
 
-    String FEEDBACK_SUBJECT = "YES PDF! for Android " + "v" + BuildConfig.VERSION_NAME + "\n"
+    String FEEDBACK_SUBJECT = "YES PDF! for Android " + "view" + BuildConfig.VERSION_NAME + "\n"
             + "Feedback(" + Build.BRAND + "-" + Build.MODEL + ")";
     String FEEDBACK_TEXT    = App.getContext().getString(R.string.app_feedback_title) + "\n"
             + "Device: " + Build.BRAND + "-" + Build.MODEL + "\n"

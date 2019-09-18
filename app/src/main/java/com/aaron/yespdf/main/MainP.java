@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.DBHelper;
-import com.aaron.yespdf.filepicker.SelectActivity;
+import com.aaron.yespdf.filepicker.DeprecateSelectActivity;
 import com.blankj.utilcode.util.ThreadUtils;
 
 import java.util.List;
@@ -26,7 +26,7 @@ class MainP implements IMainContract.P {
     public void insertPDF(Intent data) {
         mV.onShowLoading();
         if (data != null) {
-            List<String> pathList = data.getStringArrayListExtra(SelectActivity.EXTRA_SELECTED);
+            List<String> pathList = data.getStringArrayListExtra(DeprecateSelectActivity.EXTRA_SELECTED);
             insertPDF(pathList);
         }
     }

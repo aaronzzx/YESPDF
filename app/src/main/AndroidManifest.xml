@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".filepicker.SelectActivity"
+            android:name=".filepicker.DeprecateSelectActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".preview.PreviewActivity">
             <intent-filter tools:ignore="AppLinkUrlError">
@@ -45,7 +45,7 @@
         </activity>
         <activity android:name=".about.AboutActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".filepicker.TestActivity" />
+        <activity android:name=".filepicker.SelectActivity" />
 
     </application>
 

@@ -1,11 +1,15 @@
 package com.aaron.yespdf.filepicker;
 
+import java.util.List;
+
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
 interface IAdapterInterface {
 
-    void init();
+    void reset();
 
-    void selectAll();
+    void selectAll(boolean flag);
+
+    List<String> selectResult();
 }

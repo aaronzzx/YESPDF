@@ -1,13 +1,13 @@
 package com.aaron.yespdf.filepicker;
 
-import java.util.List;
+import android.view.View;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
 interface IActivityInterface {
 
-    void onDirTap(String path);
+    void onDirTap(String dirPath);
 
-    void onSelectResult(List<String> pathList, int total, boolean isAllDisable);
+    View getViewSelectAll();
 }
