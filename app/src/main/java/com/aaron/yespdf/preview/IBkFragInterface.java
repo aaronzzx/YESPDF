@@ -5,7 +5,7 @@ import java.util.Collection;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-interface IBkFragComm {
+interface IBkFragInterface {
 
     void update(Collection<Bookmark> collection);
 }

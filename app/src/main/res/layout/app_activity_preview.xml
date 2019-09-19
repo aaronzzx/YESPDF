@@ -136,16 +136,16 @@
                 android:drawableTop="@drawable/app_sel_bookmark"/>
 
             <TextView
-                android:id="@+id/app_tv_settings"
+                android:id="@+id/app_tv_more"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/app_settings"
+                android:text="@string/app_more"
                 android:textSize="@dimen/base_text_small"
                 android:textColor="@color/base_white"
                 android:drawablePadding="8dp"
-                android:drawableTop="@drawable/app_ic_action_settings_white"/>
+                android:drawableTop="@drawable/app_ic_more_horiz_black_24dp" />
 
         </LinearLayout>
 
@@ -330,6 +330,46 @@
             android:textColor="@color/base_white"
             android:drawablePadding="16dp"
             android:drawableStart="@drawable/app_ic_vertical_white_24dp" />
+
+    </LinearLayout>
+
+    <!-- 阅读方式 -->
+    <LinearLayout
+        android:id="@+id/app_ll_more"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:background="@color/base_black">
+
+        <TextView
+            android:id="@+id/app_tv_lock_landscape"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:text="@string/app_lock_landscape"
+            android:textColor="@color/base_white"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/app_ic_screen_lock_landscape_white_24dp" />
+
+        <TextView
+            android:id="@+id/app_tv_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:text="@string/app_settings"
+            android:textColor="@color/base_white"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/app_ic_action_settings_white" />
 
     </LinearLayout>
 

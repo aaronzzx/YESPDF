@@ -49,7 +49,7 @@ class BookmarkAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             Bookmark bk = mBookmarks.get(pos);
-            ((IActivityComm) context).onJumpTo(bk.getPageId());
+            ((IActivityInterface) context).onJumpTo(bk.getPageId());
         });
         return holder;
     }

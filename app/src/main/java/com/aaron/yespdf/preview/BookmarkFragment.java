@@ -30,7 +30,7 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class BookmarkFragment extends BaseFragment implements IBkFragComm {
+public class BookmarkFragment extends BaseFragment implements IBkFragInterface {
 
     @BindView(R2.id.app_rv_bookmark) RecyclerView mRvBookmark;
 

@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-interface IContetnFragComm {
+interface IContentFragInterface {
 
     void update(Collection<PdfDocument.Bookmark> collection);
 }

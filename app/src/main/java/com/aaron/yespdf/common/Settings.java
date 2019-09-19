@@ -7,6 +7,7 @@ import com.blankj.utilcode.util.SPStaticUtils;
  */
 public final class Settings {
 
+    private static final String SP_LOCK_LANDSCAPE = "SP_LOCK_LANDSCAPE";
     private static final String SP_MAX_RECENT_COUNT = "SP_MAX_RECENT_COUNT";
     private static final String SP_SWIPE_HORIZONTAL = "SP_SWIPE_HORIZONTAL";
     private static final String SP_NIGHT_MODE       = "SP_NIGHT_MODE";
@@ -14,6 +15,7 @@ public final class Settings {
     private static final String SP_SHOW_STATUS_BAR = "SP_SHOW_STATUS_BAR";
     private static final String SP_SCROLL_LEVEL = "SP_SCROLL_LEVEL";
 
+    private static boolean lockLandscape;
     private static String maxRecentCount;
     private static boolean swipeHorizontal;
     private static boolean nightMode;
@@ -22,12 +24,18 @@ public final class Settings {
     private static long scrollLevel;
 
     static void querySettings() {
+        Settings.lockLandscape = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false);
         Settings.maxRecentCount = SPStaticUtils.getString(SP_MAX_RECENT_COUNT, "9");
         Settings.swipeHorizontal = SPStaticUtils.getBoolean(SP_SWIPE_HORIZONTAL, true);
         Settings.nightMode       = SPStaticUtils.getBoolean(SP_NIGHT_MODE, false);
         Settings.volumeControl   = SPStaticUtils.getBoolean(SP_VOLUME_CONTROL, true);
         Settings.showStatusBar = SPStaticUtils.getBoolean(SP_SHOW_STATUS_BAR, false);
         Settings.scrollLevel = SPStaticUtils.getLong(SP_SCROLL_LEVEL, 5L);
+    }
+
+    public static void setLockLandscape(boolean lockLandscape) {
+        Settings.lockLandscape = lockLandscape;
+        SPStaticUtils.put(SP_LOCK_LANDSCAPE, lockLandscape);
     }
 
     public static void setMaxRecentCount(String maxRecentCount) {
@@ -58,6 +66,10 @@ public final class Settings {
     public static void setScrollLevel(long scrollLevel) {
         Settings.scrollLevel = scrollLevel;
         SPStaticUtils.put(SP_SCROLL_LEVEL, scrollLevel);
+    }
+
+    public static boolean isLockLandscape() {
+        return lockLandscape;
     }
 
     public static String getMaxRecentCount() {

@@ -29,7 +29,7 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class ContentFragment extends BaseFragment implements IContetnFragComm {
+public class ContentFragment extends BaseFragment implements IContentFragInterface {
 
     @BindView(R2.id.app_ll) LinearLayout mLl;
     @BindView(R2.id.app_itv_placeholder)
@@ -90,7 +90,7 @@ public class ContentFragment extends BaseFragment implements IContetnFragComm {
                 holder.setOnNodeTapListener(new ContentHolder.OnNodeTapListener() {
                     @Override
                     public void onNodeTap(int pageId) {
-                        ((IActivityComm) mActivity).onJumpTo(pageId);
+                        ((IActivityInterface) mActivity).onJumpTo(pageId);
                     }
                 });
 
@@ -136,7 +136,7 @@ public class ContentFragment extends BaseFragment implements IContetnFragComm {
             holder.setOnNodeTapListener(new ContentHolder.OnNodeTapListener() {
                 @Override
                 public void onNodeTap(int pageId) {
-                    ((IActivityComm) mActivity).onJumpTo(pageId);
+                    ((IActivityInterface) mActivity).onJumpTo(pageId);
                 }
             });
 
