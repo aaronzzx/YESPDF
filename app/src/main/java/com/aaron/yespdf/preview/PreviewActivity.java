@@ -248,6 +248,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         // 阅读方式回原位
         llReadMethod.setTranslationY(ScreenUtils.getScreenHeight());
         vgMore.setTranslationY(ScreenUtils.getScreenHeight());
+        if (autoDisp != null && !autoDisp.isDisposed()) autoDisp.dispose();
     }
 
     @Override

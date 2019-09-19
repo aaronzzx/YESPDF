@@ -298,7 +298,8 @@
         android:id="@+id/app_ll_read_method"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="24dp"
         android:background="@color/base_black">
 
         <TextView
@@ -333,12 +334,13 @@
 
     </LinearLayout>
 
-    <!-- 阅读方式 -->
+    <!-- 更多 -->
     <LinearLayout
         android:id="@+id/app_ll_more"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="24dp"
         android:background="@color/base_black">
 
         <TextView
