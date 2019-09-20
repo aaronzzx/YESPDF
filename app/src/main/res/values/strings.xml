@@ -17,6 +17,8 @@
 
     <string name="app_import">导入</string>
     <string name="app_import_count">导入(0)</string>
+    <string name="app_selected">已选中</string>
+    <string name="app_selected_zero">已选中(0)</string>
     <string name="app_about">关于</string>
     <string name="app_settings">设置</string>
     <string name="app_previous_chapter">上一章</string>
@@ -40,6 +42,7 @@
     <string name="app_max_recent_count">最近显示数量</string>
     <string name="app_lock_landscape">锁定横屏</string>
 
+    <string name="app_delete_completed">删除成功</string>
     <string name="app_have_no_storage_permission">导入文件需要存储权限噢 :)</string>
     <string name="app_import_file">导入文件</string>
     <string name="app_storage_device">存储设备</string>

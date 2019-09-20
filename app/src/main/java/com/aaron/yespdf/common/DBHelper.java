@@ -12,6 +12,7 @@ import com.aaron.yespdf.common.greendao.PDFDao;
 import com.aaron.yespdf.common.utils.PdfUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
+import com.blankj.utilcode.util.StringUtils;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -67,6 +68,9 @@ public final class DBHelper {
     }
 
     public static List<PDF> queryPDF(String dir) {
+        if (StringUtils.isEmpty(dir)) {
+            return new ArrayList<>();
+        }
         return sDaoSession.queryRaw(PDF.class, "where DIR = ?", dir);
     }
 
@@ -82,6 +86,24 @@ public final class DBHelper {
         String name = pdf.getName();
         RecentPDF recent = new RecentPDF(dir, name);
         sDaoSession.insertOrReplace(recent);
+    }
+
+    public static void deleteRecent(List<PDF> list) {
+        for (PDF pdf : list) {
+            sDaoSession.getDatabase().execSQL("delete from RECENT_PDF where name = ?", new String[]{pdf.getName()});
+        }
+    }
+
+    public static void deleteCollection(List<Collection> list) {
+        for (Collection c : list) {
+            sDaoSession.getCollectionDao().delete(c);
+        }
+    }
+
+    public static void deletePDF(List<PDF> list) {
+        for (PDF pdf : list) {
+            sDaoSession.getPDFDao().delete(pdf);
+        }
     }
 
     public static boolean insert(List<String> pathList) {

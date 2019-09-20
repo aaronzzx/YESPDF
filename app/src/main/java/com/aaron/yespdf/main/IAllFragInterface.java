@@ -3,7 +3,7 @@ package com.aaron.yespdf.main;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-interface IAllFragmentComm {
+interface IAllFragInterface {
 
     void update();
 }

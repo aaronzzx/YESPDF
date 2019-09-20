@@ -10,18 +10,16 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
-import com.aaron.yespdf.common.App;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.EmptyHolder;
-import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.bean.PDF;
-import com.aaron.yespdf.common.event.AllEvent;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.preview.PreviewActivity;
 import com.blankj.utilcode.util.TimeUtils;
@@ -36,55 +34,59 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements IOperationInterface {
+abstract class AbstractPDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements IOperationInterface {
 
     private static final int TYPE_EMPTY = 1;
 
-    private Context context;
+    protected Context context;
 
     private RecentPDFEvent recentPDFEvent;
-    private AllEvent allEvent;
-    private boolean recent;
 
-    private List<PDF> pdfList;
-    private List<PDF> selectList = new ArrayList<>();
-    private List<CheckBox> cbList = new ArrayList<>();
+    protected List<PDF> pdfList;
+    protected List<PDF> selectList = new ArrayList<>();
+
+    private boolean selectMode;
     private SparseBooleanArray checkArray = new SparseBooleanArray();
-    private SparseBooleanArray visibilityArray = new SparseBooleanArray();
 
-    PDFAdapter(List<PDF> pdfList, boolean recent) {
+    AbstractPDFAdapter(List<PDF> pdfList) {
         this.pdfList = pdfList;
         recentPDFEvent = new RecentPDFEvent(false);
-        allEvent = new AllEvent();
-        this.recent = recent;
     }
+
+    @LayoutRes
+    abstract int itemView();
+
+    abstract void startOperation();
+
+    abstract void onSelect(List<PDF> list, boolean isSelectAll);
 
     @SuppressLint("SimpleDateFormat")
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        this.context = parent.getContext();
+        if (this.context == null) {
+            this.context = parent.getContext();
+        }
         LayoutInflater inflater = LayoutInflater.from(context);
         if (viewType == TYPE_EMPTY) {
             View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
             return new EmptyHolder(itemView);
         }
-        View itemView = inflater.inflate(R.layout.app_recycler_item_pdf, parent, false);
+        View itemView = inflater.inflate(itemView(), parent, false);
         ViewHolder holder = new ViewHolder(itemView);
-        cbList.add(holder.cb);
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             if (holder.cb.getVisibility() == View.VISIBLE) {
                 PDF pdf = pdfList.get(pos);
-                holder.cb.setChecked(!holder.cb.isChecked());
-                checkArray.delete(pos);
-                checkArray.put(pos, holder.cb.isChecked());
+                boolean isChecked = !holder.cb.isChecked();
+                holder.cb.setChecked(isChecked);
                 if (holder.cb.isChecked()) {
                     selectList.add(pdf);
                 } else {
                     selectList.remove(pdf);
                 }
-                ((IActivityInterface) context).onSelect(selectList, selectList.size() == pdfList.size());
+                checkArray.put(pos, isChecked);
+                onSelect(selectList, selectList.size() == getItemCount());
             } else {
                 PDF pdf = pdfList.get(pos);
                 long cur = System.currentTimeMillis();
@@ -94,15 +96,12 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
                 DBHelper.insertRecent(pdf);
                 PreviewActivity.start(context, pdf);
                 EventBus.getDefault().post(recentPDFEvent);
-                EventBus.getDefault().post(allEvent);
             }
         });
         holder.itemView.setOnLongClickListener(v -> {
-            ((IActivityInterface) context).startOperation();
-            for (CheckBox cb : cbList) {
-                cb.setVisibility(View.VISIBLE);
-            }
-            visibilityArray.put(0, true);
+            startOperation();
+            selectMode = true;
+            notifyItemRangeChanged(0, getItemCount(), 0);
             return true;
         });
         return holder;
@@ -111,7 +110,6 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        Context context = viewHolder.itemView.getContext();
         if (viewHolder instanceof ViewHolder && position < getItemCount()) {
             ViewHolder holder = (ViewHolder) viewHolder;
             PDF pdf = pdfList.get(position);
@@ -119,14 +117,13 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
             String bookName = pdf.getName();
             holder.tvTitle.setText(bookName);
             holder.tvProgress.setText(context.getString(R.string.app_already_read) + pdf.getProgress());
-            ImageLoader.load(holder.itemView.getContext(), new DefaultOption.Builder(cover)
-                    .into(holder.ivCover));
-            if (visibilityArray.get(0)) {
-                holder.cb.setVisibility(View.VISIBLE);
-                boolean isChecked = checkArray.get(position);
-                holder.cb.setChecked(isChecked);
-            } else {
-                holder.cb.setVisibility(View.GONE);
+            ImageLoader.load(context, new DefaultOption.Builder(cover).into(holder.ivCover));
+            holder.cb.setVisibility(selectMode ? View.VISIBLE : View.GONE);
+            if (selectMode) {
+                holder.cb.setAlpha(1.0F);
+                holder.cb.setScaleX(0.8F);
+                holder.cb.setScaleY(0.8F);
+                holder.cb.setChecked(checkArray.get(position));
             }
 
         } else if (viewHolder instanceof EmptyHolder) {
@@ -138,20 +135,27 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
     }
 
     @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(viewHolder, position, payloads);
+        } else {
+            if (viewHolder instanceof ViewHolder && position < getItemCount()) {
+                ViewHolder holder = (ViewHolder) viewHolder;
+                holder.cb.setVisibility(selectMode ? View.VISIBLE : View.GONE);
+                if (selectMode) {
+                    holder.cb.setAlpha(1.0F);
+                    holder.cb.setScaleX(0.8F);
+                    holder.cb.setScaleY(0.8F);
+                    holder.cb.setChecked(checkArray.get(position));
+                }
+            }
+        }
+    }
+
+    @Override
     public int getItemCount() {
         if (pdfList.isEmpty()) {
             return 1;
-        } else if (recent) {
-            String[] array = App.getContext().getResources().getStringArray(R.array.max_recent_count);
-            String infinite = array[array.length - 1];
-            String maxRecent = Settings.getMaxRecentCount();
-            if (!maxRecent.equals(infinite)) {
-                int count = Integer.parseInt(maxRecent);
-                if (count <= pdfList.size()) {
-                    return count;
-                }
-                return pdfList.size();
-            }
         }
         return pdfList.size();
     }
@@ -166,30 +170,30 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
 
     @Override
     public void cancel() {
-        for (CheckBox cb : cbList) {
-            cb.setChecked(false);
-            cb.setVisibility(View.GONE);
-        }
         checkArray.clear();
-        visibilityArray.clear();
+        selectMode = false;
         selectList.clear();
+        notifyItemRangeChanged(0, getItemCount(), 0);
     }
 
     @Override
     public void selectAll(boolean flag) {
-        for (CheckBox cb : cbList) {
-            cb.setChecked(flag);
+        for (int i = 0; i < getItemCount(); i++) {
+            checkArray.put(i, flag);
         }
         if (flag) {
             selectList.clear();
-            selectList.addAll(pdfList);
+            for (int i = 0; i < getItemCount(); i++) {
+                selectList.add(pdfList.get(i));
+            }
         } else {
             selectList.clear();
         }
-        ((IActivityInterface) context).onSelect(selectList, selectList.size() == pdfList.size());
+        onSelect(selectList, flag);
+        notifyItemRangeChanged(0, getItemCount(), 0);
     }
 
-    private static class ViewHolder extends RecyclerView.ViewHolder {
+    protected static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView ivCover;
         private TextView tvTitle;
         private TextView tvProgress;

@@ -10,6 +10,7 @@ import com.aaron.yespdf.common.event.HotfixEvent;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PathUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
+import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.interfaces.BetaPatchListener;
 
@@ -35,18 +36,28 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(base);
-        tinker();
+//        tinker();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        leakCanary();
         sContext = this.getApplicationContext();
 
         DBHelper.init(this, AppConfig.DB_NAME);
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
-        bugly(this);
+//        bugly(this);
+    }
+
+    private void leakCanary() {
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
     }
 
     private void bugly(Application app) {

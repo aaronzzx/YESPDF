@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_vg_operation"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:alpha="0.0"
+    android:translationY="-100dp"
+    android:visibility="gone"
+    android:background="@color/base_white"
+    android:paddingTop="30dp"
+    android:paddingBottom="8dp">
+
+    <ImageButton
+        android:id="@+id/app_ibtn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
+        android:background="@null"
+        android:src="@drawable/app_ic_action_back_black" />
+
+    <TextView
+        android:id="@+id/app_tv_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:textColor="@color/base_black"
+        android:textStyle="bold"
+        android:textSize="@dimen/base_text_hlarge"
+        android:text="@string/app_selected_zero" />
+
+    <ImageButton
+        android:id="@+id/app_ibtn_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:padding="4dp"
+        android:scaleX="0.75"
+        android:scaleY="0.75"
+        android:background="@null"
+        android:src="@drawable/app_ic_action_delete_black" />
+
+    <ImageButton
+        android:id="@+id/app_ibtn_select_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="8dp"
+        android:background="@null"
+        android:src="@drawable/app_sel_select_all" />
+
+</LinearLayout>

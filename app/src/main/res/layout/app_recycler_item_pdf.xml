@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:clipChildren="false">
 
     <com.aaron.yespdf.common.widgets.BorderImageView
         android:id="@+id/app_iv_cover"
@@ -12,9 +12,25 @@
         android:background="@color/base_white"
         tools:background="@color/app_color_accent"/>
 
+    <CheckBox
+        android:id="@+id/app_cb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="-12dp"
+        android:layout_marginTop="-12dp"
+        android:scaleX="0.3"
+        android:scaleY="0.3"
+        android:alpha="0"
+        android:button="@drawable/app_sel_main_select"
+        android:background="@null"
+        android:visibility="gone"
+        android:clickable="false" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/app_iv_cover"
         android:layout_marginTop="8dp"
         android:layout_gravity="center"
         android:orientation="vertical">
@@ -40,4 +56,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

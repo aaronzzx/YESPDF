@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -18,11 +19,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import com.aaron.base.impl.OnClickListenerImpl;
 import com.aaron.yespdf.R;
@@ -31,16 +31,18 @@ import com.aaron.yespdf.about.AboutActivity;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
+import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.PDF;
-import com.aaron.yespdf.common.event.AllEvent;
 import com.aaron.yespdf.common.event.HotfixEvent;
+import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.common.utils.DialogUtils;
+import com.aaron.yespdf.common.widgets.NewViewPager;
 import com.aaron.yespdf.filepicker.SelectActivity;
 import com.aaron.yespdf.settings.SettingsActivity;
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
-import com.github.mmin18.widget.RealtimeBlurView;
 import com.google.android.material.tabs.TabLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,27 +56,37 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MainActivity extends CommonActivity implements IMainContract.V, IAllAdapterComm {
+public class MainActivity extends CommonActivity implements IMainContract.V, IActivityInterface {
 
     private static final int SELECT_REQUEST_CODE = 101;
 
-    @BindView(R2.id.app_tab_layout) TabLayout mTabLayout;
-    @BindView(R2.id.app_vp) ViewPager mVp;
-    @BindView(R2.id.app_blur_view) RealtimeBlurView mBlurView;
+    @BindView(R2.id.app_vg_operation)
+    ViewGroup vgOperationBar;
+    @BindView(R2.id.app_ibtn_cancel)
+    ImageButton ibtnCancel;
+    @BindView(R2.id.app_tv_title)
+    TextView tvTitle;
+    @BindView(R2.id.app_ibtn_delete)
+    ImageButton ibtnDelete;
+    @BindView(R2.id.app_ibtn_select_all)
+    ImageButton ibtnSelectAll;
+    @BindView(R2.id.app_tab_layout)
+    TabLayout tabLayout;
+    @BindView(R2.id.app_vp)
+    NewViewPager vp;
 
-    private IMainContract.P mP;
+    private IMainContract.P presenter;
+    private FragmentManager fragmentManager;
 
-    private Unbinder mUnbinder;
-    private Dialog mLoadingDialog;
-    private PopupWindow mPwMenu;
-    private PopupWindow mPwCollection;
-
-    private TextView mTvCollectionTitle;
-    private RecyclerView mRvCollection;
-    private RecyclerView.Adapter mCollectionAdapter;
+    private Unbinder unbinder;
+    private Dialog loadingDialog;
+    private PopupWindow pwMenu;
 
     private boolean receiveHotfix = false;
-    private List<PDF> mPDFList = new ArrayList<>();
+    private float translationY;
+
+    private List<PDF> recentSelectList;
+    private List<Collection> allCollectionList;
 
     @Override
     protected int layoutId() {
@@ -84,16 +96,6 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
     @Override
     protected Toolbar createToolbar() {
         return findViewById(R.id.app_toolbar);
-    }
-
-    /**
-     * 只是为了在打开文档时关闭 PopupWindow
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAllEvent(AllEvent event) {
-        if (mPwCollection.isShowing()) {
-            mRvCollection.postDelayed(() -> mPwCollection.dismiss(), 500);
-        }
     }
 
     /**
@@ -139,7 +141,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
         super.onCreate(savedInstanceState);
         attachP();
         EventBus.getDefault().register(this);
-        mUnbinder = ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         initView();
     }
 
@@ -147,15 +149,15 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        mUnbinder.unbind();
-        mP.detachV();
+        unbinder.unbind();
+        presenter.detachV();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECT_REQUEST_CODE && resultCode == RESULT_OK) {
-            mP.insertPDF(data);
+            presenter.insertPDF(data);
         }
     }
 
@@ -171,27 +173,57 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
             View parent = getWindow().getDecorView();
             int x = ConvertUtils.dp2px(6);
             int y = ConvertUtils.dp2px(80);
-            mPwMenu.showAtLocation(parent, Gravity.TOP | Gravity.END, x, y);
+            pwMenu.showAtLocation(parent, Gravity.TOP | Gravity.END, x, y);
         }
         return true;
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        if (receiveHotfix) {
-            android.os.Process.killProcess(android.os.Process.myPid());
+        if (vgOperationBar.getVisibility() == View.VISIBLE) {
+            cancelSelect();
+        } else {
+            super.onBackPressed();
+            if (receiveHotfix) {
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
         }
     }
 
     @Override
     public void onTap(String name) {
-        mTvCollectionTitle.setText(name);
-        mPDFList.clear();
-        mPDFList.addAll(DBHelper.queryPDF(name));
-        mCollectionAdapter.notifyDataSetChanged();
-        mBlurView.animate().alpha(1).setDuration(200).start();
-        mPwCollection.showAtLocation(mVp, Gravity.CENTER, 0, 0);
+        DialogFragment fragment = CollectionFragment.newInstance(name);
+        fragment.show(getSupportFragmentManager(), "");
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public <T> void onSelect(List<T> list, boolean isSelectAll) {
+        LogUtils.e(list);
+        ibtnSelectAll.setSelected(isSelectAll);
+        tvTitle.setText(getString(R.string.app_selected) + "(" + list.size() + ")");
+        if (!list.isEmpty()) {
+            T type = list.get(0);
+            if (type instanceof PDF) {
+                recentSelectList = (List<PDF>) list;
+            } else if (type instanceof Collection) {
+                allCollectionList = (List<Collection>) list;
+            }
+        }
+    }
+
+    @Override
+    public void onShowOperationBar() {
+        vp.setScrollable(false);
+        tvTitle.setText(getString(R.string.app_selected_zero));
+        ibtnSelectAll.setSelected(false);
+        OperationBarHelper.show(vgOperationBar);
+    }
+
+    @Override
+    public void onHideOperationBar() {
+        vp.setScrollable(true);
+        OperationBarHelper.hide(vgOperationBar, translationY);
     }
 
     @Override
@@ -201,43 +233,105 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
 
     @Override
     public void onShowLoading() {
-        mLoadingDialog.show();
+        loadingDialog.show();
     }
 
     @Override
     public void onHideLoading() {
-        mLoadingDialog.dismiss();
+        loadingDialog.dismiss();
     }
 
     @Override
-    public void onUpdate() {
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+    public void onUpdate(int type) {
+        switch (type) {
+            case 0:
+                updateRecent();
+                break;
+            case 1:
+                updateAll();
+                break;
+            case 2:
+                update();
+                break;
+        }
+    }
+
+    private void updateRecent() {
+        EventBus.getDefault().post(new RecentPDFEvent());
+    }
+
+    private void updateAll() {
+        List<Fragment> fragments = fragmentManager.getFragments();
         for (Fragment f : fragments) {
-            if (f instanceof IAllFragmentComm) {
-                ((IAllFragmentComm) f).update();
+            if (f instanceof IAllFragInterface) {
+                ((IAllFragInterface) f).update();
                 break;
             }
         }
     }
 
+    private void update() {
+        updateRecent();
+        updateAll();
+    }
+
     @Override
     public void attachP() {
-        mP = new MainP(this);
+        presenter = new MainPresenter(this);
+    }
+
+    @Override
+    public void startOperation() {
+        presenter.showOperationBar();
     }
 
     private void initView() {
-        mLoadingDialog = DialogUtils.createDialog(this, R.layout.app_dialog_loading);
+        loadingDialog = DialogUtils.createDialog(this, R.layout.app_dialog_loading);
+        vgOperationBar.post(() -> translationY = vgOperationBar.getTranslationY());
 
         initPwMenu();
-        initPwCollection();
 
-        mTabLayout.setupWithViewPager(mVp);
-        FragmentPagerAdapter fragmentPagerAdapter = new MainFragmentAdapter(getSupportFragmentManager());
-        mVp.setAdapter(fragmentPagerAdapter);
+        setListener();
+
+        tabLayout.setupWithViewPager(vp);
+        fragmentManager = getSupportFragmentManager();
+        FragmentPagerAdapter fragmentPagerAdapter = new MainFragmentAdapter(fragmentManager);
+        vp.setAdapter(fragmentPagerAdapter);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
+        }
+    }
+
+    private void setListener() {
+        ibtnCancel.setOnClickListener(v -> cancelSelect());
+        ibtnDelete.setOnClickListener(v -> {
+            if (recentSelectList != null && !recentSelectList.isEmpty()) {
+                presenter.deleteRecent(recentSelectList);
+            } else if (allCollectionList != null && !allCollectionList.isEmpty()) {
+                presenter.deleteCollection(allCollectionList);
+            } else {
+                onShowMessage(R.string.app_have_not_select);
+            }
+        });
+        ibtnSelectAll.setOnClickListener(v -> {
+            List<Fragment> fragments = fragmentManager.getFragments();
+            for (Fragment f : fragments) {
+                if (f instanceof IOperationInterface) {
+                    ((IOperationInterface) f).selectAll(!v.isSelected());
+                }
+            }
+        });
+    }
+
+    private void cancelSelect() {
+        presenter.hideOperationBar();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        for (Fragment f : fragments) {
+            if (f instanceof IOperationInterface) {
+                ((IOperationInterface) f).cancel();
+            }
         }
     }
 
@@ -247,7 +341,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
         TextView tvImport   = pwView.findViewById(R.id.app_tv_import);
         TextView tvSettings = pwView.findViewById(R.id.app_tv_settings);
         TextView tvAbout    = pwView.findViewById(R.id.app_tv_about);
-        mPwMenu = new PopupWindow(pwView);
+        pwMenu = new PopupWindow(pwView);
         tvImport.setOnClickListener(v -> {
             PermissionUtils.permission(PermissionConstants.STORAGE)
                     .callback(new PermissionUtils.SimpleCallback() {
@@ -267,47 +361,21 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IAl
                         }
                     })
                     .request();
-            mPwMenu.dismiss();
+            pwMenu.dismiss();
         });
         tvSettings.setOnClickListener(v -> {
             SettingsActivity.start(this);
-            mPwMenu.dismiss();
+            pwMenu.dismiss();
         });
         tvAbout.setOnClickListener(v -> {
             AboutActivity.start(this);
-            mPwMenu.dismiss();
+            pwMenu.dismiss();
         });
-        mPwMenu.setAnimationStyle(R.style.AppPwMenu);
-        mPwMenu.setFocusable(true);
-        mPwMenu.setOutsideTouchable(true);
-        mPwMenu.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mPwMenu.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mPwMenu.setElevation(ConvertUtils.dp2px(4));
-    }
-
-    private void initPwCollection() {
-        @SuppressLint("InflateParams")
-        View pwView = LayoutInflater.from(this).inflate(R.layout.app_pw_collection, null);
-        mTvCollectionTitle = pwView.findViewById(R.id.app_tv_title);
-        mRvCollection = pwView.findViewById(R.id.app_rv_collection);
-        mRvCollection.addItemDecoration(new XGridDecoration());
-        mRvCollection.addItemDecoration(new YGridDecoration());
-        RecyclerView.LayoutManager lm = new GridLayoutManager(this, 3);
-        mRvCollection.setLayoutManager(lm);
-
-        mCollectionAdapter = new PDFAdapter(mPDFList, false);
-        mRvCollection.setAdapter(mCollectionAdapter);
-        mPwCollection = new PopupWindow(pwView);
-        mPwCollection.setOnDismissListener(() -> {
-            mRvCollection.scrollToPosition(0);
-            mBlurView.animate().alpha(0).setDuration(200).start();
-        });
-
-        mPwCollection.setAnimationStyle(R.style.AppPwCollection);
-        mPwCollection.setFocusable(true);
-        mPwCollection.setOutsideTouchable(true);
-        mPwCollection.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        mPwCollection.setHeight(ConvertUtils.dp2px(500));
-        mPwCollection.setElevation(ConvertUtils.dp2px(2));
+        pwMenu.setAnimationStyle(R.style.AppPwMenu);
+        pwMenu.setFocusable(true);
+        pwMenu.setOutsideTouchable(true);
+        pwMenu.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        pwMenu.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        pwMenu.setElevation(ConvertUtils.dp2px(4));
     }
 }

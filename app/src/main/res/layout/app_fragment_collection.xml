@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false">
+
+    <com.github.mmin18.widget.RealtimeBlurView
+        android:id="@+id/app_blur_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:realtimeBlurRadius="20dp"
+        app:realtimeOverlayColor="#B3DBDBDB" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_centerInParent="true"
+        android:clipToPadding="false">
+
+        <TextView
+            android:id="@+id/app_tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/base_black"
+            android:textStyle="bold"
+            android:textSize="@dimen/base_text_xxhlarge" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/app_rv_collection"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="18dp"
+            android:padding="8dp"
+            android:background="#F7F7F7"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            android:overScrollMode="never"
+            android:scrollbars="vertical" />
+
+    </LinearLayout>
+
+    <include layout="@layout/app_include_operation_bar" />
+
+</RelativeLayout>

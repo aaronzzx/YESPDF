@@ -16,6 +16,7 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.Collection;
+import com.blankj.utilcode.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +28,15 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class AllFragment extends BaseFragment implements IAllFragmentComm {
+public class AllFragment extends BaseFragment implements IAllFragInterface, IOperationInterface {
 
-    @BindView(R2.id.app_rv_all) RecyclerView mRvAll;
+    @BindView(R2.id.app_rv_all)
+    RecyclerView rvAll;
 
-    private Unbinder mUnbinder;
-    private RecyclerView.Adapter mAdapter;
+    private Unbinder unbinder;
+    private RecyclerView.Adapter adapter;
 
-    private List<Collection> mCollections = new ArrayList<>();
+    private List<Collection> collections = new ArrayList<>();
 
     static Fragment newInstance() {
         return new AllFragment();
@@ -46,16 +48,16 @@ public class AllFragment extends BaseFragment implements IAllFragmentComm {
 
     @Override
     public void update() {
-        mCollections.clear();
-        mCollections.addAll(DBHelper.queryAllCollection());
-        mAdapter.notifyDataSetChanged();
+        collections.clear();
+        collections.addAll(DBHelper.queryAllCollection());
+        adapter.notifyItemRangeChanged(0, collections.size(), 0);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.app_fragment_all, container, false);
-        mUnbinder = ButterKnife.bind(this, layout);
+        unbinder = ButterKnife.bind(this, layout);
         initView();
         return layout;
     }
@@ -63,26 +65,42 @@ public class AllFragment extends BaseFragment implements IAllFragmentComm {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mUnbinder.unbind();
+        unbinder.unbind();
+    }
+
+    @Override
+    public void cancel() {
+        if (isResumed()) {
+            ((IOperationInterface) adapter).cancel();
+        }
+    }
+
+    @Override
+    public void selectAll(boolean flag) {
+        LogUtils.e(flag);
+        if (isResumed()) {
+            LogUtils.e("inner: " + flag);
+            ((IOperationInterface) adapter).selectAll(flag);
+        }
     }
 
     private void initView() {
-        mCollections.addAll(DBHelper.queryAllCollection());
+        collections.addAll(DBHelper.queryAllCollection());
 
-        mRvAll.addItemDecoration(new XGridDecoration());
-        mRvAll.addItemDecoration(new YGridDecoration());
+        rvAll.addItemDecoration(new XGridDecoration());
+        rvAll.addItemDecoration(new YGridDecoration());
         GridLayoutManager lm = new GridLayoutManager(mActivity, 3);
         lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (mCollections.isEmpty()) {
+                if (collections.isEmpty()) {
                     return 3;
                 }
                 return 1;
             }
         });
-        mRvAll.setLayoutManager(lm);
-        mAdapter = new AllAdapter(mCollections);
-        mRvAll.setAdapter(mAdapter);
+        rvAll.setLayoutManager(lm);
+        adapter = new AllAdapter(collections);
+        rvAll.setAdapter(adapter);
     }
 }
