@@ -69,7 +69,7 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
             View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
             return new EmptyHolder(itemView);
         }
-        View itemView = inflater.inflate(R.layout.app_recycler_item_pdf, parent, false);
+        View itemView = inflater.inflate(R.layout.app_recycler_item_cover, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
         cbList.add(holder.cb);
         holder.itemView.setOnClickListener(v -> {
@@ -84,7 +84,7 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
                 } else {
                     selectList.remove(pdf);
                 }
-                ((IActivityInterface) context).onSelect(selectList, selectList.size() == pdfList.size());
+                ((IFragmentInterface) context).onSelect(selectList, selectList.size() == pdfList.size());
             } else {
                 PDF pdf = pdfList.get(pos);
                 long cur = System.currentTimeMillis();
@@ -98,7 +98,7 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
             }
         });
         holder.itemView.setOnLongClickListener(v -> {
-            ((IActivityInterface) context).startOperation();
+            ((IFragmentInterface) context).startOperation();
             for (CheckBox cb : cbList) {
                 cb.setVisibility(View.VISIBLE);
             }
@@ -186,7 +186,7 @@ class PDFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
         } else {
             selectList.clear();
         }
-        ((IActivityInterface) context).onSelect(selectList, selectList.size() == pdfList.size());
+        ((IFragmentInterface) context).onSelect(selectList, selectList.size() == pdfList.size());
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {

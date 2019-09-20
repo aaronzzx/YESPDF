@@ -12,23 +12,26 @@ import java.util.List;
  */
 class RecentPDFAdapter extends AbstractPDFAdapter {
 
-    RecentPDFAdapter(List<PDF> pdfList) {
+    private IFragmentInterface activityInterface;
+
+    RecentPDFAdapter(IFragmentInterface activityInterface, List<PDF> pdfList) {
         super(pdfList);
+        this.activityInterface = activityInterface;
     }
 
     @Override
     int itemView() {
-        return R.layout.app_recycler_item_pdf;
+        return R.layout.app_recycler_item_cover;
     }
 
     @Override
     void startOperation() {
-        ((IActivityInterface) context).startOperation();
+        activityInterface.startOperation();
     }
 
     @Override
     void onSelect(List<PDF> list, boolean isSelectAll) {
-        ((IActivityInterface) context).onSelect(selectList, isSelectAll);
+        activityInterface.onSelect(selectList, isSelectAll);
     }
 
     @Override

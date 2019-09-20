@@ -1,7 +1,5 @@
 package com.aaron.yespdf.main;
 
-import android.app.Activity;
-
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.bean.PDF;
 
@@ -12,25 +10,28 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class AllPDFAdapter extends AbstractPDFAdapter {
+class CollectionAdapter extends AbstractPDFAdapter {
 
-    AllPDFAdapter(Activity activity, List<PDF> pdfList) {
+    private IFragmentInterface activityInterface;
+
+    CollectionAdapter(IFragmentInterface activityInterface, List<PDF> pdfList) {
         super(pdfList);
-        context = activity;
+        this.activityInterface = activityInterface;
     }
 
     @Override
     int itemView() {
-        return R.layout.app_recycler_item_pdf;
+        return R.layout.app_recycler_item_cover;
     }
 
     @Override
     void startOperation() {
+        activityInterface.startOperation();
         EventBus.getDefault().post(new OperationEvent());
     }
 
     @Override
     void onSelect(List<PDF> list, boolean isSelectAll) {
-        EventBus.getDefault().post(new SelectEvent(list, isSelectAll));
+        activityInterface.onSelect(list, isSelectAll);
     }
 }

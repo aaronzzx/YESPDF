@@ -18,6 +18,7 @@ import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.MaxRecentEvent;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
+import com.blankj.utilcode.util.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,22 +34,45 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class RecentFragment extends BaseFragment implements IFragmentInterface, IOperationInterface {
+public class RecentFragmentTest extends BaseFragment implements IOperation, AbstractAdapter.ICommInterface<PDF> {
 
     @BindView(R2.id.app_rv_recent)
     RecyclerView rvRecent;
 
     private Unbinder unbinder;
-    private RecyclerView.Adapter adapter;
+    private AbstractAdapter<PDF> adapter;
 
     private List<PDF> recentPDFList = new ArrayList<>();
 
     static Fragment newInstance() {
-        return new RecentFragment();
+        return new RecentFragmentTest();
     }
 
-    public RecentFragment() {
+    public RecentFragmentTest() {
 
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
+        View layout = inflater.inflate(R.layout.app_fragment_recent, container, false);
+        unbinder = ButterKnife.bind(this, layout);
+        initView();
+        return layout;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivityTest) mActivity).setOperation(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+        unbinder.unbind();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -70,50 +94,35 @@ public class RecentFragment extends BaseFragment implements IFragmentInterface, 
         adapter.notifyDataSetChanged();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        EventBus.getDefault().register(this);
-        View layout = inflater.inflate(R.layout.app_fragment_recent, container, false);
-        unbinder = ButterKnife.bind(this, layout);
-        initView();
-        return layout;
+    public void onStartOperation() {
+        ((MainActivityTest) mActivity).showOperationBar();
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
-        unbinder.unbind();
+    public void onSelect(List<PDF> list, boolean selectAll) {
+        LogUtils.e(list);
+        ((MainActivityTest) mActivity).selectResult(list.size(), selectAll);
     }
 
     @Override
-    public void startOperation() {
-        ((MainActivity) mActivity).startOperation();
-    }
-
-    @Override
-    public void onTap(String name) {
+    public void delete() {
 
     }
 
     @Override
-    public <T> void onSelect(List<T> list, boolean isSelectAll) {
-
+    public void selectAll(boolean selectAll) {
+        adapter.selectAll(selectAll);
     }
 
     @Override
-    public void cancel() {
-        if (isResumed()) {
-            ((IOperationInterface) adapter).cancel();
-        }
+    public void cancelSelect() {
+        adapter.cancelSelect();
     }
 
     @Override
-    public void selectAll(boolean flag) {
-        if (isResumed()) {
-            ((IOperationInterface) adapter).selectAll(flag);
-        }
+    public void update() {
+
     }
 
     private void initView() {
@@ -133,7 +142,7 @@ public class RecentFragment extends BaseFragment implements IFragmentInterface, 
             }
         });
         rvRecent.setLayoutManager(lm);
-        adapter = new RecentPDFAdapter(this, recentPDFList);
+        adapter = new RecentAdapterTest(this, recentPDFList);
         rvRecent.setAdapter(adapter);
     }
 

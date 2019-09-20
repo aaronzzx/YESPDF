@@ -68,14 +68,14 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
                     selectList.remove(collection);
                 }
                 checkArray.put(pos, isChecked);
-                ((IActivityInterface) context).onSelect(selectList, selectList.size() == mCollections.size());
+                ((IFragmentInterface) context).onSelect(selectList, selectList.size() == mCollections.size());
             } else {
                 String name = mCollections.get(pos).getName();
-                ((IActivityInterface) context).onTap(name);
+                ((IFragmentInterface) context).onTap(name);
             }
         });
         holder.itemView.setOnLongClickListener(v -> {
-            ((IActivityInterface) context).startOperation();
+            ((IFragmentInterface) context).startOperation();
             selectMode = true;
             notifyItemRangeChanged(0, getItemCount(), 0);
             return true;
@@ -174,7 +174,7 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
         } else {
             selectList.clear();
         }
-        ((IActivityInterface) context).onSelect(selectList, flag);
+        ((IFragmentInterface) context).onSelect(selectList, flag);
         notifyItemRangeChanged(0, getItemCount(), 0);
     }
 

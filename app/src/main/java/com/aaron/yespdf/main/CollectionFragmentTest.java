@@ -40,7 +40,7 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class CollectionFragment extends DialogFragment implements IFragmentInterface {
+public class CollectionFragmentTest extends DialogFragment implements IOperation, AbstractAdapter.ICommInterface<PDF> {
 
     private static final String BUNDLE_NAME = "BUNDLE_NAME";
 
@@ -62,7 +62,7 @@ public class CollectionFragment extends DialogFragment implements IFragmentInter
     RecyclerView rvCollection;
 
     private Unbinder unbinder;
-    private RecyclerView.Adapter collectionAdapter;
+    private AbstractAdapter adapter;
 
     private String name;
     private float translationY;
@@ -70,32 +70,11 @@ public class CollectionFragment extends DialogFragment implements IFragmentInter
     private List<PDF> selectPDFList;
 
     static DialogFragment newInstance(String name) {
-        DialogFragment fragment = new CollectionFragment();
+        DialogFragment fragment = new CollectionFragmentTest();
         Bundle args = new Bundle();
         args.putString(BUNDLE_NAME, name);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void startOperation() {
-        tvTitle.setText(getString(R.string.app_selected_zero));
-        ibtnSelectAll.setSelected(false);
-        OperationBarHelper.show(vgOperationBar);
-    }
-
-    @Override
-    public void onTap(String name) {
-
-    }
-
-    @SuppressLint("SetTextI18n")
-    @Override
-    public <T> void onSelect(List<T> list, boolean isSelectAll) {
-        LogUtils.e(list);
-        ibtnSelectAll.setSelected(isSelectAll);
-        tvTitle.setText(getString(R.string.app_selected) + "(" + list.size() + ")");
-        selectPDFList = (List<PDF>) list;
     }
 
     @Override
@@ -143,7 +122,8 @@ public class CollectionFragment extends DialogFragment implements IFragmentInter
                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
                     if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_BACK) {
                         if (vgOperationBar.getVisibility() == View.VISIBLE) {
-                            cancel();
+                            OperationBarHelper.hide(vgOperationBar, translationY);
+                            adapter.cancelSelect();
                             return true;
                         }
                     }
@@ -157,6 +137,58 @@ public class CollectionFragment extends DialogFragment implements IFragmentInter
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onStartOperation() {
+        tvTitle.setText(getString(R.string.app_selected_zero));
+        ibtnSelectAll.setSelected(false);
+        OperationBarHelper.show(vgOperationBar);
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onSelect(List<PDF> list, boolean selectAll) {
+        LogUtils.e(list);
+        ibtnSelectAll.setSelected(selectAll);
+        tvTitle.setText(getString(R.string.app_selected) + "(" + list.size() + ")");
+        selectPDFList = list;
+    }
+
+    @Override
+    public void delete() {
+        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<Object>() {
+            @Nullable
+            @Override
+            public Object doInBackground() {
+                pdfList.removeAll(selectPDFList);
+                DBHelper.deletePDF(selectPDFList);
+                return null;
+            }
+
+            @Override
+            public void onSuccess(@Nullable Object result) {
+                UiManager.showShort(R.string.app_delete_completed);
+                adapter.notifyItemRangeChanged(0, pdfList.size(), 0);
+            }
+        });
+    }
+
+    @Override
+    public void selectAll(boolean selectAll) {
+        ibtnSelectAll.setSelected(selectAll);
+        adapter.selectAll(selectAll);
+    }
+
+    @Override
+    public void cancelSelect() {
+        OperationBarHelper.hide(vgOperationBar, translationY);
+        adapter.cancelSelect();
+    }
+
+    @Override
+    public void update() {
+
     }
 
     private void initView() {
@@ -177,41 +209,14 @@ public class CollectionFragment extends DialogFragment implements IFragmentInter
         RecyclerView.LayoutManager lm = new GridLayoutManager(getActivity(), 3);
         rvCollection.setLayoutManager(lm);
 
-        collectionAdapter = new CollectionAdapter(this, pdfList);
-        rvCollection.setAdapter(collectionAdapter);
+        adapter = new CollectionAdapterTest(this, pdfList);
+        rvCollection.setAdapter(adapter);
     }
 
     private void setListener() {
         realtimeBlurView.setOnClickListener(v -> dismiss());
-        ibtnCancel.setOnClickListener(v -> cancel());
+        ibtnCancel.setOnClickListener(v -> cancelSelect());
         ibtnDelete.setOnClickListener(v -> delete());
-        ibtnSelectAll.setOnClickListener(v -> ((IOperationInterface) collectionAdapter).selectAll(!v.isSelected()));
-    }
-
-    private void delete() {
-        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<Object>() {
-            @Nullable
-            @Override
-            public Object doInBackground() {
-                pdfList.removeAll(selectPDFList);
-                DBHelper.deletePDF(selectPDFList);
-                return null;
-            }
-
-            @Override
-            public void onSuccess(@Nullable Object result) {
-                UiManager.showShort(R.string.app_delete_completed);
-                collectionAdapter.notifyItemRangeChanged(0, pdfList.size(), 0);
-            }
-        });
-    }
-
-    private void hideOperationBar() {
-        OperationBarHelper.hide(vgOperationBar, translationY);
-    }
-
-    private void cancel() {
-        hideOperationBar();
-        ((IOperationInterface) collectionAdapter).cancel();
+        ibtnSelectAll.setOnClickListener(v -> selectAll(!v.isSelected()));
     }
 }

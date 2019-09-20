@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-interface IActivityInterface {
+interface IFragmentInterface {
 
     void startOperation();
 
