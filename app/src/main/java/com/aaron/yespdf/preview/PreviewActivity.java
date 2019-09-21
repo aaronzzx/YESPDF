@@ -87,6 +87,7 @@ import io.reactivex.schedulers.Schedulers;
 public class PreviewActivity extends CommonActivity implements IActivityInterface {
 
     private static final String EXTRA_PDF = "EXTRA_PDF";
+    private static final String BUNDLE_CUR_PAGE = "BUNDLE_CUR_PAGE";
 
     private static final int REQUEST_CODE_SETTINGS = 101;
 
@@ -209,7 +210,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         LogUtils.e("onCreate");
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
-        initView();
+        initView(savedInstanceState);
     }
 
     @Override
@@ -262,6 +263,12 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         LogUtils.e("onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(BUNDLE_CUR_PAGE, curPage);
     }
 
     /**
@@ -344,7 +351,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     }
 
     @SuppressLint({"SwitchIntDef"})
-    private void initView() {
+    private void initView(Bundle savedInstanceState) {
         if (isNightMode) {
             pdfViewBg.setBackground(new ColorDrawable(Color.BLACK));
         }
@@ -392,7 +399,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         if (tab1 != null) tab1.setCustomView(R.layout.app_tab_content);
         if (tab2 != null) tab2.setCustomView(R.layout.app_tab_bookmark);
 
-        getData();
+        getData(savedInstanceState);
 
         setListener();
 
@@ -401,12 +408,12 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         enterFullScreen();
     }
 
-    private void getData() {
+    private void getData(Bundle savedInstanceState) {
         Intent intent = getIntent();
         uri = intent.getData();
         pdf = intent.getParcelableExtra(EXTRA_PDF);
         if (pdf != null) {
-            curPage = pdf.getCurPage();
+            curPage = savedInstanceState != null ? savedInstanceState.getInt(BUNDLE_CUR_PAGE) : pdf.getCurPage();
             pageCount = pdf.getTotalPage();
         }
     }
