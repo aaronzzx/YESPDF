@@ -10,6 +10,4 @@ interface IOperation {
     void selectAll(boolean selectAll);
 
     void cancelSelect();
-
-    void update();
 }

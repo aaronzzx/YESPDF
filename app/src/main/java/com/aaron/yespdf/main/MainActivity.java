@@ -19,9 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.aaron.base.impl.OnClickListenerImpl;
@@ -31,17 +29,14 @@ import com.aaron.yespdf.about.AboutActivity;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
-import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.HotfixEvent;
-import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.common.utils.DialogUtils;
 import com.aaron.yespdf.common.widgets.NewViewPager;
 import com.aaron.yespdf.filepicker.SelectActivity;
 import com.aaron.yespdf.settings.SettingsActivity;
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.google.android.material.tabs.TabLayout;
 
@@ -56,7 +51,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MainActivity extends CommonActivity implements IMainContract.V, IFragmentInterface {
+/**
+ * @author Aaron aaronzzxup@gmail.com
+ */
+public class MainActivity extends CommonActivity implements IMainContract.V {
 
     private static final int SELECT_REQUEST_CODE = 101;
 
@@ -70,23 +68,22 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IFr
     ImageButton ibtnDelete;
     @BindView(R2.id.app_ibtn_select_all)
     ImageButton ibtnSelectAll;
+
     @BindView(R2.id.app_tab_layout)
     TabLayout tabLayout;
     @BindView(R2.id.app_vp)
     NewViewPager vp;
 
     private IMainContract.P presenter;
-    private FragmentManager fragmentManager;
+    private IOperation operation;
 
     private Unbinder unbinder;
     private Dialog loadingDialog;
     private PopupWindow pwMenu;
+    private FragmentPagerAdapter fragmentPagerAdapter;
 
     private boolean receiveHotfix = false;
     private float translationY;
-
-    private List<PDF> recentSelectList;
-    private List<Collection> allCollectionList;
 
     @Override
     protected int layoutId() {
@@ -181,7 +178,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IFr
     @Override
     public void onBackPressed() {
         if (vgOperationBar.getVisibility() == View.VISIBLE) {
-            cancelSelect();
+            finishOperation();
         } else {
             super.onBackPressed();
             if (receiveHotfix) {
@@ -190,40 +187,27 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IFr
         }
     }
 
-    @Override
-    public void onTap(String name) {
-        DialogFragment fragment = CollectionFragment.newInstance(name);
-        fragment.show(getSupportFragmentManager(), "");
+    void setOperation(IOperation fragment) {
+        operation = fragment;
     }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    public <T> void onSelect(List<T> list, boolean isSelectAll) {
-        LogUtils.e(list);
-        ibtnSelectAll.setSelected(isSelectAll);
-        tvTitle.setText(getString(R.string.app_selected) + "(" + list.size() + ")");
-        if (!list.isEmpty()) {
-            T type = list.get(0);
-            if (type instanceof PDF) {
-                recentSelectList = (List<PDF>) list;
-            } else if (type instanceof Collection) {
-                allCollectionList = (List<Collection>) list;
-            }
-        }
-    }
-
-    @Override
-    public void onShowOperationBar() {
+    void startOperation() {
         vp.setScrollable(false);
         tvTitle.setText(getString(R.string.app_selected_zero));
         ibtnSelectAll.setSelected(false);
         OperationBarHelper.show(vgOperationBar);
     }
 
-    @Override
-    public void onHideOperationBar() {
+    void finishOperation() {
         vp.setScrollable(true);
         OperationBarHelper.hide(vgOperationBar, translationY);
+        operation.cancelSelect();
+    }
+
+    @SuppressLint("SetTextI18n")
+    void selectResult(int count, boolean selectAll) {
+        ibtnSelectAll.setSelected(selectAll);
+        tvTitle.setText(getString(R.string.app_selected) + "(" + count + ")");
     }
 
     @Override
@@ -242,47 +226,19 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IFr
     }
 
     @Override
-    public void onUpdate(int type) {
-        switch (type) {
-            case 0:
-                updateRecent();
-                break;
-            case 1:
-                updateAll();
-                break;
-            case 2:
-                update();
-                break;
-        }
-    }
-
-    private void updateRecent() {
-        EventBus.getDefault().post(new RecentPDFEvent());
-    }
-
-    private void updateAll() {
-        List<Fragment> fragments = fragmentManager.getFragments();
-        for (Fragment f : fragments) {
-            if (f instanceof IAllFragInterface) {
-                ((IAllFragInterface) f).update();
-                break;
+    public void onUpdate() {
+        List<Fragment> list = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : list) {
+            if (fragment instanceof AllFragment) {
+                ((AllFragment) fragment).update();
+                return;
             }
         }
-    }
-
-    private void update() {
-        updateRecent();
-        updateAll();
     }
 
     @Override
     public void attachP() {
         presenter = new MainPresenter(this);
-    }
-
-    @Override
-    public void startOperation() {
-        presenter.showOperationBar();
     }
 
     private void initView() {
@@ -294,8 +250,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IFr
         setListener();
 
         tabLayout.setupWithViewPager(vp);
-        fragmentManager = getSupportFragmentManager();
-        FragmentPagerAdapter fragmentPagerAdapter = new MainFragmentAdapter(fragmentManager);
+        fragmentPagerAdapter = new MainFragmentAdapter(getSupportFragmentManager());
         vp.setAdapter(fragmentPagerAdapter);
 
         ActionBar actionBar = getSupportActionBar();
@@ -305,42 +260,17 @@ public class MainActivity extends CommonActivity implements IMainContract.V, IFr
     }
 
     private void setListener() {
-        ibtnCancel.setOnClickListener(v -> cancelSelect());
-        ibtnDelete.setOnClickListener(v -> {
-            if (recentSelectList != null && !recentSelectList.isEmpty()) {
-                presenter.deleteRecent(recentSelectList);
-            } else if (allCollectionList != null && !allCollectionList.isEmpty()) {
-                presenter.deleteCollection(allCollectionList);
-            } else {
-                onShowMessage(R.string.app_have_not_select);
-            }
-        });
-        ibtnSelectAll.setOnClickListener(v -> {
-            List<Fragment> fragments = fragmentManager.getFragments();
-            for (Fragment f : fragments) {
-                if (f instanceof IOperationInterface) {
-                    ((IOperationInterface) f).selectAll(!v.isSelected());
-                }
-            }
-        });
+        ibtnCancel.setOnClickListener(v -> finishOperation());
+        ibtnDelete.setOnClickListener(v -> operation.delete());
+        ibtnSelectAll.setOnClickListener(v -> operation.selectAll(!v.isSelected()));
     }
 
-    private void cancelSelect() {
-        presenter.hideOperationBar();
-        List<Fragment> fragments = fragmentManager.getFragments();
-        for (Fragment f : fragments) {
-            if (f instanceof IOperationInterface) {
-                ((IOperationInterface) f).cancel();
-            }
-        }
-    }
-
+    @SuppressLint("InflateParams")
     private void initPwMenu() {
-        @SuppressLint("InflateParams")
         View pwView = LayoutInflater.from(this).inflate(R.layout.app_pw_main, null);
-        TextView tvImport   = pwView.findViewById(R.id.app_tv_import);
+        TextView tvImport = pwView.findViewById(R.id.app_tv_import);
         TextView tvSettings = pwView.findViewById(R.id.app_tv_settings);
-        TextView tvAbout    = pwView.findViewById(R.id.app_tv_about);
+        TextView tvAbout = pwView.findViewById(R.id.app_tv_about);
         pwMenu = new PopupWindow(pwView);
         tvImport.setOnClickListener(v -> {
             PermissionUtils.permission(PermissionConstants.STORAGE)

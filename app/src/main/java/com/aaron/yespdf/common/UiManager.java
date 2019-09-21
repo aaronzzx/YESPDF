@@ -42,14 +42,14 @@ public final class UiManager {
     }
 
     public static void showShort(CharSequence text) {
-        ToastUtils.setGravity(Gravity.BOTTOM, 0, 300);
+        ToastUtils.setGravity(Gravity.BOTTOM, 0, 250);
         View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
         TextView tv    = toastView.findViewById(R.id.app_tv);
         tv.setText(text);
     }
 
     public static void showShort(@StringRes int res) {
-        ToastUtils.setGravity(Gravity.BOTTOM, 0, 300);
+        ToastUtils.setGravity(Gravity.BOTTOM, 0, 250);
         View toastView = ToastUtils.showCustomShort(R.layout.app_toast);
         TextView tv = toastView.findViewById(R.id.app_tv);
         tv.setText(res);

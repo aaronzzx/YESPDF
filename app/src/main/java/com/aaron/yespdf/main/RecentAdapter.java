@@ -5,14 +5,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.App;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.EmptyHolder;
+import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.preview.PreviewActivity;
@@ -27,11 +28,11 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class CollectionAdapterTest extends AbstractAdapter<PDF> {
+class RecentAdapter extends AbstractAdapter<PDF> {
 
     private RecentPDFEvent recentPDFEvent;
 
-    CollectionAdapterTest(ICommInterface<PDF> commInterface, List<PDF> sourceList) {
+    RecentAdapter(ICommInterface<PDF> commInterface, List<PDF> sourceList) {
         super(commInterface, sourceList);
         recentPDFEvent = new RecentPDFEvent();
     }
@@ -90,6 +91,15 @@ class CollectionAdapterTest extends AbstractAdapter<PDF> {
 
     @Override
     int itemCount() {
+        String[] array = App.getContext().getResources().getStringArray(R.array.max_recent_count);
+        String infinite = array[array.length - 1];
+        String maxRecent = Settings.getMaxRecentCount();
+        if (!maxRecent.equals(infinite)) {
+            int count = Integer.parseInt(maxRecent);
+            if (count <= sourceList.size()) {
+                return count;
+            }
+        }
         return sourceList.size();
     }
 
@@ -118,9 +128,6 @@ class CollectionAdapterTest extends AbstractAdapter<PDF> {
                 DBHelper.insertRecent(pdf);
                 PreviewActivity.start(context, pdf);
                 EventBus.getDefault().post(recentPDFEvent);
-                holder.itemView.postDelayed(() -> {
-                    ((DialogFragment) commInterface).dismiss();
-                }, 400);
             }
         }
     }

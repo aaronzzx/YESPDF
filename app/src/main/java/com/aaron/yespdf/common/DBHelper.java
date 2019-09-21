@@ -88,22 +88,38 @@ public final class DBHelper {
         sDaoSession.insertOrReplace(recent);
     }
 
-    public static void deleteRecent(List<PDF> list) {
+    public static List<String> deleteRecent(List<PDF> list) {
+        List<String> dirList = new ArrayList<>();
         for (PDF pdf : list) {
+            dirList.add(pdf.getName());
             sDaoSession.getDatabase().execSQL("delete from RECENT_PDF where name = ?", new String[]{pdf.getName()});
         }
+        return dirList;
     }
 
-    public static void deleteCollection(List<Collection> list) {
+    public static String deleteCollection(String name) {
+        sDaoSession.getDatabase().execSQL("delete from COLLECTION where name = ?", new String[]{name});
+        return name;
+    }
+
+    public static List<String> deleteCollection(List<Collection> list) {
+        List<String> dirList = new ArrayList<>();
         for (Collection c : list) {
+            dirList.add(c.getName());
             sDaoSession.getCollectionDao().delete(c);
+            sDaoSession.getDatabase().execSQL("delete from PDF where dir = ?", new String[]{c.getName()});
+            sDaoSession.getDatabase().execSQL("delete from RECENT_PDF where dir = ?", new String[]{c.getName()});
         }
+        return dirList;
     }
 
-    public static void deletePDF(List<PDF> list) {
+    public static List<String> deletePDF(List<PDF> list) {
+        List<String> nameList = new ArrayList<>();
         for (PDF pdf : list) {
+            nameList.add(pdf.getName());
             sDaoSession.getPDFDao().delete(pdf);
         }
+        return nameList;
     }
 
     public static boolean insert(List<String> pathList) {

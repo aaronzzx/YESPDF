@@ -1,16 +1,13 @@
 package com.aaron.yespdf.main;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.util.SparseBooleanArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.image.DefaultOption;
@@ -20,81 +17,44 @@ import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.EmptyHolder;
 import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.PDF;
-import com.aaron.yespdf.common.widgets.BorderImageView;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements IOperationInterface {
+class AllAdapter extends AbstractAdapter<Collection> {
 
-    private static final int TYPE_EMPTY = 1;
+    private FragmentManager fm;
 
-    private Context context;
-
-    private List<Collection> mCollections;
-
-    private List<Collection> selectList = new ArrayList<>();
-    private boolean selectMode;
-    private SparseBooleanArray checkArray = new SparseBooleanArray();
-
-    AllAdapter(List<Collection> list) {
-        mCollections = list;
+    AllAdapter(ICommInterface<Collection> commInterface, FragmentManager fm, List<Collection> sourceList) {
+        super(commInterface, sourceList);
+        this.fm = fm;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        this.context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-        if (viewType == TYPE_EMPTY) {
-            View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
-            return new EmptyHolder(itemView);
-        }
-        View itemView = inflater.inflate(R.layout.app_recycler_item_collection, parent, false);
-        ViewHolder holder = new ViewHolder(itemView);
-        holder.itemView.setOnClickListener(v -> {
-            int pos = holder.getAdapterPosition();
-            if (holder.cb.getVisibility() == View.VISIBLE) {
-                Collection collection = mCollections.get(pos);
-                boolean isChecked = !holder.cb.isChecked();
-                holder.cb.setChecked(isChecked);
-                if (holder.cb.isChecked()) {
-                    selectList.add(collection);
-                } else {
-                    selectList.remove(collection);
-                }
-                checkArray.put(pos, isChecked);
-                ((IFragmentInterface) context).onSelect(selectList, selectList.size() == mCollections.size());
-            } else {
-                String name = mCollections.get(pos).getName();
-                ((IFragmentInterface) context).onTap(name);
-            }
-        });
-        holder.itemView.setOnLongClickListener(v -> {
-            ((IFragmentInterface) context).startOperation();
-            selectMode = true;
-            notifyItemRangeChanged(0, getItemCount(), 0);
-            return true;
-        });
-        return holder;
+    RecyclerView.ViewHolder createHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = inflater.inflate(CollectionHolder.DEFAULT_LAYOUT, parent, false);
+        return new CollectionHolder(itemView);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        if (viewHolder instanceof ViewHolder) {
-            ViewHolder holder = (ViewHolder) viewHolder;
-            if (mCollections != null && !mCollections.isEmpty()) {
-                Collection c = mCollections.get(position);
+    void bindHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+        LogUtils.e("喵喵喵");
+        if (viewHolder instanceof CollectionHolder) {
+            CollectionHolder holder = (CollectionHolder) viewHolder;
+            if (!sourceList.isEmpty()) {
+                Collection c = sourceList.get(position);
                 List<PDF> pdfList = DBHelper.queryPDF(c.getName());
                 int count = pdfList.size();
 
                 holder.tvTitle.setText(c.getName());
-                holder.tvCount.setText("共 " + count + " 本");
+                holder.tvCount.setText(context.getString(R.string.app_total) + count + context.getString(R.string.app_count));
+                setVisibility(holder, count);
                 if (count == 0) return;
                 setCover(holder.ivCover1, pdfList.get(0).getCover());
                 if (count == 1) return;
@@ -120,12 +80,12 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position, @NonNull List<Object> payloads) {
+    void bindHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position, @NonNull List<Object> payloads) {
         if (payloads.isEmpty()) {
-            super.onBindViewHolder(viewHolder, position, payloads);
+            bindHolder(viewHolder, position);
         } else {
-            if (viewHolder instanceof ViewHolder && position < getItemCount()) {
-                ViewHolder holder = (ViewHolder) viewHolder;
+            if (viewHolder instanceof CollectionHolder && position < getItemCount()) {
+                CollectionHolder holder = (CollectionHolder) viewHolder;
                 holder.cb.setVisibility(selectMode ? View.VISIBLE : View.GONE);
                 if (selectMode) {
                     holder.cb.setAlpha(1.0F);
@@ -138,69 +98,42 @@ class AllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implement
     }
 
     @Override
-    public int getItemCount() {
-        if (mCollections.isEmpty()) {
-            return 1;
-        }
-        return mCollections.size();
+    int itemCount() {
+        return sourceList.size();
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if (mCollections.isEmpty()) {
-            return TYPE_EMPTY;
-        }
-        return super.getItemViewType(position);
-    }
-
-    @Override
-    public void cancel() {
-        checkArray.clear();
-        selectMode = false;
-        selectList.clear();
-        notifyItemRangeChanged(0, getItemCount(), 0);
-    }
-
-    @Override
-    public void selectAll(boolean flag) {
-        for (int i = 0; i < getItemCount(); i++) {
-            checkArray.put(i, flag);
-        }
-        if (flag) {
-            selectList.clear();
-            for (int i = 0; i < getItemCount(); i++) {
-                selectList.add(mCollections.get(i));
+    void onTap(RecyclerView.ViewHolder viewHolder, int position) {
+        if (viewHolder instanceof CollectionHolder) {
+            CollectionHolder holder = (CollectionHolder) viewHolder;
+            if (holder.cb.getVisibility() == View.VISIBLE) {
+                Collection collection = sourceList.get(position);
+                boolean isChecked = !holder.cb.isChecked();
+                holder.cb.setChecked(isChecked);
+                if (holder.cb.isChecked()) {
+                    selectList.add(collection);
+                } else {
+                    selectList.remove(collection);
+                }
+                checkArray.put(position, isChecked);
+                commInterface.onSelect(selectList, selectList.size() == getItemCount());
+            } else {
+                DialogFragment df = CollectionFragment.newInstance(sourceList.get(position).getName());
+                df.show(fm, "");
             }
-        } else {
-            selectList.clear();
         }
-        ((IFragmentInterface) context).onSelect(selectList, flag);
-        notifyItemRangeChanged(0, getItemCount(), 0);
+    }
+
+    private void setVisibility(CollectionHolder holder, int count) {
+        holder.ivCover1.setVisibility(count >= 1 ? View.VISIBLE : View.INVISIBLE);
+        holder.ivCover2.setVisibility(count >= 2 ? View.VISIBLE : View.INVISIBLE);
+        holder.ivCover3.setVisibility(count >= 3 ? View.VISIBLE : View.INVISIBLE);
+        holder.ivCover4.setVisibility(count >= 4 ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void setCover(ImageView ivCover, String path) {
-        if (StringUtils.isEmpty(path)) return;
-        ImageLoader.load(ivCover.getContext(), new DefaultOption.Builder(path).into(ivCover));
-    }
-
-    private static class ViewHolder extends RecyclerView.ViewHolder {
-        private BorderImageView ivCover1;
-        private BorderImageView ivCover2;
-        private BorderImageView ivCover3;
-        private BorderImageView ivCover4;
-        private TextView tvTitle;
-        private TextView tvCount;
-        private CheckBox cb;
-
-        ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            ivCover1 = itemView.findViewById(R.id.app_iv_1);
-            ivCover2 = itemView.findViewById(R.id.app_iv_2);
-            ivCover3 = itemView.findViewById(R.id.app_iv_3);
-            ivCover4 = itemView.findViewById(R.id.app_iv_4);
-            tvTitle = itemView.findViewById(R.id.app_tv_title);
-            tvCount = itemView.findViewById(R.id.app_tv_count);
-            cb = itemView.findViewById(R.id.app_cb);
+        if (!StringUtils.isEmpty(path)) {
+            ImageLoader.load(context, new DefaultOption.Builder(path).into(ivCover));
         }
     }
 }

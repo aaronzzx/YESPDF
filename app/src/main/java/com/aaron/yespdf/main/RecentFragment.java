@@ -15,9 +15,12 @@ import com.aaron.base.base.BaseFragment;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.MaxRecentEvent;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
+import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,15 +36,16 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class RecentFragment extends BaseFragment implements IFragmentInterface, IOperationInterface {
+public class RecentFragment extends BaseFragment implements IOperation, AbstractAdapter.ICommInterface<PDF> {
 
     @BindView(R2.id.app_rv_recent)
     RecyclerView rvRecent;
 
     private Unbinder unbinder;
-    private RecyclerView.Adapter adapter;
+    private AbstractAdapter<PDF> adapter;
 
     private List<PDF> recentPDFList = new ArrayList<>();
+    private List<PDF> selectPDFList = new ArrayList<>();
 
     static Fragment newInstance() {
         return new RecentFragment();
@@ -49,6 +53,85 @@ public class RecentFragment extends BaseFragment implements IFragmentInterface, 
 
     public RecentFragment() {
 
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
+        View layout = inflater.inflate(R.layout.app_fragment_recent, container, false);
+        unbinder = ButterKnife.bind(this, layout);
+        initView();
+        return layout;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) mActivity).setOperation(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+        unbinder.unbind();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPdfDeleteEvent(PdfDeleteEvent event) {
+        if (!recentPDFList.isEmpty()) {
+            ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<Object>() {
+                @Nullable
+                @Override
+                public Object doInBackground() {
+                    List<PDF> delete = new ArrayList<>();
+                    for (String name : event.deleted) {
+                        for (PDF pdf : recentPDFList) {
+                            if (pdf.getName().equals(name)) {
+                                delete.add(pdf);
+                            }
+                        }
+                    }
+                    recentPDFList.removeAll(delete);
+                    DBHelper.deleteRecent(delete);
+                    return null;
+                }
+
+                @Override
+                public void onSuccess(@Nullable Object result) {
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAllDeleteEvent(AllDeleteEvent event) {
+        if (!recentPDFList.isEmpty()) {
+            ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<Object>() {
+                @Nullable
+                @Override
+                public Object doInBackground() {
+                    List<PDF> delete = new ArrayList<>();
+                    for (String dir : event.dirList) {
+                        for (PDF pdf : recentPDFList) {
+                            if (pdf.getDir().equals(dir)) {
+                                delete.add(pdf);
+                            }
+                        }
+                    }
+                    recentPDFList.removeAll(delete);
+                    DBHelper.deleteRecent(delete);
+                    return null;
+                }
+
+                @Override
+                public void onSuccess(@Nullable Object result) {
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -70,50 +153,47 @@ public class RecentFragment extends BaseFragment implements IFragmentInterface, 
         adapter.notifyDataSetChanged();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        EventBus.getDefault().register(this);
-        View layout = inflater.inflate(R.layout.app_fragment_recent, container, false);
-        unbinder = ButterKnife.bind(this, layout);
-        initView();
-        return layout;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
-        unbinder.unbind();
-    }
-
-    @Override
-    public void startOperation() {
+    public void onStartOperation() {
         ((MainActivity) mActivity).startOperation();
     }
 
     @Override
-    public void onTap(String name) {
-
+    public void onSelect(List<PDF> list, boolean selectAll) {
+        LogUtils.e(list);
+        selectPDFList.clear();
+        selectPDFList.addAll(list);
+        ((MainActivity) mActivity).selectResult(list.size(), selectAll);
     }
 
     @Override
-    public <T> void onSelect(List<T> list, boolean isSelectAll) {
+    public void delete() {
+        if (!selectPDFList.isEmpty()) {
+            ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<List<String>>() {
+                @Override
+                public List<String> doInBackground() {
+                    recentPDFList.removeAll(selectPDFList);
+                    return DBHelper.deleteRecent(selectPDFList);
+                }
 
-    }
-
-    @Override
-    public void cancel() {
-        if (isResumed()) {
-            ((IOperationInterface) adapter).cancel();
+                @Override
+                public void onSuccess(List<String> dirList) {
+                    UiManager.showShort(R.string.app_delete_completed);
+                    ((MainActivity) mActivity).finishOperation();
+                    adapter.notifyDataSetChanged();
+                }
+            });
         }
     }
 
     @Override
-    public void selectAll(boolean flag) {
-        if (isResumed()) {
-            ((IOperationInterface) adapter).selectAll(flag);
-        }
+    public void selectAll(boolean selectAll) {
+        adapter.selectAll(selectAll);
+    }
+
+    @Override
+    public void cancelSelect() {
+        adapter.cancelSelect();
     }
 
     private void initView() {
@@ -133,7 +213,7 @@ public class RecentFragment extends BaseFragment implements IFragmentInterface, 
             }
         });
         rvRecent.setLayoutManager(lm);
-        adapter = new RecentPDFAdapter(this, recentPDFList);
+        adapter = new RecentAdapter(this, recentPDFList);
         rvRecent.setAdapter(adapter);
     }
 
