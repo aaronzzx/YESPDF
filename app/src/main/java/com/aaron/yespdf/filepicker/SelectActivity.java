@@ -22,6 +22,7 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.UiManager;
+import com.blankj.utilcode.util.LogUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 
 import java.io.File;
@@ -36,7 +37,7 @@ import butterknife.Unbinder;
  * @author Aaron aaronzzxup@gmail.com
  */
 @ParallaxBack
-public class SelectActivity extends CommonActivity implements ISelectContract.V, IActivityInterface {
+public class SelectActivity extends CommonActivity implements ISelectContract.V {
 
     public static final String EXTRA_SELECTED = "EXTRA_SELECTED";
     private static final String EXTRA_IMPORTED = "EXTRA_IMPORTED";
@@ -56,9 +57,10 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
 
     private ISelectContract.P presenter;
     private Unbinder unbinder;
-    private RecyclerView.Adapter adapter;
+    private AbstractAdapter adapter;
 
     private List<File> fileList = new ArrayList<>();
+    private List<String> selectList = new ArrayList<>();
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -74,7 +76,8 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
         public void onChanged() {
             ibtnSelectAll.setSelected(false);
             tvImportCount.setText(R.string.app_import_count);
-            ((IAdapterInterface) adapter).reset();
+            boolean enableSelectAll = adapter.reset();
+            ibtnSelectAll.setEnabled(enableSelectAll);
         }
     };
 
@@ -159,21 +162,17 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
         }
     }
 
-    @Override
-    public void onDirTap(String dirPath) {
+    void onDirTap(String dirPath) {
         presenter.listFile(dirPath);
     }
 
     @SuppressLint("SetTextI18n")
-    @Override
-    public void onSelectResult(List<String> pathList, int total) {
+    void onSelectResult(List<String> pathList, int total) {
+        LogUtils.e(pathList);
         ibtnSelectAll.setSelected(pathList.size() == total);
         tvImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
-    }
-
-    @Override
-    public View getViewSelectAll() {
-        return ibtnSelectAll;
+        selectList.clear();
+        selectList.addAll(pathList);
     }
 
     private void initView() {
@@ -186,12 +185,11 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
             @SuppressLint("SetTextI18n")
             @Override
             public void onViewClick(View v, long interval) {
-                List<String> selectResult = ((IAdapterInterface) adapter).selectResult();
-                if (selectResult.isEmpty()) {
+                if (selectList.isEmpty()) {
                     UiManager.showShort(R.string.app_have_not_select);
                 } else {
                     Intent data = new Intent();
-                    data.putStringArrayListExtra(EXTRA_SELECTED, (ArrayList<String>) selectResult);
+                    data.putStringArrayListExtra(EXTRA_SELECTED, (ArrayList<String>) selectList);
                     setResult(RESULT_OK, data);
                     finish();
                 }
@@ -199,7 +197,7 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V,
         });
         ibtnSelectAll.setOnClickListener(v -> {
             ibtnSelectAll.setSelected(!ibtnSelectAll.isSelected());
-            ((IAdapterInterface) adapter).selectAll(ibtnSelectAll.isSelected());
+            adapter.selectAll(ibtnSelectAll.isSelected());
         });
 
         ibtnSelectAll.setEnabled(false); // XML 设置无效，只能这里初始化

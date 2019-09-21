@@ -97,13 +97,11 @@ abstract class AbstractAdapter<T> extends RecyclerView.Adapter<RecyclerView.View
         for (int i = 0; i < getItemCount(); i++) {
             checkArray.put(i, selectAll);
         }
+        selectList.clear();
         if (selectAll) {
-            selectList.clear();
             for (int i = 0; i < getItemCount(); i++) {
                 selectList.add(sourceList.get(i));
             }
-        } else {
-            selectList.clear();
         }
         commInterface.onSelect(selectList, selectAll);
         notifyItemRangeChanged(0, getItemCount(), 0);
