@@ -55,10 +55,18 @@ abstract class AbstractAdapter<T> extends RecyclerView.Adapter<RecyclerView.View
         RecyclerView.ViewHolder holder = createHolder(parent, viewType);
         holder.itemView.setOnClickListener(v -> onTap(holder, holder.getAdapterPosition()));
         holder.itemView.setOnLongClickListener(v -> {
-            commInterface.onStartOperation();
-            selectMode = true;
-            notifyItemRangeChanged(0, getItemCount(), 0);
-            return true;
+            if (!(holder instanceof EmptyHolder) && !selectMode) {
+                int pos = holder.getAdapterPosition();
+                commInterface.onStartOperation();
+                checkArray.put(pos, true);
+                checkCurrent(holder, pos);
+                selectList.add(sourceList.get(pos));
+                commInterface.onSelect(selectList, selectList.size() == getItemCount());
+                selectMode = true;
+                notifyItemRangeChanged(0, getItemCount(), 0);
+                return true;
+            }
+            return false;
         });
         return holder;
     }
@@ -93,6 +101,16 @@ abstract class AbstractAdapter<T> extends RecyclerView.Adapter<RecyclerView.View
         return super.getItemViewType(position);
     }
 
+    void handleCheckBox(CheckBox cb, int position) {
+        cb.setVisibility(selectMode ? View.VISIBLE : View.GONE);
+        if (selectMode) {
+            cb.setAlpha(1.0F);
+            cb.setScaleX(0.8F);
+            cb.setScaleY(0.8F);
+            cb.setChecked(checkArray.get(position));
+        }
+    }
+
     void selectAll(boolean selectAll) {
         for (int i = 0; i < getItemCount(); i++) {
             checkArray.put(i, selectAll);
@@ -124,6 +142,8 @@ abstract class AbstractAdapter<T> extends RecyclerView.Adapter<RecyclerView.View
     abstract int itemCount();
 
     abstract void onTap(RecyclerView.ViewHolder viewHolder, int position);
+
+    abstract void checkCurrent(RecyclerView.ViewHolder viewHolder, int position);
 
     interface ICommInterface<T> {
         void onStartOperation();

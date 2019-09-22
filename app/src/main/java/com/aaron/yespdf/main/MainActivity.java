@@ -38,6 +38,7 @@ import com.aaron.yespdf.settings.SettingsActivity;
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.PermissionUtils;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -79,11 +80,12 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     private Unbinder unbinder;
     private Dialog loadingDialog;
+    private TextView tvDeleteDescription;
+    private BottomSheetDialog deleteDialog;
     private PopupWindow pwMenu;
     private FragmentPagerAdapter fragmentPagerAdapter;
 
     private boolean receiveHotfix = false;
-    private float translationY;
 
     @Override
     protected int layoutId() {
@@ -200,12 +202,13 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     void finishOperation() {
         vp.setScrollable(true);
-        OperationBarHelper.hide(vgOperationBar, translationY);
+        OperationBarHelper.hide(vgOperationBar);
         operation.cancelSelect();
     }
 
     @SuppressLint("SetTextI18n")
     void selectResult(int count, boolean selectAll) {
+        ibtnDelete.setEnabled(count > 0);
         ibtnSelectAll.setSelected(selectAll);
         tvTitle.setText(getString(R.string.app_selected) + "(" + count + ")");
     }
@@ -243,7 +246,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     private void initView() {
         loadingDialog = DialogUtils.createDialog(this, R.layout.app_dialog_loading);
-        vgOperationBar.post(() -> translationY = vgOperationBar.getTranslationY());
+        createDeleteDialog();
 
         initPwMenu();
 
@@ -259,9 +262,25 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
         }
     }
 
+    private void createDeleteDialog() {
+        View view = LayoutInflater.from(this).inflate(R.layout.app_bottomdialog_delete, null);
+        tvDeleteDescription = view.findViewById(R.id.app_tv_description);
+        Button btnCancel = view.findViewById(R.id.app_btn_cancel);
+        Button btnDelete = view.findViewById(R.id.app_btn_delete);
+        btnCancel.setOnClickListener(v -> deleteDialog.dismiss());
+        btnDelete.setOnClickListener(v -> {
+            deleteDialog.dismiss();
+            operation.delete();
+        });
+        deleteDialog = DialogUtils.createBottomSheetDialog(this, view);
+    }
+
     private void setListener() {
         ibtnCancel.setOnClickListener(v -> finishOperation());
-        ibtnDelete.setOnClickListener(v -> operation.delete());
+        ibtnDelete.setOnClickListener(v -> {
+            tvDeleteDescription.setText(operation.deleteDescription());
+            deleteDialog.show();
+        });
         ibtnSelectAll.setOnClickListener(v -> operation.selectAll(!v.isSelected()));
     }
 

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -26,9 +27,11 @@ import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
+import com.aaron.yespdf.common.utils.DialogUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.github.mmin18.widget.RealtimeBlurView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -65,9 +68,10 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
 
     private Unbinder unbinder;
     private AbstractAdapter adapter;
+    private TextView tvDeleteDescription;
+    private BottomSheetDialog deleteDialog;
 
     private String name;
-    private float translationY;
     private List<PDF> pdfList = new ArrayList<>();
     private List<PDF> selectPDFList;
 
@@ -124,7 +128,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
                     if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_BACK) {
                         if (vgOperationBar.getVisibility() == View.VISIBLE) {
-                            OperationBarHelper.hide(vgOperationBar, translationY);
+                            OperationBarHelper.hide(vgOperationBar);
                             adapter.cancelSelect();
                             return true;
                         }
@@ -152,6 +156,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     @Override
     public void onSelect(List<PDF> list, boolean selectAll) {
         LogUtils.e(list);
+        ibtnDelete.setEnabled(list.size() > 0);
         ibtnSelectAll.setSelected(selectAll);
         tvTitle.setText(getString(R.string.app_selected) + "(" + list.size() + ")");
         selectPDFList = list;
@@ -184,8 +189,13 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
 
     @Override
     public void cancelSelect() {
-        OperationBarHelper.hide(vgOperationBar, translationY);
+        OperationBarHelper.hide(vgOperationBar);
         adapter.cancelSelect();
+    }
+
+    @Override
+    public String deleteDescription() {
+        return null;
     }
 
     private void initView() {
@@ -197,8 +207,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             pdfList.addAll(DBHelper.queryPDF(name));
         }
 
-        vgOperationBar.post(() -> translationY = vgOperationBar.getTranslationY());
-
+        createDeleteDialog();
         setListener();
 
         rvCollection.addItemDecoration(new XGridDecoration());
@@ -219,10 +228,27 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         rvCollection.setAdapter(adapter);
     }
 
+    private void createDeleteDialog() {
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.app_bottomdialog_delete, null);
+        tvDeleteDescription = view.findViewById(R.id.app_tv_description);
+        Button btnCancel = view.findViewById(R.id.app_btn_cancel);
+        Button btnDelete = view.findViewById(R.id.app_btn_delete);
+        btnCancel.setOnClickListener(v -> deleteDialog.dismiss());
+        btnDelete.setOnClickListener(v -> {
+            deleteDialog.dismiss();
+            delete();
+        });
+        deleteDialog = DialogUtils.createBottomSheetDialog(getActivity(), view);
+    }
+
+    @SuppressLint("SetTextI18n")
     private void setListener() {
         realtimeBlurView.setOnClickListener(v -> dismiss());
         ibtnCancel.setOnClickListener(v -> cancelSelect());
-        ibtnDelete.setOnClickListener(v -> delete());
+        ibtnDelete.setOnClickListener(v -> {
+            tvDeleteDescription.setText(getString(R.string.app_will_delete) + " " + selectPDFList.size() + " " + getString(R.string.app_delete_for_collection));
+            deleteDialog.show();
+        });
         ibtnSelectAll.setOnClickListener(v -> selectAll(!v.isSelected()));
     }
 }

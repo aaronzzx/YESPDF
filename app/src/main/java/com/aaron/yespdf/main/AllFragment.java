@@ -129,6 +129,11 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
         adapter.cancelSelect();
     }
 
+    @Override
+    public String deleteDescription() {
+        return getString(R.string.app_will_delete) + " " + selectCollections.size() + " " + getString(R.string.app_delete_for_all);
+    }
+
     void update() {
         collections.clear();
         collections.addAll(DBHelper.queryAllCollection());

@@ -196,10 +196,14 @@ public class RecentFragment extends BaseFragment implements IOperation, Abstract
         adapter.cancelSelect();
     }
 
+    @Override
+    public String deleteDescription() {
+        return getString(R.string.app_will_delete) + " " + selectPDFList.size() + " " + getString(R.string.app_delete_for_recent);
+    }
+
     private void initView() {
         initData();
 
-        rvRecent.setItemAnimator(null);
         rvRecent.addItemDecoration(new XGridDecoration());
         rvRecent.addItemDecoration(new YGridDecoration());
         GridLayoutManager lm = new GridLayoutManager(mActivity, 3);

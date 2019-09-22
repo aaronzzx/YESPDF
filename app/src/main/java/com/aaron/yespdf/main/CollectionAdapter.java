@@ -54,13 +54,7 @@ class CollectionAdapter extends AbstractAdapter<PDF> {
             holder.tvTitle.setText(bookName);
             holder.tvProgress.setText(context.getString(R.string.app_already_read) + pdf.getProgress());
             ImageLoader.load(context, new DefaultOption.Builder(cover).into(holder.ivCover));
-            holder.cb.setVisibility(selectMode ? View.VISIBLE : View.GONE);
-            if (selectMode) {
-                holder.cb.setAlpha(1.0F);
-                holder.cb.setScaleX(0.8F);
-                holder.cb.setScaleY(0.8F);
-                holder.cb.setChecked(checkArray.get(position));
-            }
+            handleCheckBox(holder.cb, position);
 
         } else if (viewHolder instanceof EmptyHolder) {
             EmptyHolder holder = (EmptyHolder) viewHolder;
@@ -77,13 +71,7 @@ class CollectionAdapter extends AbstractAdapter<PDF> {
         } else {
             if (viewHolder instanceof CoverHolder && position < getItemCount()) {
                 CoverHolder holder = (CoverHolder) viewHolder;
-                holder.cb.setVisibility(selectMode ? View.VISIBLE : View.GONE);
-                if (selectMode) {
-                    holder.cb.setAlpha(1.0F);
-                    holder.cb.setScaleX(0.8F);
-                    holder.cb.setScaleY(0.8F);
-                    holder.cb.setChecked(checkArray.get(position));
-                }
+                handleCheckBox(holder.cb, position);
             }
         }
     }
@@ -122,6 +110,14 @@ class CollectionAdapter extends AbstractAdapter<PDF> {
                     ((DialogFragment) commInterface).dismiss();
                 }, 400);
             }
+        }
+    }
+
+    @Override
+    void checkCurrent(RecyclerView.ViewHolder viewHolder, int position) {
+        if (viewHolder instanceof CoverHolder) {
+            CoverHolder holder = (CoverHolder) viewHolder;
+            holder.cb.setChecked(true);
         }
     }
 }

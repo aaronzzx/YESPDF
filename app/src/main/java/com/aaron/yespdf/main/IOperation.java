@@ -10,4 +10,6 @@ interface IOperation {
     void selectAll(boolean selectAll);
 
     void cancelSelect();
+
+    String deleteDescription();
 }

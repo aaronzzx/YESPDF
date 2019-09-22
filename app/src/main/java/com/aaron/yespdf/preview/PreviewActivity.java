@@ -76,6 +76,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -182,6 +183,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     private int previousPage;
     private int nextPage;
 
+    private Unbinder unbinder;
     private Canvas canvas; // AndroidPDFView 的画布
     private Paint paint; // 画书签的画笔
     private float pageWidth;
@@ -209,7 +211,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     protected void onCreate(Bundle savedInstanceState) {
         LogUtils.e("onCreate");
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         initView(savedInstanceState);
     }
 
@@ -257,6 +259,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         LogUtils.e("onDestroy");
         super.onDestroy();
         pdfView.recycle();
+        unbinder.unbind();
     }
 
     @Override
@@ -833,7 +836,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         Button btnConfirm = view.findViewById(R.id.app_btn_confirm);
         Dialog dialog = DialogUtils.createDialog(this, view);
         tvTitle.setText(R.string.app_need_verify_password);
-        btnCancel.setText(R.string.app_cancel);
+        btnCancel.setText(R.string.app_do_not_delete);
         btnConfirm.setText(R.string.app_confirm);
         btnCancel.setOnClickListener(v -> finish());
         btnConfirm.setOnClickListener(v -> {
@@ -964,31 +967,31 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mToolbar.setVisibility(View.GONE);
+                        if (mToolbar != null) mToolbar.setVisibility(View.GONE);
                     }
                 }).start();
         llBottomBar.animate().setDuration(250).alpha(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        llBottomBar.setVisibility(View.GONE);
+                        if (llBottomBar != null) llBottomBar.setVisibility(View.GONE);
                     }
                 }).start();
         tvPageinfo.animate().setDuration(250).alpha(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        tvPageinfo.setVisibility(View.GONE);
+                        if (tvPageinfo != null) tvPageinfo.setVisibility(View.GONE);
                     }
                 }).start();
         llQuickBar.animate().setDuration(250).alpha(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        llQuickBar.setVisibility(View.GONE);
+                        if (llQuickBar != null) llQuickBar.setVisibility(View.GONE);
                     }
                 }).start();
-        ibtnQuickbarAction.setSelected(false); // 初始化为 Undo 状态
+        if (ibtnQuickbarAction != null) ibtnQuickbarAction.setSelected(false); // 初始化为 Undo 状态
     }
 
     private void enterFullScreen() {

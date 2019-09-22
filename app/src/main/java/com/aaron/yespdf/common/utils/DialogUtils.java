@@ -36,6 +36,23 @@ public final class DialogUtils {
         return dialog;
     }
 
+    public static BottomSheetDialog createBottomSheetDialog(Context context, View view) {
+        BottomSheetDialog dialog = new BottomSheetDialog(context);
+        dialog.setContentView(view);
+        View rootView = dialog.getDelegate().findViewById(R.id.design_bottom_sheet);
+        if (rootView != null) {
+            BottomSheetBehavior behavior = BottomSheetBehavior.from(rootView);
+            behavior.setHideable(false);
+        }
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setWindowAnimations(R.style.AppBottomDialogAnim);
+            window.findViewById(R.id.design_bottom_sheet)
+                    .setBackgroundResource(android.R.color.transparent);
+        }
+        return dialog;
+    }
+
     public static BottomSheetDialog createBottomSheetDialog(Context context, View view, @StyleRes int animStyle, boolean transparentBg) {
         BottomSheetDialog dialog = new BottomSheetDialog(context);
         dialog.setContentView(view);
