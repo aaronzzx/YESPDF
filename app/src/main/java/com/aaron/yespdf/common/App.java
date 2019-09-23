@@ -38,7 +38,7 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(base);
-        tinker();
+//        tinker();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class App extends Application {
         DBHelper.init(this, AppConfig.DB_NAME);
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
-        bugly();
+//        bugly();
     }
 
     private void leakCanary() {
