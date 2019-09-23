@@ -6,11 +6,13 @@ import android.util.Log;
 
 import androidx.multidex.MultiDex;
 
+import com.aaron.yespdf.BuildConfig;
 import com.aaron.yespdf.common.event.HotfixEvent;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PathUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
 import com.squareup.leakcanary.LeakCanary;
+import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.interfaces.BetaPatchListener;
 
@@ -36,7 +38,7 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(base);
-//        tinker();
+        tinker();
     }
 
     @Override
@@ -48,7 +50,7 @@ public class App extends Application {
         DBHelper.init(this, AppConfig.DB_NAME);
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
-//        bugly(this);
+        bugly();
     }
 
     private void leakCanary() {
@@ -60,7 +62,7 @@ public class App extends Application {
         LeakCanary.install(this);
     }
 
-    private void bugly(Application app) {
+    private void bugly() {
         // Tinker
         Beta.enableHotfix = true; // 设置是否开启热更新能力，默认为true
         Beta.canAutoDownloadPatch = true; // 设置是否自动下载补丁
@@ -178,8 +180,8 @@ public class App extends Application {
 //            }
 //        };
         // TODO: 2019/9/11 正式版加上
-//        Bugly.setIsDevelopmentDevice(app, true); // 是否开发设备
-//        Bugly.init(app, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
+        Bugly.setIsDevelopmentDevice(this, BuildConfig.DEBUG); // 是否开发设备
+        Bugly.init(this, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
     }
 
     private void tinker() {
