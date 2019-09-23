@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/base_black_divider_shallow">
+    android:background="#F0F0F0">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/app_toolbar"

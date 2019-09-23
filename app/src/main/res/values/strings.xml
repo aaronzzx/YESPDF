@@ -20,6 +20,12 @@
     <string name="app_delete_for_all">个集合（包含集合内所有书籍信息等，不影响源文件），是否继续？</string>
     <string name="app_delete_for_collection">本书籍（包含阅读进度与书签等，不影响源文件），是否继续？</string>
     <string name="app_delete">删除</string>
+    <string name="app_wechat_pay">微信付款</string>
+    <string name="app_gift_description">YES PDF! 没有收费版本，也不会添加广告，如果您觉得用着还不错，欢迎捐赠！\n\n如果出现跳转未保存图片的情况，请点击“打开二维码”\n\n付款时认准「Aaronzzx」</string>
+    <string name="app_open_qrcode">打开二维码</string>
+    <string name="app_open_wechat_scanner">跳转微信扫一扫</string>
+    <string name="app_screenshot">截图进入微信选择图片扫码或使用另一部手机扫码</string>
+    <string name="app_wechat_scan_notice">打开右上角菜单，从微信相册中选取收款码</string>
 
     <string name="app_import">导入</string>
     <string name="app_import_count">导入(0)</string>
@@ -64,8 +70,11 @@
     <string name="app_feedback">反馈</string>
     <string name="app_source_code">源码</string>
     <string name="app_github">GITHUB</string>
+    <string name="app_rate_app">给个好评</string>
     <string name="app_gift">捐赠(微信)</string>
-    <string name="app_feedback_title">请尽可能详细描述您的问题或建议，请不要删除或修改下列设备信息。</string>
+    <string name="app_feedback_title">请尽可能详细描述您的问题或建议，不要删除或修改下列设备信息。</string>
+    <string name="app_have_no_install_coolapk">请先安装酷安客户端</string>
+    <string name="app_have_no_install_wechat">请先安装微信客户端</string>
 
     <!-- 设置项 -->
     <string name="app_color_reverse">颜色反转</string>

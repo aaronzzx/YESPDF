@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/base_white">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:textStyle="bold"
+        android:textColor="@color/base_black"
+        android:textSize="@dimen/base_text_xxhlarge"
+        android:text="@string/app_wechat_pay" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/app_img_qrcode" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/app_gift_description" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        android:background="@color/base_black_divider_shallow" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <Button
+            android:id="@+id/app_btn_open_qrcode"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:textStyle="bold"
+            android:textSize="@dimen/base_text_large"
+            android:text="@string/app_open_qrcode" />
+
+        <View
+            android:layout_width="0.7dp"
+            android:layout_height="match_parent"
+            android:background="@color/base_black_divider_shallow" />
+
+        <Button
+            android:id="@+id/app_btn_go_wechat"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:textStyle="bold"
+            android:textColor="@color/app_color_accent"
+            android:textSize="@dimen/base_text_large"
+            android:text="@string/app_open_wechat_scanner" />
+
+    </LinearLayout>
+
+</LinearLayout>

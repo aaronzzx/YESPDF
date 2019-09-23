@@ -9,9 +9,14 @@
         <item name="android:windowBackground">@drawable/app_bg_launch</item>
     </style>
 
+    <style name="AppDialogAnim">
+        <item name="android:windowEnterAnimation">@anim/app_window_scale_enter</item>
+        <item name="android:windowExitAnimation">@anim/app_window_scale_exit</item>
+    </style>
+
     <style name="AppBottomDialogAnim">
-        <item name="android:windowEnterAnimation">@anim/app_window_enter</item>
-        <item name="android:windowExitAnimation">@anim/app_window_exit</item>
+        <item name="android:windowEnterAnimation">@anim/app_window_slide_enter</item>
+        <item name="android:windowExitAnimation">@anim/app_window_slide_exit</item>
     </style>
 
     <!-- 目录标题加粗 -->
