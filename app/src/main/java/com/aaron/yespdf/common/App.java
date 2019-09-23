@@ -44,9 +44,9 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        leakCanary();
         sContext = this.getApplicationContext();
 
+        leakCanary();
         DBHelper.init(this, AppConfig.DB_NAME);
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
