@@ -16,7 +16,7 @@ android {
 
     resourcePrefix 'app'
     defaultConfig {
-        applicationId "com.aaron.yespdfhotfix"
+        applicationId "com.aaron.yespdf"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 4
