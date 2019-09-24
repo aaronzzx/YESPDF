@@ -219,6 +219,10 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     protected void onRestart() {
         LogUtils.e("onRestart");
         super.onRestart();
+        // 解决锁定横屏时从后台回到前台时头两次点击无效
+        int screenHeight = ScreenUtils.getScreenHeight();
+        llReadMethod.setTranslationY(screenHeight);
+        vgMore.setTranslationY(screenHeight);
         enterFullScreen(); // 重新回到界面时主动进入全屏
     }
 
@@ -377,14 +381,17 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         llReadMethod.setTranslationY(ScreenUtils.getScreenHeight());
         vgMore.setTranslationY(ScreenUtils.getScreenHeight());
         // 移动到屏幕左边
-        vgContent.post(() -> vgContent.setTranslationX(-vgContent.getMeasuredWidth()));
+        vgContent.post(() -> {
+            if (vgContent != null) {
+                vgContent.setTranslationX(-vgContent.getMeasuredWidth());
+            }
+        });
 
         if (Settings.isSwipeHorizontal()) {
             tvHorizontal.setTextColor(getResources().getColor(R.color.app_color_accent));
         } else {
             tvVertical.setTextColor(getResources().getColor(R.color.app_color_accent));
         }
-
         if (Settings.isLockLandscape()) {
             tvLockLandscape.setTextColor(getResources().getColor(R.color.app_color_accent));
             if (!ScreenUtils.isLandscape()) ScreenUtils.setLandscape(this);

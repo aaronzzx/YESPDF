@@ -137,7 +137,9 @@ class SelectAdapter extends AbstractAdapter {
         selectList.clear();
         if (selectAll) {
             for (int i = 0; i < getItemCount(); i++) {
-                selectList.add(fileList.get(i).getAbsolutePath());
+                if (fileList.get(i).isFile()) {
+                    selectList.add(fileList.get(i).getAbsolutePath());
+                }
             }
         }
         ((SelectActivity) context).onSelectResult(selectList, fileCount());
