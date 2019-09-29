@@ -106,3 +106,11 @@ file=E:\AndroidStudioProjects\YESPDF\app\build\outputs\mapping\release\mapping.t
 sha1=00f3c4784434e445e74223a0d6737ca75dce1ad0
 appId=fd084373ed
 
+file=E:\AndroidStudioProjects\YESPDF\app\build\outputs\mapping\release\mapping.txt
+sha1=2c206319489d784aaf1013fef25403ee0b744e0f
+appId=fd084373ed
+
+file=E:\AndroidStudioProjects\YESPDF\app\build\outputs\mapping\release\mapping.txt
+sha1=2c206319489d784aaf1013fef25403ee0b744e0f
+appId=fd084373ed
+
