@@ -215,6 +215,6 @@ public class SelectActivity extends CommonActivity implements ISelectContract.V 
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black);
         }
-        mToolbar.setTitle(R.string.app_import_file);
+        toolbar.setTitle(R.string.app_import_file);
     }
 }

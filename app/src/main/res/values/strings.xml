@@ -53,6 +53,8 @@
     <string name="app_scroll_velocity">滚动速度</string>
     <string name="app_cur_level_is">当前等级：</string>
     <string name="app_show_status_bar">显示状态栏</string>
+    <string name="app_click_flip_page">点击翻页</string>
+    <string name="app_keep_screen_on">屏幕常亮</string>
     <string name="app_max_recent_count">最近显示数量</string>
     <string name="app_lock_landscape">锁定横屏</string>
 

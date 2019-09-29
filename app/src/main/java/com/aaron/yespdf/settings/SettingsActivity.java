@@ -3,12 +3,10 @@ package com.aaron.yespdf.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -93,13 +91,13 @@ public class SettingsActivity extends CommonActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black);
         }
-        mToolbar.setTitle(R.string.app_settings);
+        toolbar.setTitle(R.string.app_settings);
 
         LinearLayoutManager lm = new LinearLayoutManager(this);
         mRvSettings.setLayoutManager(lm);
-        DividerItemDecoration decoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        decoration.setDrawable(new ColorDrawable(getResources().getColor(R.color.base_black_divider)));
-        mRvSettings.addItemDecoration(decoration);
+//        DividerItemDecoration decoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+//        decoration.setDrawable(new ColorDrawable(getResources().getColor(R.color.base_black_divider)));
+//        mRvSettings.addItemDecoration(decoration);
         RecyclerView.Adapter adapter = new SettingsAdapter();
         mRvSettings.setAdapter(adapter);
     }

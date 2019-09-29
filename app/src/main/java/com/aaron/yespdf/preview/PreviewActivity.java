@@ -19,6 +19,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -267,6 +269,19 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            Window window = getWindow();
+            if (Settings.isKeepScreenOn()) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
+    }
+
+    @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         LogUtils.e("onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
@@ -318,7 +333,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
             showBar();
             return true;
         } else if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)
-                && ScreenUtils.isPortrait() && isVolumeControl && mToolbar.getAlpha() == 0.0F) {
+                && ScreenUtils.isPortrait() && isVolumeControl && toolbar.getAlpha() == 0.0F) {
             // 如果非全屏状态是无法使用音量键翻页的
             switch (keyCode) {
                 case KeyEvent.KEYCODE_VOLUME_UP:
@@ -678,7 +693,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
             String path = file != null ? UriUtils.uri2File(uri).getAbsolutePath() : null;
             tvPageinfo.setText("1 / " + pageCount);
             String bookName = path != null ? path.substring(path.lastIndexOf("/") + 1, path.length() - 4) : "";
-            mToolbar.post(() -> mToolbar.setTitle(bookName));
+            toolbar.post(() -> toolbar.setTitle(bookName));
             configurator = pdfView.fromUri(uri).defaultPage(curPage);
         } else if (pdf != null) {
             String bkJson = pdf.getBookmark(); // 获取书签 json
@@ -690,7 +705,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
             }
             sbProgress.setProgress(curPage);
             tvPageinfo.setText((curPage + 1) + " / " + pageCount);
-            mToolbar.post(() -> mToolbar.setTitle(pdf.getName()));
+            toolbar.post(() -> toolbar.setTitle(pdf.getName()));
             configurator = pdfView.fromFile(new File(pdf.getPath())).defaultPage(curPage);
         } else {
             UiManager.showCenterShort(R.string.app_file_is_empty);
@@ -783,9 +798,10 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
                 })
                 .onTap(event -> {
                     if (autoDisp != null && !autoDisp.isDisposed()) {
-                        if (mToolbar.getAlpha() == 1.0F) {
+                        if (toolbar.getAlpha() == 1.0F) {
                             hideBar();
                             enterFullScreen();
+                            isPause = false;
                         } else {
                             isPause = !isPause;
                         }
@@ -801,10 +817,17 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
                     }
                     float x = event.getRawX();
 
-                    float previous = ScreenUtils.getScreenWidth() * 0.3F;
-                    float next = ScreenUtils.getScreenWidth() * 0.7F;
+                    float previous;
+                    float next;
+                    if (Settings.isClickFlipPage()) {
+                        previous = ScreenUtils.getScreenWidth() * 0.3F;
+                        next = ScreenUtils.getScreenWidth() * 0.7F;
+                    } else {
+                        previous = 0;
+                        next = ScreenUtils.getScreenWidth();
+                    }
                     if (ScreenUtils.isPortrait() && x <= previous) {
-                        if (mToolbar.getAlpha() == 1.0F) {
+                        if (toolbar.getAlpha() == 1.0F) {
                             hideBar();
                             enterFullScreen();
                         } else {
@@ -812,7 +835,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
                             pdfView.jumpTo(--currentPage, true);
                         }
                     } else if (ScreenUtils.isPortrait() && x >= next) {
-                        if (mToolbar.getAlpha() == 1.0F) {
+                        if (toolbar.getAlpha() == 1.0F) {
                             hideBar();
                             enterFullScreen();
                         } else {
@@ -820,7 +843,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
                             pdfView.jumpTo(++currentPage, true);
                         }
                     } else {
-                        boolean visible = mToolbar.getAlpha() == 1.0F
+                        boolean visible = toolbar.getAlpha() == 1.0F
                                 && llBottomBar.getAlpha() == 1.0F;
                         if (visible) {
                             hideBar();
@@ -946,11 +969,11 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     }
 
     private void showBar() {
-        mToolbar.animate().setDuration(250).alpha(1)
+        toolbar.animate().setDuration(250).alpha(1)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
-                        mToolbar.setVisibility(View.VISIBLE);
+                        toolbar.setVisibility(View.VISIBLE);
                     }
                 }).start();
         llBottomBar.animate().setDuration(250).alpha(1)
@@ -970,11 +993,11 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     }
 
     private void hideBar() {
-        mToolbar.animate().setDuration(250).alpha(0)
+        toolbar.animate().setDuration(250).alpha(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        if (mToolbar != null) mToolbar.setVisibility(View.GONE);
+                        if (toolbar != null) toolbar.setVisibility(View.GONE);
                     }
                 }).start();
         llBottomBar.animate().setDuration(250).alpha(0)
@@ -1028,12 +1051,12 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-//            mToolbar.post(() -> UiManager.setBlackNavigationBar(this));
+//            toolbar.post(() -> UiManager.setBlackNavigationBar(this));
         } else {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
-        mToolbar.post(() -> UiManager.setNavigationBarColor(this, getResources().getColor(R.color.base_black)));
+        toolbar.post(() -> UiManager.setNavigationBarColor(this, getResources().getColor(R.color.base_black)));
     }
 }

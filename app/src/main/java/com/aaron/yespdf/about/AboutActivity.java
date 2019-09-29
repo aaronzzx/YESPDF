@@ -102,7 +102,7 @@ public class AboutActivity extends CommonActivity implements IAboutContract.V<Me
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black);
         }
-        mToolbar.setTitle(R.string.app_about);
+        toolbar.setTitle(R.string.app_about);
     }
 
     @SuppressLint("SetTextI18n")

@@ -30,7 +30,7 @@ import java.util.List;
  */
 class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int ITEM_COUNT = 5;
+    private static final int ITEM_COUNT = 7;
 
     private static final int TYPE_SWITCH = 0;
     private static final int TYPE_SEEKBAR = 1;
@@ -38,9 +38,11 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int POS_COLOR_REVERSE = 0;
     private static final int POS_VOLUME_CONTROL = 1;
-    private static final int POS_SHOW_STATUS_BAR = 2;
-    private static final int POS_NUM_PICKER = 3;
-    private static final int POS_SCROLL_LEVEL = 4;
+    private static final int POS_CLICK_FLIP_PAGE = 2;
+    private static final int POS_SHOW_STATUS_BAR = 3;
+    private static final int POS_KEEP_SCREEN_ON = 4;
+    private static final int POS_NUM_PICKER = 5;
+    private static final int POS_SCROLL_LEVEL = 6;
 
     private MaxRecentEvent mMaxRecentEvent;
     private List<String> mMaxRecentCounts;
@@ -117,8 +119,14 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case POS_VOLUME_CONTROL:
                 Settings.setVolumeControl(switcher.isChecked());
                 break;
+            case POS_CLICK_FLIP_PAGE:
+                Settings.setClickFlipPage(switcher.isChecked());
+                break;
             case POS_SHOW_STATUS_BAR:
                 Settings.setShowStatusBar(switcher.isChecked());
+                break;
+            case POS_KEEP_SCREEN_ON:
+                Settings.setKeepScreenOn(switcher.isChecked());
                 break;
         }
     }
@@ -136,9 +144,17 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     holder.tvTitle.setText(R.string.app_volume_control);
                     holder.switcher.setChecked(Settings.isVolumeControl());
                     break;
+                case POS_CLICK_FLIP_PAGE:
+                    holder.tvTitle.setText(R.string.app_click_flip_page);
+                    holder.switcher.setChecked(Settings.isClickFlipPage());
+                    break;
                 case POS_SHOW_STATUS_BAR:
                     holder.tvTitle.setText(R.string.app_show_status_bar);
                     holder.switcher.setChecked(Settings.isShowStatusBar());
+                    break;
+                case POS_KEEP_SCREEN_ON:
+                    holder.tvTitle.setText(R.string.app_keep_screen_on);
+                    holder.switcher.setChecked(Settings.isKeepScreenOn());
                     break;
             }
         } else if (viewHolder instanceof SeekbarHolder) {
@@ -174,6 +190,10 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         SwitchHolder(@NonNull View itemView) {
             super(itemView);
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
+            mlp.bottomMargin = ConvertUtils.dp2px(0.6F);
+            itemView.setLayoutParams(mlp);
+
             tvTitle = itemView.findViewById(R.id.app_tv_title);
             switcher = itemView.findViewById(R.id.app_switch);
         }
@@ -185,6 +205,10 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         SeekbarHolder(@NonNull View itemView) {
             super(itemView);
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
+            mlp.topMargin = ConvertUtils.dp2px(0.6F);
+            itemView.setLayoutParams(mlp);
+
             tvTitle = itemView.findViewById(R.id.app_tv_title);
             seekBar = itemView.findViewById(R.id.app_sb_scroll_level);
         }
@@ -197,6 +221,10 @@ class SettingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         MaxRecentHolder(@NonNull View itemView) {
             super(itemView);
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
+            mlp.topMargin = ConvertUtils.dp2px(12);
+            itemView.setLayoutParams(mlp);
+
             tvTitle = itemView.findViewById(R.id.app_tv_title);
             tvCount = itemView.findViewById(R.id.app_tv_count);
             spinner = itemView.findViewById(R.id.app_spinner);

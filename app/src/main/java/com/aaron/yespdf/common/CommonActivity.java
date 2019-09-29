@@ -13,7 +13,7 @@ import com.aaron.base.base.BaseActivity;
  */
 public abstract class CommonActivity extends BaseActivity {
 
-    protected Toolbar mToolbar;
+    protected Toolbar toolbar;
 
     @LayoutRes protected abstract int layoutId();
 
@@ -23,8 +23,8 @@ public abstract class CommonActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(layoutId());
-        mToolbar = createToolbar();
-        setSupportActionBar(mToolbar);
-        UiManager.setStatusBar(this, mToolbar);
+        toolbar = createToolbar();
+        setSupportActionBar(toolbar);
+        UiManager.setStatusBar(this, toolbar);
     }
 }

@@ -14,6 +14,8 @@ public final class Settings {
     private static final String SP_VOLUME_CONTROL   = "SP_VOLUME_CONTROL";
     private static final String SP_SHOW_STATUS_BAR = "SP_SHOW_STATUS_BAR";
     private static final String SP_SCROLL_LEVEL = "SP_SCROLL_LEVEL";
+    private static final String SP_CLICK_FLIP_PAGE = "SP_CLICK_FLIP_PAGE";
+    private static final String SP_KEEP_SCREEN_ON = "SP_KEEP_SCREEN_ON";
 
     private static boolean lockLandscape;
     private static String maxRecentCount;
@@ -22,6 +24,8 @@ public final class Settings {
     private static boolean volumeControl;
     private static boolean showStatusBar;
     private static long scrollLevel;
+    private static boolean clickFlipPage;
+    private static boolean keepScreenOn;
 
     static void querySettings() {
         Settings.lockLandscape = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false);
@@ -31,6 +35,8 @@ public final class Settings {
         Settings.volumeControl   = SPStaticUtils.getBoolean(SP_VOLUME_CONTROL, true);
         Settings.showStatusBar = SPStaticUtils.getBoolean(SP_SHOW_STATUS_BAR, false);
         Settings.scrollLevel = SPStaticUtils.getLong(SP_SCROLL_LEVEL, 5L);
+        Settings.clickFlipPage = SPStaticUtils.getBoolean(SP_CLICK_FLIP_PAGE, true);
+        Settings.keepScreenOn = SPStaticUtils.getBoolean(SP_KEEP_SCREEN_ON, false);
     }
 
     public static void setLockLandscape(boolean lockLandscape) {
@@ -68,6 +74,14 @@ public final class Settings {
         SPStaticUtils.put(SP_SCROLL_LEVEL, scrollLevel);
     }
 
+    public static void setClickFlipPage(boolean clickFlipPage) {
+        Settings.clickFlipPage = clickFlipPage;
+    }
+
+    public static void setKeepScreenOn(boolean keepScreenOn) {
+        Settings.keepScreenOn = keepScreenOn;
+    }
+
     public static boolean isLockLandscape() {
         return lockLandscape;
     }
@@ -94,6 +108,14 @@ public final class Settings {
 
     public static long getScrollLevel() {
         return scrollLevel;
+    }
+
+    public static boolean isClickFlipPage() {
+        return clickFlipPage;
+    }
+
+    public static boolean isKeepScreenOn() {
+        return keepScreenOn;
     }
 
     private Settings() {}
