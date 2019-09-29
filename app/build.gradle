@@ -4,9 +4,9 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
 
+apply plugin: 'bugly'
 apply from: 'tinker-support.gradle'
 // 上传符号表插件
-apply plugin: 'bugly'
 bugly {
     debug  = false
     appId  = 'fd084373ed' // 注册时分配的App ID
@@ -18,11 +18,11 @@ android {
 
     resourcePrefix 'app'
     defaultConfig {
-        applicationId "com.aaron.yespdf.dev"
+        applicationId "com.aaron.yespdf"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 15
-        versionName "1.1.4"
+        versionCode 16
+        versionName "1.1.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 

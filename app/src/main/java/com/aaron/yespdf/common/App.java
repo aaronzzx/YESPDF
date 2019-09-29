@@ -207,7 +207,7 @@ public class App extends Application {
 //            public void onDestroy(Context context, View view, UpgradeInfo upgradeInfo) {
 //            }
 //        };
-        Bugly.setIsDevelopmentDevice(this, false);
+        Bugly.setIsDevelopmentDevice(this, BuildConfig.DEBUG); // 是否开发设备
         Bugly.init(this, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
     }
 
