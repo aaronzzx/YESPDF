@@ -85,6 +85,11 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
         update();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDirNameEvent(DirNameEvent event) {
+        update();
+    }
+
     @Override
     public void onStartOperation() {
         ((MainActivity) mActivity).startOperation();

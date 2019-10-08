@@ -19,14 +19,33 @@
         android:layout_centerInParent="true"
         android:clipToPadding="false">
 
-        <TextView
-            android:id="@+id/app_tv_name"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/base_black"
-            android:textStyle="bold"
-            android:textSize="@dimen/base_text_xxhlarge" />
+            android:layout_gravity="center">
+
+            <EditText
+                android:id="@+id/app_et_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/base_black"
+                android:textStyle="bold"
+                android:textSize="@dimen/base_text_xxhlarge"
+                android:textColorHint="@color/base_black_hint"
+                android:background="@null"/>
+
+            <ImageButton
+                android:id="@+id/app_ibtn_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_gravity="center"
+                android:src="@drawable/app_ic_clear_grey_20dp"
+                android:background="@null"
+                android:visibility="gone"/>
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/app_rv_collection"

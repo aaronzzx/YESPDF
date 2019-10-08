@@ -6,9 +6,11 @@ import android.database.sqlite.SQLiteDatabase;
 import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.bean.RecentPDF;
+import com.aaron.yespdf.common.greendao.CollectionDao;
 import com.aaron.yespdf.common.greendao.DaoMaster;
 import com.aaron.yespdf.common.greendao.DaoSession;
 import com.aaron.yespdf.common.greendao.PDFDao;
+import com.aaron.yespdf.common.greendao.RecentPDFDao;
 import com.aaron.yespdf.common.utils.PdfUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
@@ -34,6 +36,38 @@ public final class DBHelper {
         SQLiteDatabase db = helper.getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(db);
         sDaoSession = daoMaster.newSession();
+    }
+
+    public static boolean updateDirName(String oldDirName, String newDirName) {
+        if (StringUtils.isEmpty(newDirName)
+                || oldDirName.equals(newDirName)) {
+            return false;
+        }
+        PDFDao pdfDao = sDaoSession.getPDFDao();
+        RecentPDFDao recentPDFDao = sDaoSession.getRecentPDFDao();
+        CollectionDao collectionDao = sDaoSession.getCollectionDao();
+        List<PDF> pdfList = pdfDao.queryBuilder()
+                .where(PDFDao.Properties.Dir.eq(oldDirName))
+                .list();
+        List<RecentPDF> recentList = recentPDFDao.queryBuilder()
+                .where(RecentPDFDao.Properties.Dir.eq(oldDirName))
+                .list();
+        List<Collection> collectionList = collectionDao.queryBuilder()
+                .where(CollectionDao.Properties.Name.eq(oldDirName))
+                .list();
+        for (PDF pdf : pdfList) {
+            pdf.setDir(newDirName);
+        }
+        for (RecentPDF recent : recentList) {
+            recent.setDir(newDirName);
+        }
+        for (Collection c : collectionList) {
+            c.setName(newDirName);
+        }
+        pdfDao.updateInTx(pdfList);
+        recentPDFDao.updateInTx(recentList);
+        collectionDao.updateInTx(collectionList);
+        return true;
     }
 
     public static void updatePDF(PDF pdf) {
@@ -138,10 +172,10 @@ public final class DBHelper {
     private static boolean insertPDFs(String dir, List<String> pathList) {
         for (String path : pathList) {
             String bookmarkPage = "";
-            int curPage         = 0;
-            int totalPage       = PdfUtils.getPdfTotalPage(path);
-            String name         = path.substring(path.lastIndexOf("/"), path.length() - 4);
-            String progress     = "0.0%";
+            int curPage = 0;
+            int totalPage = PdfUtils.getPdfTotalPage(path);
+            String name = path.substring(path.lastIndexOf("/"), path.length() - 4);
+            String progress = "0.0%";
             String cover = PathUtils.getInternalAppDataPath() + name + ".jpg";
             // 制作 PDF 封面并缓存
             try {

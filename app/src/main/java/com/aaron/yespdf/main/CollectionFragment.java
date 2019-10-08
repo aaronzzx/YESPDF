@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -22,13 +23,16 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.aaron.base.impl.TextWatcherImpl;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.utils.DialogUtils;
+import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.github.mmin18.widget.RealtimeBlurView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -61,8 +65,10 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     ImageButton ibtnDelete;
     @BindView(R2.id.app_ibtn_select_all)
     ImageButton ibtnSelectAll;
-    @BindView(R2.id.app_tv_name)
-    TextView tvName;
+    @BindView(R2.id.app_et_name)
+    EditText etName;
+    @BindView(R2.id.app_ibtn_clear)
+    ImageButton ibtnClear;
     @BindView(R2.id.app_rv_collection)
     RecyclerView rvCollection;
 
@@ -72,6 +78,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     private BottomSheetDialog deleteDialog;
 
     private String name;
+    private String newDirName;
     private List<PDF> pdfList = new ArrayList<>();
     private List<PDF> selectPDFList;
 
@@ -140,6 +147,13 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        boolean success = DBHelper.updateDirName(name, newDirName);
+        if (success) EventBus.getDefault().post(new DirNameEvent());
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
@@ -203,7 +217,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
 
         if (args != null) {
             name = args.getString(BUNDLE_NAME);
-            tvName.setText(name);
+            etName.setText(name);
             pdfList.addAll(DBHelper.queryPDF(name));
         }
 
@@ -243,12 +257,36 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
 
     @SuppressLint("SetTextI18n")
     private void setListener() {
-        realtimeBlurView.setOnClickListener(v -> dismiss());
+        realtimeBlurView.setOnClickListener(v -> {
+            if (etName.hasFocus()) {
+                KeyboardUtils.hideSoftInput(etName);
+                etName.clearFocus();
+                if (StringUtils.isEmpty(newDirName)) {
+                    etName.setText(name);
+                    UiManager.showShort(R.string.app_not_support_empty_string);
+                }
+            } else {
+                dismiss();
+            }
+        });
         ibtnCancel.setOnClickListener(v -> cancelSelect());
         ibtnDelete.setOnClickListener(v -> {
             tvDeleteDescription.setText(getString(R.string.app_will_delete) + " " + selectPDFList.size() + " " + getString(R.string.app_delete_for_collection));
             deleteDialog.show();
         });
         ibtnSelectAll.setOnClickListener(v -> selectAll(!v.isSelected()));
+        etName.setOnFocusChangeListener((v, hasFocus) -> {
+            ibtnClear.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
+        });
+        etName.addTextChangedListener(new TextWatcherImpl() {
+            @Override
+            public void onTextChanged(CharSequence c, int i, int i1, int i2) {
+                newDirName = c.toString().trim();
+            }
+        });
+        ibtnClear.setOnClickListener(v -> {
+            etName.setText(" ");
+            etName.setSelection(0);
+        });
     }
 }
