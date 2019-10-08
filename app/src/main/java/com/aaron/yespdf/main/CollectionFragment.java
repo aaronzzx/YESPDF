@@ -149,8 +149,6 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     @Override
     public void onStop() {
         super.onStop();
-        boolean success = DBHelper.updateDirName(name, newDirName);
-        if (success) EventBus.getDefault().post(new DirNameEvent());
     }
 
     @Override
@@ -161,6 +159,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
 
     @Override
     public void onStartOperation() {
+        cancelRename();
         tvTitle.setText(getString(R.string.app_selected_zero));
         ibtnSelectAll.setSelected(false);
         OperationBarHelper.show(vgOperationBar);
@@ -259,12 +258,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     private void setListener() {
         realtimeBlurView.setOnClickListener(v -> {
             if (etName.hasFocus()) {
-                KeyboardUtils.hideSoftInput(etName);
-                etName.clearFocus();
-                if (StringUtils.isEmpty(newDirName)) {
-                    etName.setText(name);
-                    UiManager.showShort(R.string.app_not_support_empty_string);
-                }
+                cancelRename();
             } else {
                 dismiss();
             }
@@ -284,9 +278,31 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
                 newDirName = c.toString().trim();
             }
         });
+        etName.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && etName.hasFocus()) {
+                    cancelRename();
+                    return true;
+                }
+                return false;
+            }
+        });
         ibtnClear.setOnClickListener(v -> {
             etName.setText(" ");
             etName.setSelection(0);
         });
+    }
+
+    private void cancelRename() {
+        KeyboardUtils.hideSoftInput(etName);
+        etName.clearFocus();
+        if (newDirName != null && StringUtils.isEmpty(newDirName)) {
+            etName.setText(name);
+            UiManager.showShort(R.string.app_not_support_empty_string);
+        } else {
+            boolean success = DBHelper.updateDirName(name, newDirName);
+            if (success) EventBus.getDefault().post(new DirNameEvent());
+        }
     }
 }
