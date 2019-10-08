@@ -1,0 +1,297 @@
+@startuml
+
+title __PREVIEW's Class Diagram__\n
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.Bookmark {
+          {static} + CREATOR : Creator<Bookmark>
+          - pageId : Integer
+          - time : long
+          - title : String
+          + Bookmark()
+          + Bookmark()
+          + describeContents()
+          + getPageId()
+          + getTime()
+          + getTitle()
+          + setPageId()
+          + setTime()
+          + setTitle()
+          + toString()
+          + writeToParcel()
+          # Bookmark()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.BookmarkAdapter {
+          {static} - TYPE_EMPTY : int
+          - mBookmarks : List<Bookmark>
+          - mDateFormat : DateFormat
+          + getItemCount()
+          + getItemViewType()
+          + onBindViewHolder()
+          + onCreateViewHolder()
+          ~ BookmarkAdapter()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.BookmarkAdapter.ViewHolder {
+          ~ tvPageId : TextView
+          ~ tvTime : TextView
+          ~ tvTitle : TextView
+          ~ ViewHolder()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.BookmarkFragment {
+          ~ mRvBookmark : RecyclerView
+          - mAdapter : Adapter
+          - mBookmarks : List<Bookmark>
+          - mUnbinder : Unbinder
+          + onCreateView()
+          + onDestroyView()
+          + update()
+          {static} ~ newInstance()
+          - initView()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.ContentFragment {
+          ~ mLl : LinearLayout
+          - mContentList : List<Bookmark>
+          - mUnbinder : Unbinder
+          + onCreateView()
+          + onDestroyView()
+          + update()
+          {static} ~ newInstance()
+          - addChild()
+          - initContent()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.ContentHolder {
+          - ivIcon : ImageView
+          - treeNode : TreeNode
+          - tvTitle : TextView
+          + createNodeView()
+          + toggle()
+          ~ ContentHolder()
+          ~ setOnIconTapListener()
+          ~ setOnNodeTapListener()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.ContentHolder.IconTreeItem {
+          ~ icon : int
+          ~ pageId : String
+          ~ title : String
+          + IconTreeItem()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      interface com.aaron.yespdf.preview.ContentHolder.OnIconTapListener {
+          {abstract} + onIconTap()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      interface com.aaron.yespdf.preview.ContentHolder.OnNodeTapListener {
+          {abstract} + onNodeTap()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      interface com.aaron.yespdf.preview.IActivityInterface {
+          {abstract} + onJumpTo()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      interface com.aaron.yespdf.preview.IBkFragInterface {
+          {abstract} + update()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      interface com.aaron.yespdf.preview.IContentFragInterface {
+          {abstract} + update()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.PagerAdapter {
+          + getCount()
+          + getItem()
+          ~ PagerAdapter()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.PreviewActivity {
+          ~ ibtnQuickbarAction : ImageButton
+          ~ llBottomBar : LinearLayout
+          ~ llQuickBar : LinearLayout
+          ~ llReadMethod : LinearLayout
+          ~ pdfViewBg : View
+          ~ sbProgress : SeekBar
+          ~ screenCover : View
+          ~ tabLayout : TabLayout
+          ~ tvAutoScroll : TextView
+          ~ tvBookmark : TextView
+          ~ tvContent : TextView
+          ~ tvHorizontal : TextView
+          ~ tvLockLandscape : TextView
+          ~ tvMore : TextView
+          ~ tvNextChapter : TextView
+          ~ tvPageinfo : TextView
+          ~ tvPreviousChapter : TextView
+          ~ tvQuickbarPageinfo : TextView
+          ~ tvQuickbarTitle : TextView
+          ~ tvReadMethod : TextView
+          ~ tvSettings : TextView
+          ~ tvVertical : TextView
+          ~ vgContent : ViewGroup
+          ~ vgMore : ViewGroup
+          ~ vp : ViewPager
+          {static} - BUNDLE_CUR_PAGE : String
+          {static} - EXTRA_PDF : String
+          {static} - OFFSET_Y : float
+          {static} - REQUEST_CODE_SETTINGS : int
+          - autoDisp : Disposable
+          - bookmarkMap : Map<Long, Bookmark>
+          - canvas : Canvas
+          - contentMap : Map<Long, Bookmark>
+          - curPage : int
+          - isNightMode : boolean
+          - isPause : boolean
+          - isVolumeControl : boolean
+          - nextPage : int
+          - pageCount : int
+          - pageList : List<Long>
+          - pageWidth : float
+          - paint : Paint
+          - password : String
+          - previousPage : int
+          - unbinder : Unbinder
+          - uri : Uri
+          + onBackPressed()
+          + onConfigurationChanged()
+          + onJumpTo()
+          + onKeyDown()
+          + onSupportNavigateUp()
+          + onWindowFocusChanged()
+          {static} + start()
+          # createToolbar()
+          # layoutId()
+          # onActivityResult()
+          # onCreate()
+          # onDestroy()
+          # onPause()
+          # onRestart()
+          # onSaveInstanceState()
+          # onStop()
+          - closeContent()
+          - closeMore()
+          - closeReadMethod()
+          - drawBookmark()
+          - enterFullScreen()
+          - exitFullScreen()
+          - findContent()
+          - getData()
+          - getPercent()
+          - getTitle()
+          - hideBar()
+          - initPdf()
+          - initView()
+          - openContent()
+          - openMore()
+          - openReadMethod()
+          - setListener()
+          - showAlertDialog()
+          - showBar()
+          - showInputDialog()
+          - showQuickbar()
+      }
+    }
+  }
+  
+
+  com.aaron.yespdf.preview.Bookmark .up.|> android.os.Parcelable
+  com.aaron.yespdf.preview.BookmarkAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.preview.BookmarkAdapter +-down- com.aaron.yespdf.preview.BookmarkAdapter.ViewHolder
+  com.aaron.yespdf.preview.BookmarkAdapter.ViewHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.aaron.yespdf.preview.BookmarkFragment .up.|> com.aaron.yespdf.preview.IBkFragInterface
+  com.aaron.yespdf.preview.BookmarkFragment -up-|> com.aaron.base.base.BaseFragment
+  com.aaron.yespdf.preview.ContentFragment .up.|> com.aaron.yespdf.preview.IContentFragInterface
+  com.aaron.yespdf.preview.ContentFragment -up-|> com.aaron.base.base.BaseFragment
+  com.aaron.yespdf.preview.ContentFragment o-- com.aaron.yespdf.common.widgets.ImageTextView : mItvEmpty
+  com.aaron.yespdf.preview.ContentHolder -up-|> com.unnamed.b.atv.model.TreeNode.BaseNodeViewHolder
+  com.aaron.yespdf.preview.ContentHolder o-- com.aaron.yespdf.preview.ContentHolder.OnIconTapListener : mOnIconTapListener
+  com.aaron.yespdf.preview.ContentHolder o-- com.aaron.yespdf.preview.ContentHolder.OnNodeTapListener : mOnNodeTapListener
+  com.aaron.yespdf.preview.ContentHolder +-down- com.aaron.yespdf.preview.ContentHolder.IconTreeItem
+  com.aaron.yespdf.preview.ContentHolder +-down- com.aaron.yespdf.preview.ContentHolder.OnIconTapListener
+  com.aaron.yespdf.preview.ContentHolder +-down- com.aaron.yespdf.preview.ContentHolder.OnNodeTapListener
+  com.aaron.yespdf.preview.PagerAdapter -up-|> androidx.fragment.app.FragmentPagerAdapter
+  com.aaron.yespdf.preview.PreviewActivity .up.|> com.aaron.yespdf.preview.IActivityInterface
+  com.aaron.yespdf.preview.PreviewActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.preview.PreviewActivity o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.aaron.yespdf.preview.PreviewActivity o-- com.aaron.yespdf.preview.IBkFragInterface : bkFragInterface
+  com.aaron.yespdf.preview.PreviewActivity o-- com.aaron.yespdf.preview.IContentFragInterface : contentFragInterface
+  com.aaron.yespdf.preview.PreviewActivity o-- com.aaron.yespdf.common.bean.PDF : pdf
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

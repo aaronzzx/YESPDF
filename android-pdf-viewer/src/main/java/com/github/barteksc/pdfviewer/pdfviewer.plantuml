@@ -1,0 +1,560 @@
+@startuml
+
+title __PDFVIEWER's Class Diagram__\n
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.AnimationManager {
+        - animation : ValueAnimator
+        - flinging : boolean
+        - pageFlinging : boolean
+        - scroller : OverScroller
+        + AnimationManager()
+        + isFlinging()
+        + startFlingAnimation()
+        + startPageFlingAnimation()
+        + startXAnimation()
+        + startYAnimation()
+        + startZoomAnimation()
+        + stopAll()
+        + stopFling()
+        ~ computeFling()
+        - hideHandle()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.AnimationManager.XAnimation {
+        + onAnimationCancel()
+        + onAnimationEnd()
+        + onAnimationUpdate()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.AnimationManager.YAnimation {
+        + onAnimationCancel()
+        + onAnimationEnd()
+        + onAnimationUpdate()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.AnimationManager.ZoomAnimation {
+        - centerX : float
+        - centerY : float
+        + ZoomAnimation()
+        + onAnimationCancel()
+        + onAnimationEnd()
+        + onAnimationRepeat()
+        + onAnimationStart()
+        + onAnimationUpdate()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.CacheManager {
+        - activeCache : PriorityQueue<PagePart>
+        - passiveActiveLock : Object
+        - passiveCache : PriorityQueue<PagePart>
+        - thumbnails : List<PagePart>
+        + CacheManager()
+        + cachePart()
+        + cacheThumbnail()
+        + containsThumbnail()
+        + getPageParts()
+        + getThumbnails()
+        + makeANewSet()
+        + recycle()
+        + upPartIfContained()
+        - addWithoutDuplicates()
+        {static} - find()
+        - makeAFreeSpace()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.CacheManager.PagePartComparator {
+        + compare()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.DecodingAsyncTask {
+        - cancelled : boolean
+        - password : String
+        - pdfViewReference : WeakReference<PDFView>
+        - pdfiumCore : PdfiumCore
+        - userPages : int[]
+        # doInBackground()
+        # onCancelled()
+        # onPostExecute()
+        ~ DecodingAsyncTask()
+        - getViewSize()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.DragPinchManager {
+        - enabled : boolean
+        - gestureDetector : GestureDetector
+        - scaleGestureDetector : ScaleGestureDetector
+        - scaling : boolean
+        - scrolling : boolean
+        + onDoubleTap()
+        + onDoubleTapEvent()
+        + onDown()
+        + onFling()
+        + onLongPress()
+        + onScale()
+        + onScaleBegin()
+        + onScaleEnd()
+        + onScroll()
+        + onShowPress()
+        + onSingleTapConfirmed()
+        + onSingleTapUp()
+        + onTouch()
+        ~ DragPinchManager()
+        ~ disable()
+        ~ disableLongpress()
+        ~ enable()
+        - checkDoPageFling()
+        - checkLinkTapped()
+        - hideHandle()
+        - onBoundedFling()
+        - onScrollEnd()
+        - startPageFling()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PDFView {
+        {static} + DEFAULT_MAX_SCALE : float
+        {static} + DEFAULT_MID_SCALE : float
+        {static} + DEFAULT_MIN_SCALE : float
+        {static} - TAG : String
+        - annotationRendering : boolean
+        - antialiasFilter : PaintFlagsDrawFilter
+        - autoSpacing : boolean
+        - bestQuality : boolean
+        - currentPage : int
+        - currentXOffset : float
+        - currentYOffset : float
+        - debugPaint : Paint
+        - defaultPage : int
+        - doubletapEnabled : boolean
+        - enableAntialiasing : boolean
+        - enableSwipe : boolean
+        - fitEachPage : boolean
+        - hasSize : boolean
+        - isScrollHandleInit : boolean
+        - maxZoom : float
+        - midZoom : float
+        - minZoom : float
+        - nightMode : boolean
+        - onDrawPagesNums : List<Integer>
+        - pageFling : boolean
+        - pageSnap : boolean
+        - paint : Paint
+        - pdfiumCore : PdfiumCore
+        - recycled : boolean
+        - renderDuringScale : boolean
+        - renderingHandlerThread : HandlerThread
+        - spacingPx : int
+        - swipeVertical : boolean
+        - zoom : float
+        + PDFView()
+        + canScrollHorizontally()
+        + canScrollVertically()
+        + computeScroll()
+        + doRenderDuringScale()
+        + documentFitsView()
+        + enableAnnotationRendering()
+        + enableAntialiasing()
+        + enableRenderDuringScale()
+        + fitToWidth()
+        + fromAsset()
+        + fromBytes()
+        + fromFile()
+        + fromSource()
+        + fromStream()
+        + fromUri()
+        + getCurrentPage()
+        + getCurrentXOffset()
+        + getCurrentYOffset()
+        + getDocumentMeta()
+        + getLinks()
+        + getMaxZoom()
+        + getMidZoom()
+        + getMinZoom()
+        + getPageAtPositionOffset()
+        + getPageCount()
+        + getPageFitPolicy()
+        + getPageSize()
+        + getPositionOffset()
+        + getSpacingPx()
+        + getTableOfContents()
+        + getZoom()
+        + isAnnotationRendering()
+        + isAntialiasing()
+        + isAutoSpacingEnabled()
+        + isBestQuality()
+        + isFitEachPage()
+        + isPageFlingEnabled()
+        + isPageSnap()
+        + isRecycled()
+        + isSwipeEnabled()
+        + isSwipeVertical()
+        + isZooming()
+        + jumpTo()
+        + jumpTo()
+        + loadPageByOffset()
+        + loadPages()
+        + moveRelativeTo()
+        + moveTo()
+        + moveTo()
+        + onBitmapRendered()
+        + pageFillsScreen()
+        + performPageSnap()
+        + recycle()
+        + resetZoom()
+        + resetZoomWithAnimation()
+        + setMaxZoom()
+        + setMidZoom()
+        + setMinZoom()
+        + setNightMode()
+        + setPageFling()
+        + setPageSnap()
+        + setPositionOffset()
+        + setPositionOffset()
+        + setSwipeEnabled()
+        + stopFling()
+        + toCurrentScale()
+        + toRealScale()
+        + useBestQuality()
+        + zoomCenteredRelativeTo()
+        + zoomCenteredTo()
+        + zoomTo()
+        + zoomWithAnimation()
+        + zoomWithAnimation()
+        # onDetachedFromWindow()
+        # onDraw()
+        # onSizeChanged()
+        ~ enableDoubletap()
+        ~ findFocusPage()
+        ~ findSnapEdge()
+        ~ getScrollHandle()
+        ~ isDoubletapEnabled()
+        ~ loadComplete()
+        ~ loadError()
+        ~ onPageError()
+        ~ redraw()
+        ~ showPage()
+        ~ snapOffsetForPage()
+        - drawPart()
+        - drawWithListener()
+        - load()
+        - load()
+        - setAutoSpacing()
+        - setDefaultPage()
+        - setFitEachPage()
+        - setPageFitPolicy()
+        - setScrollHandle()
+        - setSpacing()
+        - setSwipeVertical()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PDFView.Configurator {
+        - annotationRendering : boolean
+        - antialiasing : boolean
+        - autoSpacing : boolean
+        - defaultPage : int
+        - enableDoubletap : boolean
+        - enableSwipe : boolean
+        - fitEachPage : boolean
+        - nightMode : boolean
+        - pageFling : boolean
+        - pageNumbers : int[]
+        - pageSnap : boolean
+        - password : String
+        - spacing : int
+        - swipeHorizontal : boolean
+        + autoSpacing()
+        + defaultPage()
+        + disableLongpress()
+        + enableAnnotationRendering()
+        + enableAntialiasing()
+        + enableDoubletap()
+        + enableSwipe()
+        + fitEachPage()
+        + linkHandler()
+        + load()
+        + nightMode()
+        + onDraw()
+        + onDrawAll()
+        + onError()
+        + onLoad()
+        + onLongPress()
+        + onPageChange()
+        + onPageError()
+        + onPageScroll()
+        + onRender()
+        + onScroll()
+        + onShow()
+        + onTap()
+        + pageFitPolicy()
+        + pageFling()
+        + pageSnap()
+        + pages()
+        + password()
+        + scrollHandle()
+        + spacing()
+        + swipeHorizontal()
+        - Configurator()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    enum ScrollDir {
+      END
+      NONE
+      START
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    enum State {
+      DEFAULT
+      ERROR
+      LOADED
+      SHOWN
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PagesLoader {
+        - cacheOrder : int
+        - pageRelativePartHeight : float
+        - pageRelativePartWidth : float
+        - partRenderHeight : float
+        - partRenderWidth : float
+        - preloadOffset : int
+        - thumbnailRect : RectF
+        - xOffset : float
+        - yOffset : float
+        ~ PagesLoader()
+        ~ loadPages()
+        - calculatePartSize()
+        - getPageColsRows()
+        - getRenderRangeList()
+        - loadCell()
+        - loadPage()
+        - loadThumbnail()
+        - loadVisible()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PagesLoader.GridSize {
+        ~ cols : int
+        ~ rows : int
+        + toString()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PagesLoader.Holder {
+        ~ col : int
+        ~ row : int
+        + toString()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PagesLoader.RenderRange {
+        ~ page : int
+        + toString()
+        ~ RenderRange()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PdfFile {
+        - autoSpacing : boolean
+        - documentLength : float
+        - fitEachPage : boolean
+        - isVertical : boolean
+        {static} - lock : Object
+        - maxHeightPageSize : SizeF
+        - maxWidthPageSize : SizeF
+        - openedPages : SparseBooleanArray
+        - originalMaxHeightPageSize : Size
+        - originalMaxWidthPageSize : Size
+        - originalPageSizes : List<Size>
+        - originalUserPages : int[]
+        - pageOffsets : List<Float>
+        - pageSizes : List<SizeF>
+        - pageSpacing : List<Float>
+        - pagesCount : int
+        - pdfDocument : PdfDocument
+        - pdfiumCore : PdfiumCore
+        - spacingPx : int
+        + determineValidPageNumberFrom()
+        + dispose()
+        + documentPage()
+        + getBookmarks()
+        + getDocLen()
+        + getMaxPageHeight()
+        + getMaxPageSize()
+        + getMaxPageWidth()
+        + getMetaData()
+        + getPageAtOffset()
+        + getPageLength()
+        + getPageLinks()
+        + getPageOffset()
+        + getPageSize()
+        + getPageSpacing()
+        + getPagesCount()
+        + getScaledPageSize()
+        + getSecondaryPageOffset()
+        + mapRectToDevice()
+        + openPage()
+        + pageHasError()
+        + recalculatePageSizes()
+        + renderPageBitmap()
+        ~ PdfFile()
+        - prepareAutoSpacing()
+        - prepareDocLen()
+        - preparePagesOffset()
+        - setup()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.RenderingHandler {
+        {static} ~ MSG_RENDER_TASK : int
+        {static} - TAG : String
+        - renderBounds : RectF
+        - renderMatrix : Matrix
+        - roundedRenderBounds : Rect
+        - running : boolean
+        + handleMessage()
+        ~ RenderingHandler()
+        ~ addRenderingTask()
+        ~ start()
+        ~ stop()
+        - calculateBounds()
+        - proceed()
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.RenderingHandler.RenderingTask {
+        ~ annotationRendering : boolean
+        ~ bestQuality : boolean
+        ~ bounds : RectF
+        ~ cacheOrder : int
+        ~ height : float
+        ~ page : int
+        ~ thumbnail : boolean
+        ~ width : float
+        ~ RenderingTask()
+    }
+  }
+  
+
+  com.github.barteksc.pdfviewer.AnimationManager o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.AnimationManager +-down- com.github.barteksc.pdfviewer.AnimationManager.XAnimation
+  com.github.barteksc.pdfviewer.AnimationManager +-down- com.github.barteksc.pdfviewer.AnimationManager.YAnimation
+  com.github.barteksc.pdfviewer.AnimationManager +-down- com.github.barteksc.pdfviewer.AnimationManager.ZoomAnimation
+  com.github.barteksc.pdfviewer.AnimationManager.XAnimation .up.|> android.animation.ValueAnimator.AnimatorUpdateListener
+  com.github.barteksc.pdfviewer.AnimationManager.XAnimation -up-|> android.animation.AnimatorListenerAdapter
+  com.github.barteksc.pdfviewer.AnimationManager.YAnimation .up.|> android.animation.ValueAnimator.AnimatorUpdateListener
+  com.github.barteksc.pdfviewer.AnimationManager.YAnimation -up-|> android.animation.AnimatorListenerAdapter
+  com.github.barteksc.pdfviewer.AnimationManager.ZoomAnimation .up.|> android.animation.Animator.AnimatorListener
+  com.github.barteksc.pdfviewer.AnimationManager.ZoomAnimation .up.|> android.animation.ValueAnimator.AnimatorUpdateListener
+  com.github.barteksc.pdfviewer.CacheManager o-- com.github.barteksc.pdfviewer.CacheManager.PagePartComparator : orderComparator
+  com.github.barteksc.pdfviewer.CacheManager +-down- com.github.barteksc.pdfviewer.CacheManager.PagePartComparator
+  com.github.barteksc.pdfviewer.CacheManager.PagePartComparator .up.|> java.util.Comparator
+  com.github.barteksc.pdfviewer.DecodingAsyncTask -up-|> android.os.AsyncTask
+  com.github.barteksc.pdfviewer.DecodingAsyncTask o-- com.github.barteksc.pdfviewer.source.DocumentSource : docSource
+  com.github.barteksc.pdfviewer.DecodingAsyncTask o-- com.github.barteksc.pdfviewer.PdfFile : pdfFile
+  com.github.barteksc.pdfviewer.DragPinchManager .up.|> android.view.GestureDetector.OnDoubleTapListener
+  com.github.barteksc.pdfviewer.DragPinchManager .up.|> android.view.GestureDetector.OnGestureListener
+  com.github.barteksc.pdfviewer.DragPinchManager .up.|> android.view.ScaleGestureDetector.OnScaleGestureListener
+  com.github.barteksc.pdfviewer.DragPinchManager .up.|> android.view.View.OnTouchListener
+  com.github.barteksc.pdfviewer.DragPinchManager o-- com.github.barteksc.pdfviewer.AnimationManager : animationManager
+  com.github.barteksc.pdfviewer.DragPinchManager o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.PDFView -up-|> android.widget.RelativeLayout
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.CacheManager : cacheManager
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.listener.Callbacks : callbacks
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PdfFile : pdfFile
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.RenderingHandler : renderingHandler
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.AnimationManager : animationManager
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.DecodingAsyncTask : decodingAsyncTask
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.DragPinchManager : dragPinchManager
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.util.FitPolicy : pageFitPolicy
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PagesLoader : pagesLoader
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PDFView.ScrollDir : scrollDir
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.scroll.ScrollHandle : scrollHandle
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PDFView.State : state
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PDFView.Configurator : waitingDocumentConfigurator
+  com.github.barteksc.pdfviewer.PDFView +-down- com.github.barteksc.pdfviewer.PDFView.Configurator
+  com.github.barteksc.pdfviewer.PDFView +-down- com.github.barteksc.pdfviewer.PDFView.ScrollDir
+  com.github.barteksc.pdfviewer.PDFView +-down- com.github.barteksc.pdfviewer.PDFView.State
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.source.DocumentSource : documentSource
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.link.LinkHandler : linkHandler
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnScrollListener : mOnScrollListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnShowListener : mOnShowListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnDrawListener : onDrawAllListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnDrawListener : onDrawListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnErrorListener : onErrorListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener : onLoadCompleteListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnLongPressListener : onLongPressListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnPageChangeListener : onPageChangeListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnPageErrorListener : onPageErrorListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnPageScrollListener : onPageScrollListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnRenderListener : onRenderListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.listener.OnTapListener : onTapListener
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.util.FitPolicy : pageFitPolicy
+  com.github.barteksc.pdfviewer.PDFView.Configurator o-- com.github.barteksc.pdfviewer.scroll.ScrollHandle : scrollHandle
+  com.github.barteksc.pdfviewer.PagesLoader o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.PagesLoader +-down- com.github.barteksc.pdfviewer.PagesLoader.GridSize
+  com.github.barteksc.pdfviewer.PagesLoader +-down- com.github.barteksc.pdfviewer.PagesLoader.Holder
+  com.github.barteksc.pdfviewer.PagesLoader +-down- com.github.barteksc.pdfviewer.PagesLoader.RenderRange
+  com.github.barteksc.pdfviewer.PagesLoader.RenderRange o-- com.github.barteksc.pdfviewer.PagesLoader.GridSize : gridSize
+  com.github.barteksc.pdfviewer.PagesLoader.RenderRange o-- com.github.barteksc.pdfviewer.PagesLoader.Holder : leftTop
+  com.github.barteksc.pdfviewer.PagesLoader.RenderRange o-- com.github.barteksc.pdfviewer.PagesLoader.Holder : rightBottom
+  com.github.barteksc.pdfviewer.PdfFile o-- com.github.barteksc.pdfviewer.util.FitPolicy : pageFitPolicy
+  com.github.barteksc.pdfviewer.RenderingHandler -up-|> android.os.Handler
+  com.github.barteksc.pdfviewer.RenderingHandler o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.RenderingHandler +-down- com.github.barteksc.pdfviewer.RenderingHandler.RenderingTask
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

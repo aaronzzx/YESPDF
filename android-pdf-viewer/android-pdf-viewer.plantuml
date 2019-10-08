@@ -1,0 +1,393 @@
+@startuml
+
+title __ANDROID-PDF-VIEWER's Class Diagram__\n
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.AnimationManager {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.BuildConfig {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.CacheManager {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.DecodingAsyncTask {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.DragPinchManager {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PDFView {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PagesLoader {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.PdfFile {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    class com.github.barteksc.pdfviewer.RenderingHandler {
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace exception {
+      class com.github.barteksc.pdfviewer.exception.FileNotFoundException {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace exception {
+      class com.github.barteksc.pdfviewer.exception.PageRenderingException {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace link {
+      class com.github.barteksc.pdfviewer.link.DefaultLinkHandler {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace link {
+      interface com.github.barteksc.pdfviewer.link.LinkHandler {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      class com.github.barteksc.pdfviewer.listener.Callbacks {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnDrawListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnErrorListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnLongPressListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnPageChangeListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnPageErrorListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnPageScrollListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnRenderListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnScrollListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnShowListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnTapListener {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace model {
+      class com.github.barteksc.pdfviewer.model.LinkTapEvent {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace model {
+      class com.github.barteksc.pdfviewer.model.PagePart {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace scroll {
+      class com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace scroll {
+      interface com.github.barteksc.pdfviewer.scroll.ScrollHandle {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace source {
+      class com.github.barteksc.pdfviewer.source.AssetSource {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace source {
+      class com.github.barteksc.pdfviewer.source.ByteArraySource {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace source {
+      interface com.github.barteksc.pdfviewer.source.DocumentSource {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace source {
+      class com.github.barteksc.pdfviewer.source.FileSource {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace source {
+      class com.github.barteksc.pdfviewer.source.InputStreamSource {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace source {
+      class com.github.barteksc.pdfviewer.source.UriSource {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace util {
+      class com.github.barteksc.pdfviewer.util.ArrayUtils {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace util {
+      class com.github.barteksc.pdfviewer.util.Constants {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace util {
+      class com.github.barteksc.pdfviewer.util.FileUtils {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace util {
+      enum FitPolicy {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace util {
+      class com.github.barteksc.pdfviewer.util.MathUtils {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace util {
+      class com.github.barteksc.pdfviewer.util.PageSizeCalculator {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace util {
+      enum SnapEdge {
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace util {
+      class com.github.barteksc.pdfviewer.util.Util {
+      }
+    }
+  }
+  
+
+  com.github.barteksc.pdfviewer.AnimationManager o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.CacheManager o-- com.github.barteksc.pdfviewer.CacheManager.PagePartComparator : orderComparator
+  com.github.barteksc.pdfviewer.DecodingAsyncTask -up-|> android.os.AsyncTask
+  com.github.barteksc.pdfviewer.DecodingAsyncTask o-- com.github.barteksc.pdfviewer.source.DocumentSource : docSource
+  com.github.barteksc.pdfviewer.DecodingAsyncTask o-- com.github.barteksc.pdfviewer.PdfFile : pdfFile
+  com.github.barteksc.pdfviewer.DragPinchManager .up.|> android.view.GestureDetector.OnDoubleTapListener
+  com.github.barteksc.pdfviewer.DragPinchManager .up.|> android.view.GestureDetector.OnGestureListener
+  com.github.barteksc.pdfviewer.DragPinchManager .up.|> android.view.ScaleGestureDetector.OnScaleGestureListener
+  com.github.barteksc.pdfviewer.DragPinchManager .up.|> android.view.View.OnTouchListener
+  com.github.barteksc.pdfviewer.DragPinchManager o-- com.github.barteksc.pdfviewer.AnimationManager : animationManager
+  com.github.barteksc.pdfviewer.DragPinchManager o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.PDFView -up-|> android.widget.RelativeLayout
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.CacheManager : cacheManager
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.listener.Callbacks : callbacks
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PdfFile : pdfFile
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.RenderingHandler : renderingHandler
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.AnimationManager : animationManager
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.DecodingAsyncTask : decodingAsyncTask
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.DragPinchManager : dragPinchManager
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.util.FitPolicy : pageFitPolicy
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PagesLoader : pagesLoader
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PDFView.ScrollDir : scrollDir
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.scroll.ScrollHandle : scrollHandle
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PDFView.State : state
+  com.github.barteksc.pdfviewer.PDFView o-- com.github.barteksc.pdfviewer.PDFView.Configurator : waitingDocumentConfigurator
+  com.github.barteksc.pdfviewer.PagesLoader o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.PdfFile o-- com.github.barteksc.pdfviewer.util.FitPolicy : pageFitPolicy
+  com.github.barteksc.pdfviewer.RenderingHandler -up-|> android.os.Handler
+  com.github.barteksc.pdfviewer.RenderingHandler o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.link.DefaultLinkHandler .up.|> com.github.barteksc.pdfviewer.link.LinkHandler
+  com.github.barteksc.pdfviewer.link.DefaultLinkHandler o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.link.LinkHandler : linkHandler
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnScrollListener : mOnScrollListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnShowListener : mOnShowListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnDrawListener : onDrawAllListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnDrawListener : onDrawListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnErrorListener : onErrorListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener : onLoadCompleteListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnLongPressListener : onLongPressListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnPageChangeListener : onPageChangeListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnPageErrorListener : onPageErrorListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnPageScrollListener : onPageScrollListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnRenderListener : onRenderListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnTapListener : onTapListener
+  com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle .up.|> com.github.barteksc.pdfviewer.scroll.ScrollHandle
+  com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle -up-|> android.widget.RelativeLayout
+  com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.github.barteksc.pdfviewer.source.AssetSource .up.|> com.github.barteksc.pdfviewer.source.DocumentSource
+  com.github.barteksc.pdfviewer.source.ByteArraySource .up.|> com.github.barteksc.pdfviewer.source.DocumentSource
+  com.github.barteksc.pdfviewer.source.FileSource .up.|> com.github.barteksc.pdfviewer.source.DocumentSource
+  com.github.barteksc.pdfviewer.source.InputStreamSource .up.|> com.github.barteksc.pdfviewer.source.DocumentSource
+  com.github.barteksc.pdfviewer.source.UriSource .up.|> com.github.barteksc.pdfviewer.source.DocumentSource
+  com.github.barteksc.pdfviewer.util.PageSizeCalculator o-- com.github.barteksc.pdfviewer.util.FitPolicy : fitPolicy
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

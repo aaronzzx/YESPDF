@@ -1,0 +1,230 @@
+@startuml
+
+title __ABOUT's Class Diagram__\n
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.AboutActivity {
+          ~ mRvLibrary : RecyclerView
+          ~ mRvMessage : RecyclerView
+          - mUnbinder : Unbinder
+          + attachPresenter()
+          + onShowLibrary()
+          + onShowMessage()
+          + onSupportNavigateUp()
+          {static} + start()
+          # createToolbar()
+          # layoutId()
+          # onCreate()
+          # onDestroy()
+          - initLibrary()
+          - initMessage()
+          - initToolbar()
+          - initVersionStatus()
+          - initView()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.AboutPresenter {
+          - mLibraryList : List<Library>
+          - mMessageList : List<Message>
+          - mView : V<Message, Library>
+          + detachView()
+          + requestLibrary()
+          + requestMessage()
+          ~ AboutPresenter()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.AboutPresenter.Element {
+          {static} ~ ICON_ID : int[]
+          {static} ~ LIBRARY_AUTHOR : String[]
+          {static} ~ LIBRARY_INTRODUCE : String[]
+          {static} ~ LIBRARY_NAME : String[]
+          {static} ~ TITLE : String[]
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.AboutUtils {
+          {static} ~ copyImageToDevice()
+          {static} ~ goWeChatScan()
+          {static} ~ openCoolApk()
+          - AboutUtils()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      interface com.aaron.yespdf.about.IAboutContract {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      interface com.aaron.yespdf.about.IAboutContract.P {
+          {abstract} + detachView()
+          {abstract} + requestLibrary()
+          {abstract} + requestMessage()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      interface com.aaron.yespdf.about.IAboutContract.V {
+          {abstract} + attachPresenter()
+          {abstract} + onShowLibrary()
+          {abstract} + onShowMessage()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      interface com.aaron.yespdf.about.Info {
+          {static} + FEEDBACK_SUBJECT : String
+          {static} + FEEDBACK_TEXT : String
+          {static} + MY_BLOG : String
+          {static} + MY_EMAIL : String
+          {static} + MY_GITHUB : String
+          {static} + SOURCE_CODE : String
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.Library {
+          - author : String
+          - introduce : String
+          - name : String
+          + getAuthor()
+          + getIntroduce()
+          + getName()
+          + setAuthor()
+          + setIntroduce()
+          + setName()
+          ~ Library()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.LibraryAdapter {
+          - mContext : Context
+          - mList : List<T>
+          + getItemCount()
+          + onBindViewHolder()
+          + onCreateViewHolder()
+          ~ LibraryAdapter()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.LibraryAdapter.ViewHolder {
+          ~ author : TextView
+          ~ introduce : TextView
+          ~ itemView : View
+          ~ name : TextView
+          ~ ViewHolder()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.Message {
+          - iconId : int
+          - title : String
+          + getIconId()
+          + getTitle()
+          + setIconId()
+          + setTitle()
+          ~ Message()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.MessageAdapter {
+          {static} - FEEDBACK : int
+          {static} - GIFT : int
+          {static} - GITHUB : int
+          {static} - INTRODUCE : int
+          {static} - RATE_APP : int
+          {static} - SOURCE_CODE : int
+          - activity : Activity
+          - giftDialog : Dialog
+          - list : List<T>
+          - qrcodeDialog : Dialog
+          + getItemCount()
+          + onBindViewHolder()
+          + onCreateViewHolder()
+          ~ MessageAdapter()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.MessageAdapter.ViewHolder {
+          ~ icon : ImageView
+          ~ itemView : View
+          ~ title : TextView
+          ~ ViewHolder()
+      }
+    }
+  }
+  
+
+  com.aaron.yespdf.about.AboutActivity .up.|> com.aaron.yespdf.about.IAboutContract.V
+  com.aaron.yespdf.about.AboutActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.about.AboutActivity o-- com.aaron.yespdf.about.IAboutContract.P : mPresenter
+  com.aaron.yespdf.about.AboutPresenter .up.|> com.aaron.yespdf.about.IAboutContract.P
+  com.aaron.yespdf.about.AboutPresenter +-down- com.aaron.yespdf.about.AboutPresenter.Element
+  com.aaron.yespdf.about.IAboutContract +-down- com.aaron.yespdf.about.IAboutContract.P
+  com.aaron.yespdf.about.IAboutContract +-down- com.aaron.yespdf.about.IAboutContract.V
+  com.aaron.yespdf.about.LibraryAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.about.LibraryAdapter +-down- com.aaron.yespdf.about.LibraryAdapter.ViewHolder
+  com.aaron.yespdf.about.LibraryAdapter.ViewHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.aaron.yespdf.about.MessageAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.about.MessageAdapter +-down- com.aaron.yespdf.about.MessageAdapter.ViewHolder
+  com.aaron.yespdf.about.MessageAdapter.ViewHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

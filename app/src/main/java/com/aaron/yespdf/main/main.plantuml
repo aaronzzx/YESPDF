@@ -1,0 +1,431 @@
+@startuml
+
+title __MAIN's Class Diagram__\n
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      abstract class com.aaron.yespdf.main.AbstractAdapter {
+          # checkArray : SparseBooleanArray
+          # commInterface : ICommInterface<T>
+          # context : Context
+          # inflater : LayoutInflater
+          # selectList : List<T>
+          # selectMode : boolean
+          # sourceList : List<T>
+          {static} - TYPE_EMPTY : int
+          + getItemCount()
+          + getItemViewType()
+          + onBindViewHolder()
+          + onBindViewHolder()
+          + onCreateViewHolder()
+          ~ AbstractAdapter()
+          {abstract} ~ bindHolder()
+          {abstract} ~ bindHolder()
+          ~ cancelSelect()
+          {abstract} ~ checkCurrent()
+          {abstract} ~ createHolder()
+          ~ handleCheckBox()
+          {abstract} ~ itemCount()
+          {abstract} ~ onTap()
+          ~ selectAll()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AbstractAdapter.CollectionHolder {
+          {static} ~ DEFAULT_LAYOUT : int
+          ~ cb : CheckBox
+          ~ tvCount : TextView
+          ~ tvTitle : TextView
+          ~ CollectionHolder()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AbstractAdapter.CoverHolder {
+          {static} ~ DEFAULT_LAYOUT : int
+          ~ cb : CheckBox
+          ~ ivCover : ImageView
+          ~ tvProgress : TextView
+          ~ tvTitle : TextView
+          ~ CoverHolder()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      interface com.aaron.yespdf.main.AbstractAdapter.ICommInterface {
+          {abstract} + onSelect()
+          {abstract} + onStartOperation()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AllAdapter {
+          - fm : FragmentManager
+          ~ AllAdapter()
+          ~ bindHolder()
+          ~ bindHolder()
+          ~ checkCurrent()
+          ~ createHolder()
+          ~ itemCount()
+          ~ onTap()
+          - setCover()
+          - setVisibility()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AllDeleteEvent {
+          ~ dirList : List<String>
+          ~ AllDeleteEvent()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AllFragment {
+          ~ rvAll : RecyclerView
+          - adapter : AbstractAdapter<Collection>
+          - collections : List<Collection>
+          - selectCollections : List<Collection>
+          - unbinder : Unbinder
+          + AllFragment()
+          + cancelSelect()
+          + delete()
+          + deleteDescription()
+          + onCreateView()
+          + onDestroyView()
+          + onPdfDeleteEvent()
+          + onResume()
+          + onSelect()
+          + onStartOperation()
+          + selectAll()
+          {static} ~ newInstance()
+          ~ update()
+          - initView()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.CollectionAdapter {
+          ~ CollectionAdapter()
+          ~ bindHolder()
+          ~ bindHolder()
+          ~ checkCurrent()
+          ~ createHolder()
+          ~ itemCount()
+          ~ onTap()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.CollectionFragment {
+          ~ ibtnCancel : ImageButton
+          ~ ibtnDelete : ImageButton
+          ~ ibtnSelectAll : ImageButton
+          ~ realtimeBlurView : RealtimeBlurView
+          ~ rvCollection : RecyclerView
+          ~ tvName : TextView
+          ~ tvTitle : TextView
+          ~ vgOperationBar : ViewGroup
+          {static} - BUNDLE_NAME : String
+          - deleteDialog : BottomSheetDialog
+          - name : String
+          - pdfList : List<PDF>
+          - selectPDFList : List<PDF>
+          - tvDeleteDescription : TextView
+          - unbinder : Unbinder
+          + cancelSelect()
+          + delete()
+          + deleteDescription()
+          + onCreate()
+          + onCreateView()
+          + onDestroyView()
+          + onResume()
+          + onSelect()
+          + onStart()
+          + onStartOperation()
+          + selectAll()
+          {static} ~ newInstance()
+          - createDeleteDialog()
+          - initView()
+          - setListener()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      interface com.aaron.yespdf.main.IMainContract {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      interface com.aaron.yespdf.main.IMainContract.P {
+          {abstract} + insertPDF()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      interface com.aaron.yespdf.main.IMainContract.V {
+          {abstract} + onHideLoading()
+          {abstract} + onShowLoading()
+          {abstract} + onShowMessage()
+          {abstract} + onUpdate()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      interface com.aaron.yespdf.main.IOperation {
+          {abstract} + cancelSelect()
+          {abstract} + delete()
+          {abstract} + deleteDescription()
+          {abstract} + selectAll()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.MainActivity {
+          ~ ibtnCancel : ImageButton
+          ~ ibtnDelete : ImageButton
+          ~ ibtnSelectAll : ImageButton
+          ~ tabLayout : TabLayout
+          ~ tvTitle : TextView
+          ~ vgOperationBar : ViewGroup
+          {static} - SELECT_REQUEST_CODE : int
+          - deleteDialog : BottomSheetDialog
+          - fragmentPagerAdapter : FragmentPagerAdapter
+          - loadingDialog : Dialog
+          - pwMenu : PopupWindow
+          - receiveHotfix : boolean
+          - tvDeleteDescription : TextView
+          - unbinder : Unbinder
+          + attachP()
+          + onBackPressed()
+          + onCreateOptionsMenu()
+          + onHideLoading()
+          + onHotfixSuccess()
+          + onOptionsItemSelected()
+          + onShowLoading()
+          + onShowMessage()
+          + onUpdate()
+          # createToolbar()
+          # layoutId()
+          # onActivityResult()
+          # onCreate()
+          # onDestroy()
+          ~ finishOperation()
+          ~ selectResult()
+          ~ setOperation()
+          ~ startOperation()
+          - createDeleteDialog()
+          - initPwMenu()
+          - initView()
+          - setListener()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.MainFragmentAdapter {
+          {static} - TITLES : String[]
+          + getCount()
+          + getItem()
+          + getPageTitle()
+          ~ MainFragmentAdapter()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.MainPresenter {
+          + detachV()
+          + insertPDF()
+          ~ MainPresenter()
+          - insertPDF()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.OperationBarHelper {
+          {static} ~ hide()
+          {static} ~ show()
+          - OperationBarHelper()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.OperationEvent {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.PdfDeleteEvent {
+          ~ deleted : List<String>
+          ~ dir : String
+          ~ isEmpty : boolean
+          ~ PdfDeleteEvent()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.RecentAdapter {
+          ~ RecentAdapter()
+          ~ bindHolder()
+          ~ bindHolder()
+          ~ checkCurrent()
+          ~ createHolder()
+          ~ itemCount()
+          ~ onTap()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.RecentFragment {
+          ~ rvRecent : RecyclerView
+          - adapter : AbstractAdapter<PDF>
+          - recentPDFList : List<PDF>
+          - selectPDFList : List<PDF>
+          - unbinder : Unbinder
+          + RecentFragment()
+          + cancelSelect()
+          + delete()
+          + deleteDescription()
+          + onAllDeleteEvent()
+          + onCreateView()
+          + onDestroyView()
+          + onMaxRecentEvent()
+          + onPdfDeleteEvent()
+          + onRecentPDFEvent()
+          + onResume()
+          + onSelect()
+          + onStartOperation()
+          + selectAll()
+          {static} ~ newInstance()
+          - initData()
+          - initView()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.XGridDecoration {
+          + getItemOffsets()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.YGridDecoration {
+          + getItemOffsets()
+      }
+    }
+  }
+  
+
+  com.aaron.yespdf.main.AbstractAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.main.AbstractAdapter +-down- com.aaron.yespdf.main.AbstractAdapter.CollectionHolder
+  com.aaron.yespdf.main.AbstractAdapter +-down- com.aaron.yespdf.main.AbstractAdapter.CoverHolder
+  com.aaron.yespdf.main.AbstractAdapter +-down- com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+  com.aaron.yespdf.main.AbstractAdapter.CollectionHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.aaron.yespdf.main.AbstractAdapter.CollectionHolder o-- com.aaron.yespdf.common.widgets.BorderImageView : ivCover1
+  com.aaron.yespdf.main.AbstractAdapter.CollectionHolder o-- com.aaron.yespdf.common.widgets.BorderImageView : ivCover2
+  com.aaron.yespdf.main.AbstractAdapter.CollectionHolder o-- com.aaron.yespdf.common.widgets.BorderImageView : ivCover3
+  com.aaron.yespdf.main.AbstractAdapter.CollectionHolder o-- com.aaron.yespdf.common.widgets.BorderImageView : ivCover4
+  com.aaron.yespdf.main.AbstractAdapter.CoverHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.aaron.yespdf.main.AllAdapter -up-|> com.aaron.yespdf.main.AbstractAdapter
+  com.aaron.yespdf.main.AllFragment .up.|> com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+  com.aaron.yespdf.main.AllFragment .up.|> com.aaron.yespdf.main.IOperation
+  com.aaron.yespdf.main.AllFragment -up-|> com.aaron.base.base.BaseFragment
+  com.aaron.yespdf.main.CollectionAdapter -up-|> com.aaron.yespdf.main.AbstractAdapter
+  com.aaron.yespdf.main.CollectionAdapter o-- com.aaron.yespdf.common.event.RecentPDFEvent : recentPDFEvent
+  com.aaron.yespdf.main.CollectionFragment .up.|> com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+  com.aaron.yespdf.main.CollectionFragment .up.|> com.aaron.yespdf.main.IOperation
+  com.aaron.yespdf.main.CollectionFragment -up-|> androidx.fragment.app.DialogFragment
+  com.aaron.yespdf.main.CollectionFragment o-- com.aaron.yespdf.main.AbstractAdapter : adapter
+  com.aaron.yespdf.main.IMainContract +-down- com.aaron.yespdf.main.IMainContract.P
+  com.aaron.yespdf.main.IMainContract +-down- com.aaron.yespdf.main.IMainContract.V
+  com.aaron.yespdf.main.MainActivity .up.|> com.aaron.yespdf.main.IMainContract.V
+  com.aaron.yespdf.main.MainActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.main.MainActivity o-- com.aaron.yespdf.common.widgets.NewViewPager : vp
+  com.aaron.yespdf.main.MainActivity o-- com.aaron.yespdf.main.IOperation : operation
+  com.aaron.yespdf.main.MainActivity o-- com.aaron.yespdf.main.IMainContract.P : presenter
+  com.aaron.yespdf.main.MainFragmentAdapter -up-|> androidx.fragment.app.FragmentPagerAdapter
+  com.aaron.yespdf.main.MainPresenter .up.|> com.aaron.yespdf.main.IMainContract.P
+  com.aaron.yespdf.main.MainPresenter o-- com.aaron.yespdf.main.IMainContract.V : view
+  com.aaron.yespdf.main.RecentAdapter -up-|> com.aaron.yespdf.main.AbstractAdapter
+  com.aaron.yespdf.main.RecentAdapter o-- com.aaron.yespdf.common.event.RecentPDFEvent : recentPDFEvent
+  com.aaron.yespdf.main.RecentFragment .up.|> com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+  com.aaron.yespdf.main.RecentFragment .up.|> com.aaron.yespdf.main.IOperation
+  com.aaron.yespdf.main.RecentFragment -up-|> com.aaron.base.base.BaseFragment
+  com.aaron.yespdf.main.XGridDecoration -up-|> androidx.recyclerview.widget.RecyclerView.ItemDecoration
+  com.aaron.yespdf.main.YGridDecoration -up-|> androidx.recyclerview.widget.RecyclerView.ItemDecoration
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

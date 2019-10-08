@@ -1,0 +1,208 @@
+@startuml
+
+title __GREENDAO's Class Diagram__\n
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.CollectionDao {
+            {static} + TABLENAME : String
+            + CollectionDao()
+            + CollectionDao()
+            {static} + createTable()
+            {static} + dropTable()
+            + getKey()
+            + hasKey()
+            + readEntity()
+            + readEntity()
+            + readKey()
+            # bindValues()
+            # bindValues()
+            # isEntityUpdateable()
+            # updateKeyAfterInsert()
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.CollectionDao.Properties {
+            {static} + Id : Property
+            {static} + Name : Property
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.DaoMaster {
+            {static} + SCHEMA_VERSION : int
+            + DaoMaster()
+            + DaoMaster()
+            {static} + createAllTables()
+            {static} + dropAllTables()
+            {static} + newDevSession()
+            + newSession()
+            + newSession()
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.DaoMaster.DevOpenHelper {
+            + DevOpenHelper()
+            + DevOpenHelper()
+            + onUpgrade()
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        abstract class com.aaron.yespdf.common.greendao.DaoMaster.OpenHelper {
+            + OpenHelper()
+            + OpenHelper()
+            + onCreate()
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.DaoSession {
+            - collectionDaoConfig : DaoConfig
+            - pDFDaoConfig : DaoConfig
+            - recentPDFDaoConfig : DaoConfig
+            + DaoSession()
+            + clear()
+            + getCollectionDao()
+            + getPDFDao()
+            + getRecentPDFDao()
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.PDFDao {
+            {static} + TABLENAME : String
+            + PDFDao()
+            + PDFDao()
+            {static} + createTable()
+            {static} + dropTable()
+            + getKey()
+            + hasKey()
+            + readEntity()
+            + readEntity()
+            + readKey()
+            # bindValues()
+            # bindValues()
+            # isEntityUpdateable()
+            # updateKeyAfterInsert()
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.PDFDao.Properties {
+            {static} + Bookmark : Property
+            {static} + Cover : Property
+            {static} + CurPage : Property
+            {static} + Dir : Property
+            {static} + Id : Property
+            {static} + LatestRead : Property
+            {static} + Name : Property
+            {static} + Path : Property
+            {static} + Progress : Property
+            {static} + TotalPage : Property
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.RecentPDFDao {
+            {static} + TABLENAME : String
+            + RecentPDFDao()
+            + RecentPDFDao()
+            {static} + createTable()
+            {static} + dropTable()
+            + getKey()
+            + hasKey()
+            + readEntity()
+            + readEntity()
+            + readKey()
+            # bindValues()
+            # bindValues()
+            # isEntityUpdateable()
+            # updateKeyAfterInsert()
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.RecentPDFDao.Properties {
+            {static} + Dir : Property
+            {static} + Id : Property
+            {static} + Name : Property
+        }
+      }
+    }
+  }
+  
+
+  com.aaron.yespdf.common.greendao.CollectionDao -up-|> org.greenrobot.greendao.AbstractDao
+  com.aaron.yespdf.common.greendao.CollectionDao +-down- com.aaron.yespdf.common.greendao.CollectionDao.Properties
+  com.aaron.yespdf.common.greendao.DaoMaster -up-|> org.greenrobot.greendao.AbstractDaoMaster
+  com.aaron.yespdf.common.greendao.DaoMaster +-down- com.aaron.yespdf.common.greendao.DaoMaster.DevOpenHelper
+  com.aaron.yespdf.common.greendao.DaoMaster +-down- com.aaron.yespdf.common.greendao.DaoMaster.OpenHelper
+  com.aaron.yespdf.common.greendao.DaoMaster.DevOpenHelper -up-|> com.aaron.yespdf.common.greendao.DaoMaster.OpenHelper
+  com.aaron.yespdf.common.greendao.DaoMaster.OpenHelper -up-|> org.greenrobot.greendao.database.DatabaseOpenHelper
+  com.aaron.yespdf.common.greendao.DaoSession -up-|> org.greenrobot.greendao.AbstractDaoSession
+  com.aaron.yespdf.common.greendao.DaoSession o-- com.aaron.yespdf.common.greendao.CollectionDao : collectionDao
+  com.aaron.yespdf.common.greendao.DaoSession o-- com.aaron.yespdf.common.greendao.PDFDao : pDFDao
+  com.aaron.yespdf.common.greendao.DaoSession o-- com.aaron.yespdf.common.greendao.RecentPDFDao : recentPDFDao
+  com.aaron.yespdf.common.greendao.PDFDao -up-|> org.greenrobot.greendao.AbstractDao
+  com.aaron.yespdf.common.greendao.PDFDao +-down- com.aaron.yespdf.common.greendao.PDFDao.Properties
+  com.aaron.yespdf.common.greendao.RecentPDFDao -up-|> org.greenrobot.greendao.AbstractDao
+  com.aaron.yespdf.common.greendao.RecentPDFDao +-down- com.aaron.yespdf.common.greendao.RecentPDFDao.Properties
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

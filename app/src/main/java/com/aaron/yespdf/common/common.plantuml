@@ -1,0 +1,192 @@
+@startuml
+
+title __COMMON's Class Diagram__\n
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.App {
+          {static} - TAG : String
+          {static} - sContext : Context
+          {static} + getContext()
+          + onCreate()
+          # attachBaseContext()
+          - bugly()
+          - leakCanary()
+          - tinker()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      interface com.aaron.yespdf.common.AppConfig {
+          {static} + BUGLY_APPID : String
+          {static} + DB_NAME : String
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      abstract class com.aaron.yespdf.common.CommonActivity {
+          # toolbar : Toolbar
+          {abstract} # createToolbar()
+          {abstract} # layoutId()
+          # onCreate()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.DBHelper {
+          {static} - sDaoSession : DaoSession
+          {static} - sSaveBitmapComplete : boolean
+          {static} + deleteCollection()
+          {static} + deleteCollection()
+          {static} + deletePDF()
+          {static} + deleteRecent()
+          {static} + init()
+          {static} + insert()
+          {static} + insertRecent()
+          {static} + queryAllCollection()
+          {static} + queryAllPDF()
+          {static} + queryCollection()
+          {static} + queryPDF()
+          {static} + queryRecentPDF()
+          {static} + updatePDF()
+          - DBHelper()
+          {static} - insertPDFs()
+          {static} - queryPDF()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.DaoConverter {
+          + convertToDatabaseValue()
+          + convertToEntityProperty()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.EmptyHolder {
+          + EmptyHolder()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      interface com.aaron.yespdf.common.IContract {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      interface com.aaron.yespdf.common.IContract.P {
+          {abstract} + detachV()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      interface com.aaron.yespdf.common.IContract.V {
+          {abstract} + attachP()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.Settings {
+          {static} - SP_CLICK_FLIP_PAGE : String
+          {static} - SP_KEEP_SCREEN_ON : String
+          {static} - SP_LOCK_LANDSCAPE : String
+          {static} - SP_MAX_RECENT_COUNT : String
+          {static} - SP_NIGHT_MODE : String
+          {static} - SP_SCROLL_LEVEL : String
+          {static} - SP_SHOW_STATUS_BAR : String
+          {static} - SP_SWIPE_HORIZONTAL : String
+          {static} - SP_VOLUME_CONTROL : String
+          {static} - clickFlipPage : boolean
+          {static} - keepScreenOn : boolean
+          {static} - lockLandscape : boolean
+          {static} - maxRecentCount : String
+          {static} - nightMode : boolean
+          {static} - scrollLevel : long
+          {static} - showStatusBar : boolean
+          {static} - swipeHorizontal : boolean
+          {static} - volumeControl : boolean
+          {static} + getMaxRecentCount()
+          {static} + getScrollLevel()
+          {static} + isClickFlipPage()
+          {static} + isKeepScreenOn()
+          {static} + isLockLandscape()
+          {static} + isNightMode()
+          {static} + isShowStatusBar()
+          {static} + isSwipeHorizontal()
+          {static} + isVolumeControl()
+          {static} + setClickFlipPage()
+          {static} + setKeepScreenOn()
+          {static} + setLockLandscape()
+          {static} + setMaxRecentCount()
+          {static} + setNightMode()
+          {static} + setScrollLevel()
+          {static} + setShowStatusBar()
+          {static} + setSwipeHorizontal()
+          {static} + setVolumeControl()
+          {static} ~ querySettings()
+          - Settings()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.UiManager {
+          {static} + setNavigationBarColor()
+          {static} + setStatusBar()
+          {static} + setTranslucentStatusBar()
+          {static} + setTransparentStatusBar()
+          {static} + showCenterShort()
+          {static} + showShort()
+          {static} + showShort()
+          - UiManager()
+      }
+    }
+  }
+  
+
+  com.aaron.yespdf.common.App -up-|> android.app.Application
+  com.aaron.yespdf.common.CommonActivity -up-|> com.aaron.base.base.BaseActivity
+  com.aaron.yespdf.common.DaoConverter .up.|> org.greenrobot.greendao.converter.PropertyConverter
+  com.aaron.yespdf.common.EmptyHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.aaron.yespdf.common.EmptyHolder o-- com.aaron.yespdf.common.widgets.ImageTextView : itvEmpty
+  com.aaron.yespdf.common.IContract +-down- com.aaron.yespdf.common.IContract.P
+  com.aaron.yespdf.common.IContract +-down- com.aaron.yespdf.common.IContract.V
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

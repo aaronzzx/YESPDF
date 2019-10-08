@@ -1,0 +1,160 @@
+@startuml
+
+title __LISTENER's Class Diagram__\n
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      class com.github.barteksc.pdfviewer.listener.Callbacks {
+          + callLinkHandler()
+          + callOnLoadComplete()
+          + callOnLongPress()
+          + callOnPageChange()
+          + callOnPageError()
+          + callOnPageScroll()
+          + callOnRender()
+          + callOnScroll()
+          + callOnShow()
+          + callOnTap()
+          + getOnDraw()
+          + getOnDrawAll()
+          + getOnError()
+          + setLinkHandler()
+          + setOnDraw()
+          + setOnDrawAll()
+          + setOnError()
+          + setOnLoadComplete()
+          + setOnLongPress()
+          + setOnPageChange()
+          + setOnPageError()
+          + setOnPageScroll()
+          + setOnRender()
+          + setOnScroll()
+          + setOnShow()
+          + setOnTap()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnDrawListener {
+          {abstract} + onLayerDrawn()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnErrorListener {
+          {abstract} + onError()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener {
+          {abstract} + loadComplete()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnLongPressListener {
+          {abstract} + onLongPress()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnPageChangeListener {
+          {abstract} + onPageChanged()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnPageErrorListener {
+          {abstract} + onPageError()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnPageScrollListener {
+          {abstract} + onPageScrolled()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnRenderListener {
+          {abstract} + onInitiallyRendered()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnScrollListener {
+          {abstract} + onScroll()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnShowListener {
+          {abstract} + onShow()
+      }
+    }
+  }
+  
+
+  namespace com.github.barteksc.pdfviewer {
+    namespace listener {
+      interface com.github.barteksc.pdfviewer.listener.OnTapListener {
+          {abstract} + onTap()
+      }
+    }
+  }
+  
+
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.link.LinkHandler : linkHandler
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnScrollListener : mOnScrollListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnShowListener : mOnShowListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnDrawListener : onDrawAllListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnDrawListener : onDrawListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnErrorListener : onErrorListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener : onLoadCompleteListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnLongPressListener : onLongPressListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnPageChangeListener : onPageChangeListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnPageErrorListener : onPageErrorListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnPageScrollListener : onPageScrollListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnRenderListener : onRenderListener
+  com.github.barteksc.pdfviewer.listener.Callbacks o-- com.github.barteksc.pdfviewer.listener.OnTapListener : onTapListener
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

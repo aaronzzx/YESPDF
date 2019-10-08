@@ -1,0 +1,224 @@
+@startuml
+
+title __FILEPICKER's Class Diagram__\n
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      abstract class com.aaron.yespdf.filepicker.AbstractAdapter {
+          {abstract} ~ reset()
+          {abstract} ~ selectAll()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.ByNameListable {
+          + listFile()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.FileFilterImpl {
+          + accept()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      interface com.aaron.yespdf.filepicker.IListable {
+          {abstract} + listFile()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      interface com.aaron.yespdf.filepicker.ISelectContract {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      interface com.aaron.yespdf.filepicker.ISelectContract.FileCallback {
+          {abstract} + onResult()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      interface com.aaron.yespdf.filepicker.ISelectContract.M {
+          {abstract} + listFile()
+          {abstract} + listStorage()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      abstract class com.aaron.yespdf.filepicker.ISelectContract.P {
+          # fileList : List<File>
+          {static} ~ ROOT_PATH : String
+          ~ P()
+          {abstract} ~ canFinish()
+          {abstract} ~ detachV()
+          {abstract} ~ goBack()
+          {abstract} ~ listFile()
+          {abstract} ~ listStorage()
+          {abstract} ~ model()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      interface com.aaron.yespdf.filepicker.ISelectContract.V {
+          {abstract} + attachP()
+          {abstract} + onShowFileList()
+          {abstract} + onShowMessage()
+          {abstract} + onShowPath()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectActivity {
+          {static} + EXTRA_SELECTED : String
+          ~ horizontalSv : HorizontalScrollView
+          ~ ibtnSelectAll : ImageButton
+          ~ rvSelect : RecyclerView
+          ~ tvImportCount : TextView
+          ~ tvPath : TextView
+          ~ vgPath : ViewGroup
+          {static} - EXTRA_IMPORTED : String
+          - dataObserver : AdapterDataObserver
+          - fileList : List<File>
+          - onClickListener : OnClickListener
+          - selectList : List<String>
+          - unbinder : Unbinder
+          + attachP()
+          + onBackPressed()
+          + onShowFileList()
+          + onShowMessage()
+          + onShowPath()
+          + onSupportNavigateUp()
+          {static} + start()
+          # createToolbar()
+          # layoutId()
+          # onCreate()
+          # onDestroy()
+          ~ onDirTap()
+          ~ onSelectResult()
+          - initToolbar()
+          - initView()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectAdapter {
+          - checkArray : SparseBooleanArray
+          - context : Context
+          - fileList : List<File>
+          - importedList : List<String>
+          - selectList : List<String>
+          + getItemCount()
+          + onBindViewHolder()
+          + onBindViewHolder()
+          + onCreateViewHolder()
+          + selectAll()
+          ~ SelectAdapter()
+          ~ reset()
+          - fileCount()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectAdapter.ViewHolder {
+          - cb : CheckBox
+          - ivIcon : ImageView
+          - ivNext : ImageView
+          - tvDescription : TextView
+          - tvTitle : TextView
+          ~ ViewHolder()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectM {
+          + listFile()
+          + listStorage()
+          ~ SelectM()
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectP {
+          - curPath : String
+          ~ SelectP()
+          ~ canFinish()
+          ~ detachV()
+          ~ goBack()
+          ~ listFile()
+          ~ listStorage()
+          ~ model()
+      }
+    }
+  }
+  
+
+  com.aaron.yespdf.filepicker.AbstractAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.filepicker.ByNameListable .up.|> com.aaron.yespdf.filepicker.IListable
+  com.aaron.yespdf.filepicker.FileFilterImpl .up.|> java.io.FileFilter
+  com.aaron.yespdf.filepicker.ISelectContract +-down- com.aaron.yespdf.filepicker.ISelectContract.FileCallback
+  com.aaron.yespdf.filepicker.ISelectContract +-down- com.aaron.yespdf.filepicker.ISelectContract.M
+  com.aaron.yespdf.filepicker.ISelectContract +-down- com.aaron.yespdf.filepicker.ISelectContract.P
+  com.aaron.yespdf.filepicker.ISelectContract +-down- com.aaron.yespdf.filepicker.ISelectContract.V
+  com.aaron.yespdf.filepicker.ISelectContract.P o-- com.aaron.yespdf.filepicker.ISelectContract.M : model
+  com.aaron.yespdf.filepicker.ISelectContract.P o-- com.aaron.yespdf.filepicker.ISelectContract.V : view
+  com.aaron.yespdf.filepicker.SelectActivity .up.|> com.aaron.yespdf.filepicker.ISelectContract.V
+  com.aaron.yespdf.filepicker.SelectActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.filepicker.SelectActivity o-- com.aaron.yespdf.filepicker.AbstractAdapter : adapter
+  com.aaron.yespdf.filepicker.SelectActivity o-- com.aaron.yespdf.filepicker.ISelectContract.P : presenter
+  com.aaron.yespdf.filepicker.SelectAdapter -up-|> com.aaron.yespdf.filepicker.AbstractAdapter
+  com.aaron.yespdf.filepicker.SelectAdapter +-down- com.aaron.yespdf.filepicker.SelectAdapter.ViewHolder
+  com.aaron.yespdf.filepicker.SelectAdapter.ViewHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.aaron.yespdf.filepicker.SelectM .up.|> com.aaron.yespdf.filepicker.ISelectContract.M
+  com.aaron.yespdf.filepicker.SelectM o-- com.aaron.yespdf.filepicker.IListable : mListable
+  com.aaron.yespdf.filepicker.SelectP -up-|> com.aaron.yespdf.filepicker.ISelectContract.P
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

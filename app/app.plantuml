@@ -1,0 +1,904 @@
+@startuml
+
+title __APP's Class Diagram__\n
+
+  namespace com.aaron.yespdf {
+    class com.aaron.yespdf.BuildConfig {
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    class com.aaron.yespdf.R2 {
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.AboutActivity {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.AboutActivity_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.AboutPresenter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.AboutUtils {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      interface com.aaron.yespdf.about.IAboutContract {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      interface com.aaron.yespdf.about.Info {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.Library {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.LibraryAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.Message {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace about {
+      class com.aaron.yespdf.about.MessageAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.App {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      interface com.aaron.yespdf.common.AppConfig {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      abstract class com.aaron.yespdf.common.CommonActivity {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.DBHelper {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.DaoConverter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.EmptyHolder {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      interface com.aaron.yespdf.common.IContract {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.Settings {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      class com.aaron.yespdf.common.UiManager {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace bean {
+        class com.aaron.yespdf.common.bean.Collection {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace bean {
+        class com.aaron.yespdf.common.bean.PDF {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace bean {
+        class com.aaron.yespdf.common.bean.RecentPDF {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace event {
+        class com.aaron.yespdf.common.event.AllEvent {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace event {
+        class com.aaron.yespdf.common.event.ContentEvent {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace event {
+        class com.aaron.yespdf.common.event.HotfixEvent {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace event {
+        class com.aaron.yespdf.common.event.MaxRecentEvent {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace event {
+        class com.aaron.yespdf.common.event.RecentPDFEvent {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.CollectionDao {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.DaoMaster {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.DaoSession {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.PDFDao {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace greendao {
+        class com.aaron.yespdf.common.greendao.RecentPDFDao {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace utils {
+        class com.aaron.yespdf.common.utils.DialogUtils {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace utils {
+        class com.aaron.yespdf.common.utils.PdfUtils {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace widgets {
+        class com.aaron.yespdf.common.widgets.BorderImageView {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace widgets {
+        class com.aaron.yespdf.common.widgets.ImageTextView {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace common {
+      namespace widgets {
+        class com.aaron.yespdf.common.widgets.NewViewPager {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace factorymethod {
+      class com.aaron.yespdf.factorymethod.Huawei {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace factorymethod {
+      class com.aaron.yespdf.factorymethod.HuaweiFactory {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace factorymethod {
+      interface com.aaron.yespdf.factorymethod.Phone {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace factorymethod {
+      interface com.aaron.yespdf.factorymethod.PhoneFactory {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace factorymethod {
+      class com.aaron.yespdf.factorymethod.Test {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace factorymethod {
+      class com.aaron.yespdf.factorymethod.Xiaomi {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace factorymethod {
+      class com.aaron.yespdf.factorymethod.XiaomiFactory {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      abstract class com.aaron.yespdf.filepicker.AbstractAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.ByNameListable {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.FileFilterImpl {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      interface com.aaron.yespdf.filepicker.IListable {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      interface com.aaron.yespdf.filepicker.ISelectContract {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectActivity {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectActivity_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectM {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace filepicker {
+      class com.aaron.yespdf.filepicker.SelectP {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      abstract class com.aaron.yespdf.main.AbstractAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AllAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AllDeleteEvent {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AllFragment {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.AllFragment_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.CollectionAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.CollectionFragment {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.CollectionFragment_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      interface com.aaron.yespdf.main.IMainContract {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      interface com.aaron.yespdf.main.IOperation {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.MainActivity {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.MainActivity_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.MainFragmentAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.MainPresenter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.OperationBarHelper {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.OperationEvent {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.PdfDeleteEvent {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.RecentAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.RecentFragment {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.RecentFragment_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.XGridDecoration {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace main {
+      class com.aaron.yespdf.main.YGridDecoration {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.Bookmark {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.BookmarkAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.BookmarkFragment {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.BookmarkFragment_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.ContentFragment {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.ContentFragment_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.ContentHolder {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      interface com.aaron.yespdf.preview.IActivityInterface {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      interface com.aaron.yespdf.preview.IBkFragInterface {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      interface com.aaron.yespdf.preview.IContentFragInterface {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.PagerAdapter {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.PreviewActivity {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace preview {
+      class com.aaron.yespdf.preview.PreviewActivity_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace settings {
+      class com.aaron.yespdf.settings.SettingsActivity {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace settings {
+      class com.aaron.yespdf.settings.SettingsActivity_ViewBinding {
+      }
+    }
+  }
+  
+
+  namespace com.aaron.yespdf {
+    namespace settings {
+      class com.aaron.yespdf.settings.SettingsAdapter {
+      }
+    }
+  }
+  
+
+  com.aaron.yespdf.about.AboutActivity .up.|> com.aaron.yespdf.about.IAboutContract.V
+  com.aaron.yespdf.about.AboutActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.about.AboutActivity o-- com.aaron.yespdf.about.IAboutContract.P : mPresenter
+  com.aaron.yespdf.about.AboutActivity_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.about.AboutActivity_ViewBinding o-- com.aaron.yespdf.about.AboutActivity : target
+  com.aaron.yespdf.about.AboutPresenter .up.|> com.aaron.yespdf.about.IAboutContract.P
+  com.aaron.yespdf.about.LibraryAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.about.MessageAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.common.App -up-|> android.app.Application
+  com.aaron.yespdf.common.CommonActivity -up-|> com.aaron.base.base.BaseActivity
+  com.aaron.yespdf.common.DaoConverter .up.|> org.greenrobot.greendao.converter.PropertyConverter
+  com.aaron.yespdf.common.EmptyHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.aaron.yespdf.common.EmptyHolder o-- com.aaron.yespdf.common.widgets.ImageTextView : itvEmpty
+  com.aaron.yespdf.common.bean.Collection .up.|> android.os.Parcelable
+  com.aaron.yespdf.common.bean.PDF .up.|> android.os.Parcelable
+  com.aaron.yespdf.common.bean.RecentPDF .up.|> android.os.Parcelable
+  com.aaron.yespdf.common.greendao.CollectionDao -up-|> org.greenrobot.greendao.AbstractDao
+  com.aaron.yespdf.common.greendao.DaoMaster -up-|> org.greenrobot.greendao.AbstractDaoMaster
+  com.aaron.yespdf.common.greendao.DaoSession -up-|> org.greenrobot.greendao.AbstractDaoSession
+  com.aaron.yespdf.common.greendao.DaoSession o-- com.aaron.yespdf.common.greendao.CollectionDao : collectionDao
+  com.aaron.yespdf.common.greendao.DaoSession o-- com.aaron.yespdf.common.greendao.PDFDao : pDFDao
+  com.aaron.yespdf.common.greendao.DaoSession o-- com.aaron.yespdf.common.greendao.RecentPDFDao : recentPDFDao
+  com.aaron.yespdf.common.greendao.PDFDao -up-|> org.greenrobot.greendao.AbstractDao
+  com.aaron.yespdf.common.greendao.RecentPDFDao -up-|> org.greenrobot.greendao.AbstractDao
+  com.aaron.yespdf.common.widgets.BorderImageView -up-|> android.widget.ImageView
+  com.aaron.yespdf.common.widgets.ImageTextView -up-|> android.widget.TextView
+  com.aaron.yespdf.common.widgets.NewViewPager -up-|> androidx.viewpager.widget.ViewPager
+  com.aaron.yespdf.factorymethod.Huawei .up.|> com.aaron.yespdf.factorymethod.Phone
+  com.aaron.yespdf.factorymethod.HuaweiFactory .up.|> com.aaron.yespdf.factorymethod.PhoneFactory
+  com.aaron.yespdf.factorymethod.Xiaomi .up.|> com.aaron.yespdf.factorymethod.Phone
+  com.aaron.yespdf.factorymethod.XiaomiFactory .up.|> com.aaron.yespdf.factorymethod.PhoneFactory
+  com.aaron.yespdf.filepicker.AbstractAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.filepicker.ByNameListable .up.|> com.aaron.yespdf.filepicker.IListable
+  com.aaron.yespdf.filepicker.FileFilterImpl .up.|> java.io.FileFilter
+  com.aaron.yespdf.filepicker.SelectActivity .up.|> com.aaron.yespdf.filepicker.ISelectContract.V
+  com.aaron.yespdf.filepicker.SelectActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.filepicker.SelectActivity o-- com.aaron.yespdf.filepicker.AbstractAdapter : adapter
+  com.aaron.yespdf.filepicker.SelectActivity o-- com.aaron.yespdf.filepicker.ISelectContract.P : presenter
+  com.aaron.yespdf.filepicker.SelectActivity_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.filepicker.SelectActivity_ViewBinding o-- com.aaron.yespdf.filepicker.SelectActivity : target
+  com.aaron.yespdf.filepicker.SelectAdapter -up-|> com.aaron.yespdf.filepicker.AbstractAdapter
+  com.aaron.yespdf.filepicker.SelectM .up.|> com.aaron.yespdf.filepicker.ISelectContract.M
+  com.aaron.yespdf.filepicker.SelectM o-- com.aaron.yespdf.filepicker.IListable : mListable
+  com.aaron.yespdf.filepicker.SelectP -up-|> com.aaron.yespdf.filepicker.ISelectContract.P
+  com.aaron.yespdf.main.AbstractAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.main.AllAdapter -up-|> com.aaron.yespdf.main.AbstractAdapter
+  com.aaron.yespdf.main.AllFragment .up.|> com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+  com.aaron.yespdf.main.AllFragment .up.|> com.aaron.yespdf.main.IOperation
+  com.aaron.yespdf.main.AllFragment -up-|> com.aaron.base.base.BaseFragment
+  com.aaron.yespdf.main.AllFragment_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.main.AllFragment_ViewBinding o-- com.aaron.yespdf.main.AllFragment : target
+  com.aaron.yespdf.main.CollectionAdapter -up-|> com.aaron.yespdf.main.AbstractAdapter
+  com.aaron.yespdf.main.CollectionAdapter o-- com.aaron.yespdf.common.event.RecentPDFEvent : recentPDFEvent
+  com.aaron.yespdf.main.CollectionFragment .up.|> com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+  com.aaron.yespdf.main.CollectionFragment .up.|> com.aaron.yespdf.main.IOperation
+  com.aaron.yespdf.main.CollectionFragment -up-|> androidx.fragment.app.DialogFragment
+  com.aaron.yespdf.main.CollectionFragment o-- com.aaron.yespdf.main.AbstractAdapter : adapter
+  com.aaron.yespdf.main.CollectionFragment_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.main.CollectionFragment_ViewBinding o-- com.aaron.yespdf.main.CollectionFragment : target
+  com.aaron.yespdf.main.MainActivity .up.|> com.aaron.yespdf.main.IMainContract.V
+  com.aaron.yespdf.main.MainActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.main.MainActivity o-- com.aaron.yespdf.common.widgets.NewViewPager : vp
+  com.aaron.yespdf.main.MainActivity o-- com.aaron.yespdf.main.IOperation : operation
+  com.aaron.yespdf.main.MainActivity o-- com.aaron.yespdf.main.IMainContract.P : presenter
+  com.aaron.yespdf.main.MainActivity_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.main.MainActivity_ViewBinding o-- com.aaron.yespdf.main.MainActivity : target
+  com.aaron.yespdf.main.MainFragmentAdapter -up-|> androidx.fragment.app.FragmentPagerAdapter
+  com.aaron.yespdf.main.MainPresenter .up.|> com.aaron.yespdf.main.IMainContract.P
+  com.aaron.yespdf.main.MainPresenter o-- com.aaron.yespdf.main.IMainContract.V : view
+  com.aaron.yespdf.main.RecentAdapter -up-|> com.aaron.yespdf.main.AbstractAdapter
+  com.aaron.yespdf.main.RecentAdapter o-- com.aaron.yespdf.common.event.RecentPDFEvent : recentPDFEvent
+  com.aaron.yespdf.main.RecentFragment .up.|> com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+  com.aaron.yespdf.main.RecentFragment .up.|> com.aaron.yespdf.main.IOperation
+  com.aaron.yespdf.main.RecentFragment -up-|> com.aaron.base.base.BaseFragment
+  com.aaron.yespdf.main.RecentFragment_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.main.RecentFragment_ViewBinding o-- com.aaron.yespdf.main.RecentFragment : target
+  com.aaron.yespdf.main.XGridDecoration -up-|> androidx.recyclerview.widget.RecyclerView.ItemDecoration
+  com.aaron.yespdf.main.YGridDecoration -up-|> androidx.recyclerview.widget.RecyclerView.ItemDecoration
+  com.aaron.yespdf.preview.Bookmark .up.|> android.os.Parcelable
+  com.aaron.yespdf.preview.BookmarkAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.preview.BookmarkFragment .up.|> com.aaron.yespdf.preview.IBkFragInterface
+  com.aaron.yespdf.preview.BookmarkFragment -up-|> com.aaron.base.base.BaseFragment
+  com.aaron.yespdf.preview.BookmarkFragment_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.preview.BookmarkFragment_ViewBinding o-- com.aaron.yespdf.preview.BookmarkFragment : target
+  com.aaron.yespdf.preview.ContentFragment .up.|> com.aaron.yespdf.preview.IContentFragInterface
+  com.aaron.yespdf.preview.ContentFragment -up-|> com.aaron.base.base.BaseFragment
+  com.aaron.yespdf.preview.ContentFragment o-- com.aaron.yespdf.common.widgets.ImageTextView : mItvEmpty
+  com.aaron.yespdf.preview.ContentFragment_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.preview.ContentFragment_ViewBinding o-- com.aaron.yespdf.preview.ContentFragment : target
+  com.aaron.yespdf.preview.ContentHolder -up-|> com.unnamed.b.atv.model.TreeNode.BaseNodeViewHolder
+  com.aaron.yespdf.preview.ContentHolder o-- com.aaron.yespdf.preview.ContentHolder.OnIconTapListener : mOnIconTapListener
+  com.aaron.yespdf.preview.ContentHolder o-- com.aaron.yespdf.preview.ContentHolder.OnNodeTapListener : mOnNodeTapListener
+  com.aaron.yespdf.preview.PagerAdapter -up-|> androidx.fragment.app.FragmentPagerAdapter
+  com.aaron.yespdf.preview.PreviewActivity .up.|> com.aaron.yespdf.preview.IActivityInterface
+  com.aaron.yespdf.preview.PreviewActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.preview.PreviewActivity o-- com.github.barteksc.pdfviewer.PDFView : pdfView
+  com.aaron.yespdf.preview.PreviewActivity o-- com.aaron.yespdf.preview.IBkFragInterface : bkFragInterface
+  com.aaron.yespdf.preview.PreviewActivity o-- com.aaron.yespdf.preview.IContentFragInterface : contentFragInterface
+  com.aaron.yespdf.preview.PreviewActivity o-- com.aaron.yespdf.common.bean.PDF : pdf
+  com.aaron.yespdf.preview.PreviewActivity_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.preview.PreviewActivity_ViewBinding o-- com.aaron.yespdf.preview.PreviewActivity : target
+  com.aaron.yespdf.settings.SettingsActivity -up-|> com.aaron.yespdf.common.CommonActivity
+  com.aaron.yespdf.settings.SettingsActivity_ViewBinding .up.|> butterknife.Unbinder
+  com.aaron.yespdf.settings.SettingsActivity_ViewBinding o-- com.aaron.yespdf.settings.SettingsActivity : target
+  com.aaron.yespdf.settings.SettingsAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.aaron.yespdf.settings.SettingsAdapter o-- com.aaron.yespdf.common.event.MaxRecentEvent : mMaxRecentEvent
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml
