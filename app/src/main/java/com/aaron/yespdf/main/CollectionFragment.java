@@ -1,10 +1,12 @@
 package com.aaron.yespdf.main;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -28,7 +30,9 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
+import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.PDF;
+import com.aaron.yespdf.common.event.AllEvent;
 import com.aaron.yespdf.common.utils.DialogUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.LogUtils;
@@ -49,7 +53,7 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class CollectionFragment extends DialogFragment implements IOperation, AbstractAdapter.ICommInterface<PDF> {
+public class CollectionFragment extends DialogFragment implements IOperation, AbstractAdapter.ICommInterface<PDF>, RegroupingAdapter.Callback {
 
     private static final String BUNDLE_NAME = "BUNDLE_NAME";
 
@@ -57,6 +61,8 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     RealtimeBlurView realtimeBlurView;
     @BindView(R2.id.app_vg_operation)
     ViewGroup vgOperationBar;
+    @BindView(R2.id.app_tv_regrouping)
+    TextView tvRegrouping;
     @BindView(R2.id.app_ibtn_cancel)
     ImageButton ibtnCancel;
     @BindView(R2.id.app_tv_title)
@@ -76,11 +82,14 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     private AbstractAdapter adapter;
     private TextView tvDeleteDescription;
     private BottomSheetDialog deleteDialog;
+    private BottomSheetDialog regroupingDialog;
+    private Dialog addNewGroupDialog;
 
     private String name;
     private String newDirName;
     private List<PDF> pdfList = new ArrayList<>();
     private List<PDF> selectPDFList;
+    private List<String> savedCollections = new ArrayList<>();
 
     static DialogFragment newInstance(String name) {
         DialogFragment fragment = new CollectionFragment();
@@ -135,8 +144,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
                     if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_BACK) {
                         if (vgOperationBar.getVisibility() == View.VISIBLE) {
-                            OperationBarHelper.hide(vgOperationBar);
-                            adapter.cancelSelect();
+                            cancelSelect();
                             return true;
                         }
                     }
@@ -144,11 +152,6 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
                 }
             });
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     @Override
@@ -163,6 +166,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         tvTitle.setText(getString(R.string.app_selected_zero));
         ibtnSelectAll.setSelected(false);
         OperationBarHelper.show(vgOperationBar);
+        tvRegrouping.setVisibility(View.VISIBLE);
     }
 
     @SuppressLint("SetTextI18n")
@@ -190,6 +194,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
                 cancelSelect();
                 adapter.notifyDataSetChanged();
                 EventBus.getDefault().post(new PdfDeleteEvent(nameList, name, pdfList.isEmpty()));
+                if (pdfList.isEmpty()) dismiss();
             }
         });
     }
@@ -204,6 +209,69 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     public void cancelSelect() {
         OperationBarHelper.hide(vgOperationBar);
         adapter.cancelSelect();
+        tvRegrouping.setVisibility(View.GONE);
+        if (regroupingDialog != null && regroupingDialog.isShowing()) {
+            regroupingDialog.dismiss();
+        }
+    }
+
+    /**
+     * 分组方法，属于 RegroupingAdapter
+     */
+    @Override
+    public void onAddNewGroup() {
+        if (addNewGroupDialog == null) {
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.app_dialog_input, null);
+            TextView tvTitle = view.findViewById(R.id.app_tv_title);
+            EditText etInput = view.findViewById(R.id.app_et_input);
+            Button btnCancel = view.findViewById(R.id.app_btn_cancel);
+            Button btnConfirm = view.findViewById(R.id.app_btn_confirm);
+            etInput.setInputType(InputType.TYPE_CLASS_TEXT);
+            tvTitle.setText(R.string.app_add_new_group);
+            etInput.setHint(R.string.app_type_new_group_name);
+            btnCancel.setText(R.string.app_cancel);
+            btnConfirm.setText(R.string.app_confirm);
+            btnCancel.setOnClickListener(v -> addNewGroupDialog.dismiss());
+            btnConfirm.setOnClickListener(v -> createNewGroup(etInput.getText().toString()));
+            addNewGroupDialog = DialogUtils.createDialog(getActivity(), view);
+            addNewGroupDialog.setOnDismissListener(dialog -> etInput.setText(""));
+        }
+        addNewGroupDialog.show();
+    }
+
+    private void createNewGroup(String name) {
+        for (String dir : savedCollections) {
+            if (dir.equals(name)) {
+                UiManager.showShort(R.string.app_group_name_existed);
+                return;
+            }
+        }
+        pdfList.removeAll(selectPDFList);
+        DBHelper.insertNewCollection(name, selectPDFList);
+        cancelSelect();
+        addNewGroupDialog.dismiss();
+        notifyGroupUpdate();
+    }
+
+    /**
+     * 分组方法，属于 RegroupingAdapter
+     */
+    @Override
+    public void onAddToGroup(String dir) {
+        if (name.equals(dir)) {
+            cancelSelect();
+            return;
+        }
+        pdfList.removeAll(selectPDFList);
+        DBHelper.insertPDFsToCollection(dir, selectPDFList);
+        cancelSelect();
+        notifyGroupUpdate();
+    }
+
+    private void notifyGroupUpdate() {
+        adapter.notifyDataSetChanged();
+        EventBus.getDefault().post(new AllEvent(pdfList.isEmpty(), name));
+        if (pdfList.isEmpty()) dismiss();
     }
 
     @Override
@@ -218,6 +286,9 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             name = args.getString(BUNDLE_NAME);
             etName.setText(name);
             pdfList.addAll(DBHelper.queryPDF(name));
+        }
+        for (Collection c : DBHelper.queryAllCollection()) {
+            savedCollections.add(c.getName());
         }
 
         createDeleteDialog();
@@ -263,6 +334,20 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
                 dismiss();
             }
         });
+        tvRegrouping.setOnClickListener(v -> {
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.app_bottomdialog_regrouping, null);
+            RecyclerView rv = view.findViewById(R.id.app_rv_group);
+            List<Collection> list = DBHelper.queryAllCollection();
+
+            rv.addItemDecoration(new XGridDecoration());
+            rv.addItemDecoration(new YGridDecoration());
+            GridLayoutManager lm = new GridLayoutManager(getActivity(), 3);
+            rv.setLayoutManager(lm);
+            RecyclerView.Adapter adapter = new RegroupingAdapter(list, this);
+            rv.setAdapter(adapter);
+            regroupingDialog = DialogUtils.createBottomSheetDialog(getActivity(), view, R.style.AppRegroupingAnim, true);
+            regroupingDialog.show();
+        });
         ibtnCancel.setOnClickListener(v -> cancelSelect());
         ibtnDelete.setOnClickListener(v -> {
             tvDeleteDescription.setText(getString(R.string.app_will_delete) + " " + selectPDFList.size() + " " + getString(R.string.app_delete_for_collection));
@@ -302,7 +387,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             UiManager.showShort(R.string.app_not_support_empty_string);
         } else {
             boolean success = DBHelper.updateDirName(name, newDirName);
-            if (success) EventBus.getDefault().post(new DirNameEvent());
+            if (success) EventBus.getDefault().post(new AllEvent());
         }
     }
 }

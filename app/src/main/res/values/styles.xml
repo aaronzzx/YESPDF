@@ -19,6 +19,11 @@
         <item name="android:windowExitAnimation">@anim/app_window_slide_exit</item>
     </style>
 
+    <style name="AppRegroupingAnim">
+        <item name="android:windowEnterAnimation">@anim/app_window_regroup_in</item>
+        <item name="android:windowExitAnimation">@anim/app_window_regroup_out</item>
+    </style>
+
     <!-- 目录标题加粗 -->
     <style name="AppContentTitle">
         <item name="android:textStyle">bold</item>

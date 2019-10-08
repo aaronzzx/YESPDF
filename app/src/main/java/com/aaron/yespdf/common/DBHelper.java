@@ -169,6 +169,16 @@ public final class DBHelper {
         return insertPDFs(name, pathList);
     }
 
+    public static void insertNewCollection(String newDirName, List<PDF> pdfList) {
+        Collection c = new Collection(newDirName);
+        sDaoSession.insertOrReplace(c);
+        transferPDFs(newDirName, pdfList);
+    }
+
+    public static void insertPDFsToCollection(String dirName, List<PDF> pdfList) {
+        transferPDFs(dirName, pdfList);
+    }
+
     private static boolean insertPDFs(String dir, List<String> pathList) {
         for (String path : pathList) {
             String bookmarkPage = "";
@@ -206,6 +216,13 @@ public final class DBHelper {
             sSaveBitmapComplete = false;
         }
         return true;
+    }
+
+    private static void transferPDFs(String dirName, List<PDF> pdfList) {
+        for (PDF pdf : pdfList) {
+            pdf.setDir(dirName);
+        }
+        sDaoSession.getPDFDao().updateInTx(pdfList);
     }
 
     private DBHelper() {

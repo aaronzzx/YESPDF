@@ -9,7 +9,10 @@
     <string name="app_parse_error">解析错误</string>
     <string name="app_need_verify_password">需要验证密码</string>
     <string name="app_password_error">密码错误</string>
+    <string name="app_group_name_existed">已存在分组名</string>
     <string name="app_do_not_delete">我不</string>
+    <string name="app_type_new_group_name">输入新的分组名</string>
+    <string name="app_cancel">取消</string>
     <string name="app_confirm">确认</string>
     <string name="app_oop_error">哎呀，出错了</string>
     <string name="app_doc_parse_error">文档解析错误</string>
@@ -27,6 +30,8 @@
     <string name="app_screenshot">截图进入微信选择图片扫码或使用另一部手机扫码</string>
     <string name="app_wechat_scan_notice">打开右上角菜单，从微信相册中选取收款码</string>
     <string name="app_not_support_empty_string">不支持空字符</string>
+    <string name="app_regrouping">重新分组</string>
+    <string name="app_add_new_group">新建分组</string>
 
     <string name="app_import">导入</string>
     <string name="app_import_count">导入(0)</string>

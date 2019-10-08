@@ -17,6 +17,7 @@ import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.Collection;
+import com.aaron.yespdf.common.event.AllEvent;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 
@@ -86,7 +87,10 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDirNameEvent(DirNameEvent event) {
+    public void onAllEvent(AllEvent event) {
+        if (event.isEmpty) {
+            DBHelper.deleteCollection(event.dir);
+        }
         update();
     }
 
