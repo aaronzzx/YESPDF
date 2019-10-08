@@ -14,9 +14,15 @@ import java.util.List;
 interface ISelectContract {
 
     interface M {
+        String SP_LAST_PATH = "SP_LAST_PATH"; // 使用首选项存放退出之前的路径
+
         void listStorage(FileCallback<List<SDCardUtils.SDCardInfo>> callback);
 
         void listFile(String path, FileCallback<List<File>> callback);
+
+        void saveLastPath(String path);
+
+        String queryLastPath();
     }
 
     interface FileCallback<T> {

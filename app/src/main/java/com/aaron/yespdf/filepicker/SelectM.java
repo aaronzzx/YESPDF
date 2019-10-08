@@ -1,6 +1,7 @@
 package com.aaron.yespdf.filepicker;
 
 import com.blankj.utilcode.util.SDCardUtils;
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 
 import java.io.File;
@@ -45,5 +46,15 @@ class SelectM implements ISelectContract.M {
                 callback.onResult(result);
             }
         });
+    }
+
+    @Override
+    public void saveLastPath(String path) {
+        SPStaticUtils.put(SP_LAST_PATH, path);
+    }
+
+    @Override
+    public String queryLastPath() {
+        return SPStaticUtils.getString(SP_LAST_PATH, "");
     }
 }

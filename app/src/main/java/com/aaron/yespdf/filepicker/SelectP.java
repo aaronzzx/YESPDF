@@ -1,6 +1,7 @@
 package com.aaron.yespdf.filepicker;
 
 import com.blankj.utilcode.util.SDCardUtils;
+import com.blankj.utilcode.util.StringUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.List;
 class SelectP extends ISelectContract.P {
 
     private String curPath = ROOT_PATH;
+    private boolean isFirstIn = true;
 
     SelectP(ISelectContract.V v) {
         super(v);
@@ -24,6 +26,7 @@ class SelectP extends ISelectContract.P {
 
     @Override
     void detachV() {
+        model.saveLastPath(curPath);
         view = null;
         model = null;
     }
@@ -41,6 +44,13 @@ class SelectP extends ISelectContract.P {
 
     @Override
     void listStorage() {
+        if (isFirstIn) {
+            String lastPath = model.queryLastPath();
+            if (!StringUtils.isEmpty(lastPath)) {
+                listFile(lastPath);
+            }
+            isFirstIn = false;
+        }
         model.listStorage(new ISelectContract.FileCallback<List<SDCardUtils.SDCardInfo>>() {
             @Override
             public void onResult(List<SDCardUtils.SDCardInfo> result) {
