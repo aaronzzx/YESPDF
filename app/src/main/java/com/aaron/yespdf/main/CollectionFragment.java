@@ -240,6 +240,10 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     }
 
     private void createNewGroup(String name) {
+        if (StringUtils.isEmpty(name)) {
+            UiManager.showShort(R.string.app_type_new_group_name);
+            return;
+        }
         for (String dir : savedCollections) {
             if (dir.equals(name)) {
                 UiManager.showShort(R.string.app_group_name_existed);
@@ -330,6 +334,8 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         realtimeBlurView.setOnClickListener(v -> {
             if (etName.hasFocus()) {
                 cancelRename();
+            } else if (vgOperationBar.getVisibility() == View.VISIBLE) {
+                cancelSelect();
             } else {
                 dismiss();
             }
@@ -345,7 +351,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             rv.setLayoutManager(lm);
             RecyclerView.Adapter adapter = new RegroupingAdapter(list, this);
             rv.setAdapter(adapter);
-            regroupingDialog = DialogUtils.createBottomSheetDialog(getActivity(), view, R.style.AppRegroupingAnim, true);
+            regroupingDialog = DialogUtils.createBottomSheetDialog(getActivity(), view);
             regroupingDialog.show();
         });
         ibtnCancel.setOnClickListener(v -> cancelSelect());

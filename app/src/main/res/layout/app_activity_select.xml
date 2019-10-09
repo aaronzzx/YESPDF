@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,6 +11,7 @@
         android:id="@+id/app_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_scrollFlags="scroll|enterAlways"
         style="@style/AppToolbarStyle"
         tools:title="@string/app_name_en">
 
@@ -25,26 +27,56 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <include layout="@layout/app_include_path" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/app_rv_select"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical"/>
+        android:layout_height="0.7dp"
+        android:layout_gravity="bottom"
+        android:background="@color/base_black_divider_shallow"/>
 
-    <TextView
-        android:id="@+id/app_tv_import_count"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/app_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:text="@string/app_import_count"
-        android:textSize="@dimen/base_text_large"
-        android:textStyle="bold"
-        android:textColor="@color/app_color_accent"
-        android:background="@color/base_white"/>
+        style="@style/AppSelectTabStyle">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_auto_scan" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_view_all" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/app_vp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+<!--    <TextView-->
+<!--        android:id="@+id/app_tv_import_count"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        android:gravity="center"-->
+<!--        android:paddingTop="16dp"-->
+<!--        android:paddingBottom="16dp"-->
+<!--        android:text="@string/app_import_count"-->
+<!--        android:textSize="@dimen/base_text_large"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textColor="@color/base_white"-->
+<!--        android:background="@color/app_color_accent_shallow"/>-->
+
+<!--    <include layout="@layout/app_include_path" />-->
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/app_rv_select"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:scrollbars="vertical"/>-->
 
 </LinearLayout>

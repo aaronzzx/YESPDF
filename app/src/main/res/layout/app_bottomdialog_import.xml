@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp"
+    android:background="@color/base_white">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/base_black"
+        android:textSize="@dimen/base_text_xxhlarge"
+        android:text="@string/app_how_to_group" />
+
+    <EditText
+        android:id="@+id/app_et_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/app_type_new_group_name"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/app_btn_import_exist"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_import_to_existed"
+            android:textColor="@color/base_black_shallow"
+            android:background="@null"/>
+
+        <Button
+            android:id="@+id/app_btn_base_folder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_base_on_folder_name"
+            android:textColor="@color/base_black_shallow"
+            android:background="@null"/>
+
+        <Button
+            android:id="@+id/app_btn_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_confirm_name"
+            android:textColor="@color/app_color_accent"
+            android:background="@null"/>
+
+    </LinearLayout>
+
+</LinearLayout>

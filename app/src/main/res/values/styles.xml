@@ -57,8 +57,24 @@
         <item name="tabRippleColor">@color/base_transparent</item>
     </style>
 
+    <style name="AppSelectTabStyle" parent="Widget.Design.TabLayout">
+        <item name="tabPaddingStart">16dp</item>
+        <item name="tabPaddingEnd">16dp</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabTextAppearance">@style/AppSelectTabTextStyle</item>
+        <item name="tabTextColor">@color/base_black_hint</item>
+        <item name="tabSelectedTextColor">@color/base_black</item>
+        <item name="tabRippleColor">@color/base_transparent</item>
+    </style>
+
     <style name="AppTabTextStyle" parent="Widget.Design.TabLayout">
         <item name="android:textSize">@dimen/base_text_xxxhlarge</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppSelectTabTextStyle" parent="Widget.Design.TabLayout">
+        <item name="android:textSize">@dimen/base_text_normal</item>
         <item name="android:textStyle">bold</item>
     </style>
 

@@ -3,10 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.aaron.yespdf">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <application
         android:name=".common.App"
         android:allowBackup="true"
@@ -16,7 +12,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:replace="icon,label,theme">
-
+        <activity android:name=".filepicker.ScanActivity"></activity>
         <activity
             android:name=".main.MainActivity"
             android:screenOrientation="portrait">
@@ -35,16 +31,17 @@
                 <data android:mimeType="application/pdf" />
             </intent-filter>
         </activity>
-
         <activity android:name=".settings.SettingsActivity" />
-
-        <activity android:name=".about.AboutActivity"
-            android:screenOrientation="portrait"/>
-
+        <activity
+            android:name=".about.AboutActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".filepicker.SelectActivity"
             android:screenOrientation="portrait" />
-
     </application>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

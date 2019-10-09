@@ -10,18 +10,18 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class SelectP extends ISelectContract.P {
+class ViewAllPresenter extends IViewAllContract.P {
 
     private String curPath = ROOT_PATH;
     private boolean isFirstIn = true;
 
-    SelectP(ISelectContract.V v) {
+    ViewAllPresenter(IViewAllContract.V v) {
         super(v);
     }
 
     @Override
-    ISelectContract.M model() {
-        return new SelectM();
+    IViewAllContract.M model() {
+        return new ViewAllModel();
     }
 
     @Override
@@ -46,12 +46,12 @@ class SelectP extends ISelectContract.P {
     void listStorage() {
         if (isFirstIn) {
             String lastPath = model.queryLastPath();
-            if (!StringUtils.isEmpty(lastPath)) {
+            if (!StringUtils.isEmpty(lastPath) && !ROOT_PATH.equals(lastPath)) {
                 listFile(lastPath);
             }
             isFirstIn = false;
         }
-        model.listStorage(new ISelectContract.FileCallback<List<SDCardUtils.SDCardInfo>>() {
+        model.listStorage(new IViewAllContract.FileCallback<List<SDCardUtils.SDCardInfo>>() {
             @Override
             public void onResult(List<SDCardUtils.SDCardInfo> result) {
                 fileList.clear();
@@ -72,7 +72,7 @@ class SelectP extends ISelectContract.P {
             listStorage();
             return;
         }
-        model.listFile(path, new ISelectContract.FileCallback<List<File>>() {
+        model.listFile(path, new IViewAllContract.FileCallback<List<File>>() {
             @Override
             public void onResult(List<File> result) {
                 if (path.length() > 18) {

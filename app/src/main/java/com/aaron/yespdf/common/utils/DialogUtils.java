@@ -53,8 +53,8 @@ public final class DialogUtils {
         Window window = dialog.getWindow();
         if (window != null) {
             window.setWindowAnimations(R.style.AppBottomDialogAnim);
-            window.findViewById(R.id.design_bottom_sheet)
-                    .setBackgroundResource(android.R.color.transparent);
+//            window.findViewById(R.id.design_bottom_sheet)
+//                    .setBackgroundResource(android.R.color.transparent);
         }
         return dialog;
     }

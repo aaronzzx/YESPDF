@@ -10,20 +10,28 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
         android:background="@color/base_black_divider_shallow">
+
+        <ImageButton
+            android:id="@+id/app_ibtn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/app_ic_back_black"
+            android:tint="#8D8D8D"
+            android:background="@null"/>
 
         <EditText
             android:id="@+id/app_et_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="8dp"
             android:layout_gravity="center"
             android:background="@null"
             android:maxLines="1"
             android:singleLine="true"
-            android:drawableStart="@drawable/app_ic_action_search_grey"
-            android:drawablePadding="8dp"
             android:textSize="@dimen/base_text_large"
             android:hint="@string/app_name_en"
             android:textColorHint="@color/base_black_hint"
@@ -35,8 +43,9 @@
             android:layout_height="24dp"
             android:layout_gravity="center"
             android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
             android:background="@null"
-            android:src="@drawable/app_ic_action_clear_grey"
+            android:src="@drawable/app_ic_clear_grey_20dp"
             android:visibility="gone"
             tools:ignore="ContentDescription" />
 
