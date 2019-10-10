@@ -6,15 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.EmptyHolder;
-import com.aaron.yespdf.common.widgets.BorderImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,45 +146,5 @@ abstract class AbstractAdapter<T> extends RecyclerView.Adapter<RecyclerView.View
         void onStartOperation();
 
         void onSelect(List<T> list, boolean selectAll);
-    }
-
-    static class CoverHolder extends RecyclerView.ViewHolder {
-        static final int DEFAULT_LAYOUT = R.layout.app_recycler_item_cover;
-
-        ImageView ivCover;
-        TextView tvTitle;
-        TextView tvProgress;
-        CheckBox cb;
-
-        CoverHolder(@NonNull View itemView) {
-            super(itemView);
-            ivCover = itemView.findViewById(R.id.app_iv_cover);
-            tvTitle = itemView.findViewById(R.id.app_tv_title);
-            tvProgress = itemView.findViewById(R.id.app_tv_progress);
-            cb = itemView.findViewById(R.id.app_cb);
-        }
-    }
-
-    static class CollectionHolder extends RecyclerView.ViewHolder {
-        static final int DEFAULT_LAYOUT = R.layout.app_recycler_item_collection;
-
-        BorderImageView ivCover1;
-        BorderImageView ivCover2;
-        BorderImageView ivCover3;
-        BorderImageView ivCover4;
-        TextView tvTitle;
-        TextView tvCount;
-        CheckBox cb;
-
-        CollectionHolder(@NonNull View itemView) {
-            super(itemView);
-            ivCover1 = itemView.findViewById(R.id.app_iv_1);
-            ivCover2 = itemView.findViewById(R.id.app_iv_2);
-            ivCover3 = itemView.findViewById(R.id.app_iv_3);
-            ivCover4 = itemView.findViewById(R.id.app_iv_4);
-            tvTitle = itemView.findViewById(R.id.app_tv_title);
-            tvCount = itemView.findViewById(R.id.app_tv_count);
-            cb = itemView.findViewById(R.id.app_cb);
-        }
     }
 }

@@ -1,4 +1,4 @@
-package com.aaron.yespdf.main;
+package com.aaron.yespdf.common;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -7,24 +7,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.ConvertUtils;
-import com.blankj.utilcode.util.LogUtils;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class YGridDecoration extends RecyclerView.ItemDecoration {
+public class XGridDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        int count = state.getItemCount();
         int pos = parent.getChildAdapterPosition(view);
-        if (pos < 3) {
-            outRect.top = ConvertUtils.dp2px(8);
-        } else if (pos >= count - 3) {
-            outRect.top = ConvertUtils.dp2px(24);
-            outRect.bottom = ConvertUtils.dp2px(8);
-        } else {
-            outRect.top = ConvertUtils.dp2px(24);
+        switch (pos % 3) {
+            case 0:
+            case 1:
+            case 2:
+                outRect.left = ConvertUtils.dp2px(8);
+                outRect.right = ConvertUtils.dp2px(8);
+                break;
         }
     }
 }

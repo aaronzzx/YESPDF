@@ -12,12 +12,12 @@
         android:textStyle="bold"
         android:textColor="@color/base_black"
         android:textSize="@dimen/base_text_xxhlarge"
-        android:text="@string/app_regrouping" />
+        android:text="@string/app_exist_group" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/app_rv_group"
         android:layout_width="match_parent"
-        android:layout_height="420dp"
+        android:layout_height="425dp"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:clipToPadding="false"

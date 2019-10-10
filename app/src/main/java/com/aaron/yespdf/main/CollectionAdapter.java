@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.CoverHolder;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.EmptyHolder;
 import com.aaron.yespdf.common.bean.PDF;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.aaron.yespdf.common.bean.Collection;
+import com.aaron.yespdf.common.bean.Cover;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.bean.RecentPDF;
 import com.aaron.yespdf.common.greendao.CollectionDao;
@@ -115,6 +116,10 @@ public final class DBHelper {
         return qb.list();
     }
 
+    public static void insertPDFsToExist(List<String> pathList, String groupName) {
+        insertPDFs(groupName, pathList);
+    }
+
     public static void insertRecent(PDF pdf) {
         String dir = pdf.getDir();
         String name = pdf.getName();
@@ -136,13 +141,14 @@ public final class DBHelper {
         return name;
     }
 
-    public static List<String> deleteCollection(List<Collection> list) {
+    public static List<String> deleteCollection(List<Cover> list) {
         List<String> dirList = new ArrayList<>();
-        for (Collection c : list) {
-            dirList.add(c.getName());
-            sDaoSession.getCollectionDao().delete(c);
-            sDaoSession.getDatabase().execSQL("delete from PDF where dir = ?", new String[]{c.getName()});
-            sDaoSession.getDatabase().execSQL("delete from RECENT_PDF where dir = ?", new String[]{c.getName()});
+        for (Cover c : list) {
+            dirList.add(c.name);
+//            sDaoSession.getCollectionDao().delete(c);
+            sDaoSession.getDatabase().execSQL("delete from Collection where name = ?", new String[]{c.name});
+            sDaoSession.getDatabase().execSQL("delete from PDF where dir = ?", new String[]{c.name});
+            sDaoSession.getDatabase().execSQL("delete from RECENT_PDF where dir = ?", new String[]{c.name});
         }
         return dirList;
     }
@@ -167,6 +173,19 @@ public final class DBHelper {
         Collection c = new Collection(name);
         sDaoSession.insertOrReplace(c);
         return insertPDFs(name, pathList);
+    }
+
+    public static boolean insert(List<String> pathList, String groupName) {
+        if (pathList == null || pathList.isEmpty()) return false;
+//        String actualPath = pathList.get(0);
+        // 去除了文件名称的父路径
+//        String parentPath = actualPath.substring(0, actualPath.lastIndexOf("/"));
+        // 所属文件夹
+//        String name = parentPath.substring(parentPath.lastIndexOf("/") + 1);
+        // 插入 Collection 对象
+        Collection c = new Collection(groupName);
+        sDaoSession.insertOrReplace(c);
+        return insertPDFs(groupName, pathList);
     }
 
     public static void insertNewCollection(String newDirName, List<PDF> pdfList) {

@@ -6,7 +6,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.Button;
@@ -25,10 +24,13 @@ import com.aaron.base.util.StatusBarUtils;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
-import com.aaron.yespdf.common.utils.DialogUtils;
+import com.aaron.yespdf.common.DialogManager;
+import com.aaron.yespdf.common.GroupingAdapter;
+import com.aaron.yespdf.common.UiManager;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SDCardUtils;
+import com.blankj.utilcode.util.StringUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.uber.autodispose.AutoDispose;
@@ -37,6 +39,8 @@ import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -84,19 +88,25 @@ public class ScanActivity extends CommonActivity {
     private int scanCount;
     private int pdfCount;
     private boolean stopScan;
+    private String newGroupName;
+
+    private ExecutorService threadPool;
 
     private Unbinder unbinder;
     private AbstractAdapter adapter;
     private BottomSheetDialog scanDialog;
     private BottomSheetDialog importDialog;
+    private BottomSheetDialog groupingDialog;
     private IListable listable = new ByNameListable();
     private RecyclerView.AdapterDataObserver dataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onChanged() {
-            ibtnSelectAll.setSelected(false);
-            tvImport.setText(R.string.app_import_count);
-            boolean enableSelectAll = adapter.reset();
-            ibtnSelectAll.setEnabled(enableSelectAll);
+            if (!isFinishing()) {
+                ibtnSelectAll.setSelected(false);
+                tvImport.setText(R.string.app_import_count);
+                boolean enableSelectAll = adapter.reset();
+                ibtnSelectAll.setEnabled(enableSelectAll);
+            }
         }
     };
 
@@ -142,23 +152,33 @@ public class ScanActivity extends CommonActivity {
     private void initView() {
         List<String> imported = getIntent().getStringArrayListExtra(EXTRA_IMPORTED);
 
-        View view = LayoutInflater.from(this).inflate(R.layout.app_bottomdialog_scan, null);
-        tvScanCount = view.findViewById(R.id.app_tv_scan_count);
-        tvPdfCount = view.findViewById(R.id.app_tv_pdf_count);
-        Button btnStopScan = view.findViewById(R.id.app_btn_stop_scan);
-        tvScanCount.setText(getString(R.string.app_already_scan) + 0 + getString(R.string.app_file_));
-        tvPdfCount.setText(getString(R.string.app_find) + "PDF(" + 0 + ")");
-        scanDialog = DialogUtils.createBottomSheetDialog(this, view);
-        scanDialog.setCanceledOnTouchOutside(false);
-        scanDialog.setCancelable(false);
-        btnStopScan.setOnClickListener(new OnClickListenerImpl() {
+        threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+        scanDialog = DialogManager.createScanDialog(this, new DialogManager.ScanDialogCallback() {
             @Override
-            public void onViewClick(View v, long interval) {
-                scanDialog.dismiss();
-                if (scanDisp != null && !scanDisp.isDisposed()) {
-                    scanDisp.dispose();
-                    stopScan = true;
-                }
+            public void onTitle(TextView tv) {
+                tvScanCount = tv;
+                tvScanCount.setText(getString(R.string.app_already_scan) + 0 + getString(R.string.app_file_));
+            }
+
+            @Override
+            public void onContent(TextView tv) {
+                tvPdfCount = tv;
+                tvPdfCount.setText(getString(R.string.app_find) + "PDF(" + 0 + ")");
+            }
+
+            @Override
+            public void onButton(Button btn) {
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        scanDialog.dismiss();
+                        if (scanDisp != null && !scanDisp.isDisposed()) {
+                            scanDisp.dispose();
+                            stopScan = true;
+                        }
+                    }
+                });
             }
         });
 
@@ -194,10 +214,14 @@ public class ScanActivity extends CommonActivity {
         tvImport.setOnClickListener(new OnClickListenerImpl() {
             @Override
             public void onViewClick(View v, long interval) {
-                if (importDialog == null) {
-                    initImportDialog();
+                if (selectList.isEmpty()) {
+                    UiManager.showShort(R.string.app_have_not_select);
+                } else {
+                    if (importDialog == null) {
+                        initImportDialog();
+                    }
+                    importDialog.show();
                 }
-                importDialog.show();
             }
         });
 
@@ -231,7 +255,7 @@ public class ScanActivity extends CommonActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(integer -> {
-                            scanDialog.dismiss();
+//                            scanDialog.dismiss();
                             adapter.notifyDataSetChanged();
                         }, throwable -> LogUtils.e(throwable.getMessage()));
     }
@@ -239,7 +263,7 @@ public class ScanActivity extends CommonActivity {
     private void traverseFile() {
         List<SDCardUtils.SDCardInfo> result = SDCardUtils.getSDCardInfo();
         for (SDCardUtils.SDCardInfo info : result) {
-            if (!stopScan && info.getState().equals("mounted")) {
+            if (!stopScan && "mounted".equals(info.getState())) {
                 traverse(new File(info.getPath()));
             }
         }
@@ -247,60 +271,139 @@ public class ScanActivity extends CommonActivity {
 
     @SuppressLint("SetTextI18n")
     private synchronized void traverse(File file) {
-        List<File> fileList = listable.listFile(file.getAbsolutePath());
-        for (File f : fileList) {
-            if (stopScan) {
-                return;
-            }
-            runOnUiThread(() -> {
-                scanCount++;
-                tvScanCount.setText(getString(R.string.app_already_scan) + scanCount + getString(R.string.app_file_));
-            });
-            if (f.isFile()) {
-                this.fileList.add(f);
+        threadPool.execute(() -> {
+            List<File> fileList = listable.listFile(file.getAbsolutePath());
+            for (File f : fileList) {
+                if (stopScan) {
+                    return;
+                }
                 runOnUiThread(() -> {
-                    pdfCount++;
-                    tvPdfCount.setText(getString(R.string.app_find) + "PDF(" + pdfCount + ")");
-                    adapter.notifyDataSetChanged();
+                    scanCount++;
+                    tvScanCount.setText(getString(R.string.app_already_scan) + scanCount + getString(R.string.app_file_));
                 });
-            } else {
-                traverse(f);
+                if (f.isFile()) {
+                    this.fileList.add(f);
+                    runOnUiThread(() -> {
+                        pdfCount++;
+                        tvPdfCount.setText(getString(R.string.app_find) + "PDF(" + pdfCount + ")");
+                        adapter.notifyDataSetChanged();
+                    });
+                } else {
+                    traverse(f);
+                }
             }
-        }
+        });
     }
 
     private void initImportDialog() {
-        View view = LayoutInflater.from(this).inflate(R.layout.app_bottomdialog_import, null);
-        EditText etInput = view.findViewById(R.id.app_et_input);
-        Button btnImportExist = view.findViewById(R.id.app_btn_import_exist);
-        Button btnBaseFolder = view.findViewById(R.id.app_btn_base_folder);
-        Button btnConfirm = view.findViewById(R.id.app_btn_confirm);
-        importDialog = DialogUtils.createBottomSheetDialog(this, view);
-        etInput.addTextChangedListener(new TextWatcherImpl() {
+        importDialog = DialogManager.createImportDialog(this, new DialogManager.ImportDialogCallback() {
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+            public void onInput(EditText et) {
+                et.addTextChangedListener(new TextWatcherImpl() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        newGroupName = charSequence.toString();
+                    }
+                });
             }
-        });
-        btnImportExist.setOnClickListener(new OnClickListenerImpl() {
-            @Override
-            public void onViewClick(View v, long interval) {
 
+            @Override
+            public void onLeft(Button btn) {
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        if (groupingDialog == null) {
+                            initGroupDialog();
+                        }
+                        groupingDialog.show();
+                    }
+                });
             }
-        });
-        btnBaseFolder.setOnClickListener(new OnClickListenerImpl() {
-            @Override
-            public void onViewClick(View v, long interval) {
 
+            @Override
+            public void onCenter(Button btn) {
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        setResultBack(SelectActivity.TYPE_BASE_FOLDER, null);
+//                        DataManager.updatePDFs();
+//                        DataManager.updateCollection();
+//                        DBHelper.insert(selectList);
+                    }
+                });
             }
-        });
-        btnConfirm.setOnClickListener(new OnClickListenerImpl() {
-            @Override
-            public void onViewClick(View v, long interval) {
 
+            @Override
+            public void onRight(Button btn) {
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        if (StringUtils.isEmpty(newGroupName)) {
+                            UiManager.showShort(R.string.app_type_new_group_name);
+                        } else {
+                            setResultBack(SelectActivity.TYPE_CUSTOM, newGroupName);
+//                            DataManager.updatePDFs();
+//                            DataManager.updateCollection();
+//                            DBHelper.insert(selectList, newGroupName);
+                        }
+                    }
+                });
             }
         });
     }
+
+    private void initGroupDialog() {
+        groupingDialog = DialogManager.createGroupingDialog(ScanActivity.this, false, new GroupingAdapter.Callback() {
+            @Override
+            public void onAddNewGroup() {
+//                if (inputDialog == null) {
+//                    initInputDialog();
+//                }
+//                inputDialog.show();
+                // empty
+            }
+
+            @Override
+            public void onAddToGroup(String dir) {
+                setResultBack(SelectActivity.TYPE_TO_EXIST, dir);
+//                DataManager.updatePDFs();
+//                DataManager.updateCollection();
+//                DBHelper.insert(selectList, dir);
+            }
+        });
+    }
+
+//    private void initInputDialog() {
+//        inputDialog = DialogManager.createInputDialog(ScanActivity.this, new DialogManager.InputDialogCallback() {
+//            @Override
+//            public void onTitle(TextView tv) {
+//                tv.setText(R.string.app_add_new_group);
+//            }
+//
+//            @Override
+//            public void onInput(EditText et) {
+//                etInput = et;
+//                et.setInputType(InputType.TYPE_CLASS_TEXT);
+//                et.setHint(R.string.app_type_new_group_name);
+//            }
+//
+//            @Override
+//            public void onLeft(Button btn) {
+//                btn.setText(R.string.app_cancel);
+//                btn.setOnClickListener(v -> inputDialog.dismiss());
+//            }
+//
+//            @Override
+//            public void onRight(Button btn) {
+//                btn.setText(R.string.app_confirm);
+//                btn.setOnClickListener(v -> {
+//                    DataManager.updatePDFs();
+//                    DataManager.updateCollection();
+//                    DBHelper.insert(selectList, etInput.getText().toString());
+//                });
+//            }
+//        });
+//    }
 
     private void initToolbar() {
         ActionBar actionBar = getSupportActionBar();
@@ -347,5 +450,14 @@ public class ScanActivity extends CommonActivity {
             }
         });
         animator.start();
+    }
+
+    private void setResultBack(int type, String groupName) {
+        Intent data = new Intent();
+        data.putStringArrayListExtra(SelectActivity.EXTRA_SELECTED, (ArrayList<String>) selectList);
+        data.putExtra(SelectActivity.EXTRA_TYPE, type);
+        data.putExtra(SelectActivity.EXTRA_GROUP_NAME, groupName);
+        setResult(RESULT_OK, data);
+        finish();
     }
 }

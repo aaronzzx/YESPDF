@@ -29,7 +29,12 @@ import com.aaron.base.impl.TextWatcherImpl;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
+import com.aaron.yespdf.common.DialogManager;
+import com.aaron.yespdf.common.GroupingAdapter;
 import com.aaron.yespdf.common.UiManager;
+import com.aaron.yespdf.common.XGridDecoration;
+import com.aaron.yespdf.common.YGridDecoration;
 import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.AllEvent;
@@ -53,7 +58,7 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class CollectionFragment extends DialogFragment implements IOperation, AbstractAdapter.ICommInterface<PDF>, RegroupingAdapter.Callback {
+public class CollectionFragment extends DialogFragment implements IOperation, AbstractAdapter.ICommInterface<PDF>, GroupingAdapter.Callback {
 
     private static final String BUNDLE_NAME = "BUNDLE_NAME";
 
@@ -81,6 +86,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     private Unbinder unbinder;
     private AbstractAdapter adapter;
     private TextView tvDeleteDescription;
+    private EditText etInput;
     private BottomSheetDialog deleteDialog;
     private BottomSheetDialog regroupingDialog;
     private Dialog addNewGroupDialog;
@@ -89,10 +95,10 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     private String newDirName;
     private List<PDF> pdfList = new ArrayList<>();
     private List<PDF> selectPDFList;
-    private List<String> savedCollections = new ArrayList<>();
+    private List<Collection> savedCollections = DataManager.getCollectionList();
 
-    static DialogFragment newInstance(String name) {
-        DialogFragment fragment = new CollectionFragment();
+    static CollectionFragment newInstance(String name) {
+        CollectionFragment fragment = new CollectionFragment();
         Bundle args = new Bundle();
         args.putString(BUNDLE_NAME, name);
         fragment.setArguments(args);
@@ -184,12 +190,13 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<List<String>>() {
             @Override
             public List<String> doInBackground() {
-                pdfList.removeAll(selectPDFList);
+//                pdfList.removeAll(selectPDFList);
                 return DBHelper.deletePDF(selectPDFList);
             }
 
             @Override
             public void onSuccess(List<String> nameList) {
+                DataManager.updatePDFs();
                 UiManager.showShort(R.string.app_delete_completed);
                 cancelSelect();
                 adapter.notifyDataSetChanged();
@@ -216,24 +223,36 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     }
 
     /**
-     * 分组方法，属于 RegroupingAdapter
+     * 分组方法，属于 GroupingAdapter
      */
     @Override
     public void onAddNewGroup() {
         if (addNewGroupDialog == null) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.app_dialog_input, null);
-            TextView tvTitle = view.findViewById(R.id.app_tv_title);
-            EditText etInput = view.findViewById(R.id.app_et_input);
-            Button btnCancel = view.findViewById(R.id.app_btn_cancel);
-            Button btnConfirm = view.findViewById(R.id.app_btn_confirm);
-            etInput.setInputType(InputType.TYPE_CLASS_TEXT);
-            tvTitle.setText(R.string.app_add_new_group);
-            etInput.setHint(R.string.app_type_new_group_name);
-            btnCancel.setText(R.string.app_cancel);
-            btnConfirm.setText(R.string.app_confirm);
-            btnCancel.setOnClickListener(v -> addNewGroupDialog.dismiss());
-            btnConfirm.setOnClickListener(v -> createNewGroup(etInput.getText().toString()));
-            addNewGroupDialog = DialogUtils.createDialog(getActivity(), view);
+            addNewGroupDialog = DialogManager.createInputDialog(getActivity(), new DialogManager.InputDialogCallback() {
+                @Override
+                public void onTitle(TextView tv) {
+                    tv.setText(R.string.app_add_new_group);
+                }
+
+                @Override
+                public void onInput(EditText et) {
+                    etInput = et;
+                    et.setInputType(InputType.TYPE_CLASS_TEXT);
+                    et.setHint(R.string.app_type_new_group_name);
+                }
+
+                @Override
+                public void onLeft(Button btn) {
+                    btn.setText(R.string.app_cancel);
+                    btn.setOnClickListener(v -> addNewGroupDialog.dismiss());
+                }
+
+                @Override
+                public void onRight(Button btn) {
+                    btn.setText(R.string.app_confirm);
+                    btn.setOnClickListener(v -> createNewGroup(etInput.getText().toString()));
+                }
+            });
             addNewGroupDialog.setOnDismissListener(dialog -> etInput.setText(""));
         }
         addNewGroupDialog.show();
@@ -244,13 +263,14 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             UiManager.showShort(R.string.app_type_new_group_name);
             return;
         }
-        for (String dir : savedCollections) {
-            if (dir.equals(name)) {
+        for (Collection c : savedCollections) {
+            if (c.getName().equals(name)) {
                 UiManager.showShort(R.string.app_group_name_existed);
                 return;
             }
         }
-        pdfList.removeAll(selectPDFList);
+//        pdfList.removeAll(selectPDFList);
+        DataManager.updatePDFs();
         DBHelper.insertNewCollection(name, selectPDFList);
         cancelSelect();
         addNewGroupDialog.dismiss();
@@ -258,7 +278,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
     }
 
     /**
-     * 分组方法，属于 RegroupingAdapter
+     * 分组方法，属于 GroupingAdapter
      */
     @Override
     public void onAddToGroup(String dir) {
@@ -266,7 +286,8 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             cancelSelect();
             return;
         }
-        pdfList.removeAll(selectPDFList);
+//        pdfList.removeAll(selectPDFList);
+        DataManager.updatePDFs();
         DBHelper.insertPDFsToCollection(dir, selectPDFList);
         cancelSelect();
         notifyGroupUpdate();
@@ -289,11 +310,11 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         if (args != null) {
             name = args.getString(BUNDLE_NAME);
             etName.setText(name);
-            pdfList.addAll(DBHelper.queryPDF(name));
+            pdfList.addAll(DataManager.getPdfList(name));
         }
-        for (Collection c : DBHelper.queryAllCollection()) {
-            savedCollections.add(c.getName());
-        }
+//        for (Collection c : DBHelper.queryAllCollection()) {
+//            savedCollections.add(c.getName());
+//        }
 
         createDeleteDialog();
         setListener();
@@ -341,17 +362,9 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             }
         });
         tvRegrouping.setOnClickListener(v -> {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.app_bottomdialog_regrouping, null);
-            RecyclerView rv = view.findViewById(R.id.app_rv_group);
-            List<Collection> list = DBHelper.queryAllCollection();
-
-            rv.addItemDecoration(new XGridDecoration());
-            rv.addItemDecoration(new YGridDecoration());
-            GridLayoutManager lm = new GridLayoutManager(getActivity(), 3);
-            rv.setLayoutManager(lm);
-            RecyclerView.Adapter adapter = new RegroupingAdapter(list, this);
-            rv.setAdapter(adapter);
-            regroupingDialog = DialogUtils.createBottomSheetDialog(getActivity(), view);
+            if (regroupingDialog == null) {
+                regroupingDialog = DialogManager.createGroupingDialog(getActivity(), true, this);
+            }
             regroupingDialog.show();
         });
         ibtnCancel.setOnClickListener(v -> cancelSelect());

@@ -16,6 +16,8 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
+import com.aaron.yespdf.common.XGridDecoration;
+import com.aaron.yespdf.common.YGridDecoration;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.MaxRecentEvent;
 import com.aaron.yespdf.common.event.RecentPDFEvent;

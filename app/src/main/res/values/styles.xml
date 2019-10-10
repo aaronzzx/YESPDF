@@ -20,8 +20,8 @@
     </style>
 
     <style name="AppRegroupingAnim">
-        <item name="android:windowEnterAnimation">@anim/app_window_regroup_in</item>
-        <item name="android:windowExitAnimation">@anim/app_window_regroup_out</item>
+        <item name="android:windowEnterAnimation">@anim/app_window_group_in</item>
+        <item name="android:windowExitAnimation">@anim/app_window_group_out</item>
     </style>
 
     <!-- 目录标题加粗 -->

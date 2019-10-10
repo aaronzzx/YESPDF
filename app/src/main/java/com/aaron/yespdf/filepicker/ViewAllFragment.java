@@ -7,6 +7,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
@@ -16,10 +18,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.base.BaseFragment;
 import com.aaron.base.impl.OnClickListenerImpl;
+import com.aaron.base.impl.TextWatcherImpl;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.common.DialogManager;
+import com.aaron.yespdf.common.GroupingAdapter;
 import com.aaron.yespdf.common.UiManager;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.StringUtils;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +58,10 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     private Unbinder unbinder;
     private AbstractAdapter adapter;
     private SelectActivity activity;
+    private BottomSheetDialog importDialog;
+    private BottomSheetDialog groupingDialog;
 
+    private String newGroupName;
     private List<File> fileList = new ArrayList<>();
     private List<String> selectList = new ArrayList<>();
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -180,10 +190,14 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
                 if (selectList.isEmpty()) {
                     UiManager.showShort(R.string.app_have_not_select);
                 } else {
-                    Intent data = new Intent();
-                    data.putStringArrayListExtra(SelectActivity.EXTRA_SELECTED, (ArrayList<String>) selectList);
-                    activity.setResult(RESULT_OK, data);
-                    activity.finish();
+                    if (importDialog == null) {
+                        initImportDialog();
+                    }
+                    importDialog.show();
+//                    Intent data = new Intent();
+//                    data.putStringArrayListExtra(SelectActivity.EXTRA_SELECTED, (ArrayList<String>) selectList);
+//                    activity.setResult(RESULT_OK, data);
+//                    activity.finish();
                 }
             }
         });
@@ -198,5 +212,92 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
         adapter = new ViewAllAdapter(fileList, activity.importeds, this);
         adapter.registerAdapterDataObserver(dataObserver);
         rvSelect.setAdapter(adapter);
+    }
+
+    private void initImportDialog() {
+        importDialog = DialogManager.createImportDialog(activity, new DialogManager.ImportDialogCallback() {
+            @Override
+            public void onInput(EditText et) {
+                et.addTextChangedListener(new TextWatcherImpl() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        newGroupName = charSequence.toString();
+                    }
+                });
+            }
+
+            @Override
+            public void onLeft(Button btn) {
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        if (groupingDialog == null) {
+                            initGroupDialog();
+                        }
+                        groupingDialog.show();
+                    }
+                });
+            }
+
+            @Override
+            public void onCenter(Button btn) {
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        setResultBack(SelectActivity.TYPE_BASE_FOLDER, null);
+//                        DataManager.updatePDFs();
+//                        DataManager.updateCollection();
+//                        DBHelper.insert(selectList);
+                    }
+                });
+            }
+
+            @Override
+            public void onRight(Button btn) {
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        if (StringUtils.isEmpty(newGroupName)) {
+                            UiManager.showShort(R.string.app_type_new_group_name);
+                        } else {
+                            setResultBack(SelectActivity.TYPE_CUSTOM, newGroupName);
+//                            DataManager.updatePDFs();
+//                            DataManager.updateCollection();
+//                            DBHelper.insert(selectList, newGroupName);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void initGroupDialog() {
+        groupingDialog = DialogManager.createGroupingDialog(activity, false, new GroupingAdapter.Callback() {
+            @Override
+            public void onAddNewGroup() {
+//                if (inputDialog == null) {
+//                    initInputDialog();
+//                }
+//                inputDialog.show();
+                // empty
+            }
+
+            @Override
+            public void onAddToGroup(String dir) {
+                setResultBack(SelectActivity.TYPE_TO_EXIST, dir);
+//                DataManager.updatePDFs();
+//                DataManager.updateCollection();
+//                DBHelper.insert(selectList, dir);
+            }
+        });
+    }
+
+    private void setResultBack(int type, String groupName) {
+        Intent data = new Intent();
+        data.putStringArrayListExtra(SelectActivity.EXTRA_SELECTED, (ArrayList<String>) selectList);
+        data.putExtra(SelectActivity.EXTRA_TYPE, type);
+        data.putExtra(SelectActivity.EXTRA_GROUP_NAME, groupName);
+        activity.setResult(RESULT_OK, data);
+        activity.finish();
     }
 }

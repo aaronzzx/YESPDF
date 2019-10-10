@@ -32,6 +32,14 @@ import butterknife.Unbinder;
 public class SelectActivity extends CommonActivity/* implements IViewAllContract.V*/ {
 
     public static final String EXTRA_SELECTED = "EXTRA_SELECTED";
+    public static final String EXTRA_TYPE = "EXTRA_TYPE";
+    public static final String EXTRA_GROUP_NAME = "EXTRA_GROUP_NAME";
+    public static final int TYPE_TO_EXIST = 1;
+    public static final int TYPE_BASE_FOLDER = 2;
+    public static final int TYPE_CUSTOM = 3;
+
+    public static final int REQUEST_CODE = 111;
+
     static final String EXTRA_IMPORTED = "EXTRA_IMPORTED";
 
     @BindView(R2.id.app_ibtn_check)
@@ -114,6 +122,16 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
 //            presenter.goBack();
 //        }
 //    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            setResult(RESULT_OK, data);
+            finish();
+        }
+    }
 
     @Override
     public boolean onSupportNavigateUp() {

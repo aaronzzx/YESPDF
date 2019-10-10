@@ -38,6 +38,9 @@
     <string name="app_wechat_scan_notice">打开右上角菜单，从微信相册中选取收款码</string>
     <string name="app_not_support_empty_string">不支持空字符</string>
     <string name="app_regrouping">重新分组</string>
+    <string name="app_group">分组</string>
+    <string name="app_exist_group">现有分组</string>
+    <string name="app_have_no_group">没有分组信息</string>
     <string name="app_add_new_group">新建分组</string>
     <string name="app_how_to_group">如何分组？</string>
     <string name="app_base_on_folder_name">以文件夹命名</string>

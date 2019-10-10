@@ -15,8 +15,11 @@ import com.aaron.base.base.BaseFragment;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.UiManager;
-import com.aaron.yespdf.common.bean.Collection;
+import com.aaron.yespdf.common.XGridDecoration;
+import com.aaron.yespdf.common.YGridDecoration;
+import com.aaron.yespdf.common.bean.Cover;
 import com.aaron.yespdf.common.event.AllEvent;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -35,16 +38,16 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class AllFragment extends BaseFragment implements IOperation, AbstractAdapter.ICommInterface<Collection> {
+public class AllFragment extends BaseFragment implements IOperation, AbstractAdapter.ICommInterface<Cover> {
 
     @BindView(R2.id.app_rv_all)
     RecyclerView rvAll;
 
     private Unbinder unbinder;
-    private AbstractAdapter<Collection> adapter;
+    private AbstractAdapter<Cover> adapter;
 
-    private List<Collection> collections = new ArrayList<>();
-    private List<Collection> selectCollections = new ArrayList<>();
+    private List<Cover> coverList = DataManager.getCoverList();
+    private List<Cover> selectCollections = new ArrayList<>();
 
     static Fragment newInstance() {
         return new AllFragment();
@@ -100,8 +103,7 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
     }
 
     @Override
-    public void onSelect(List<Collection> list, boolean selectAll) {
-        LogUtils.e(list);
+    public void onSelect(List<Cover> list, boolean selectAll) {
         selectCollections.clear();
         selectCollections.addAll(list);
         ((MainActivity) mActivity).selectResult(list.size(), selectAll);
@@ -113,16 +115,17 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
             ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<List<String>>() {
                 @Override
                 public List<String> doInBackground() {
-                    collections.removeAll(selectCollections);
+//                    coverList.removeAll(selectCollections);
                     return DBHelper.deleteCollection(selectCollections);
                 }
 
                 @Override
                 public void onSuccess(List<String> dirList) {
+                    DataManager.updateCollection();
                     UiManager.showShort(R.string.app_delete_completed);
                     ((MainActivity) mActivity).finishOperation();
                     adapter.notifyDataSetChanged();
-                    EventBus.getDefault().post(new AllDeleteEvent(dirList));
+//                    EventBus.getDefault().post(new AllDeleteEvent(dirList));
                 }
             });
         }
@@ -144,13 +147,14 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
     }
 
     void update() {
-        collections.clear();
-        collections.addAll(DBHelper.queryAllCollection());
+//        coverList.clear();
+//        coverList.addAll(DBHelper.queryAllCollection());
+        DataManager.updateCollection();
         adapter.notifyDataSetChanged();
     }
 
     private void initView() {
-        collections.addAll(DBHelper.queryAllCollection());
+//        coverList.addAll(DBHelper.queryAllCollection());
 
         rvAll.addItemDecoration(new XGridDecoration());
         rvAll.addItemDecoration(new YGridDecoration());
@@ -158,14 +162,14 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
         lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (collections.isEmpty()) {
+                if (coverList.isEmpty()) {
                     return 3;
                 }
                 return 1;
             }
         });
         rvAll.setLayoutManager(lm);
-        adapter = new AllAdapter(this, getFragmentManager(), collections);
+        adapter = new AllAdapter(this, getFragmentManager(), coverList);
         rvAll.setAdapter(adapter);
     }
 }

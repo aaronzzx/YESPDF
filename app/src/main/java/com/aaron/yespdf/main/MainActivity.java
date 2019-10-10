@@ -27,11 +27,10 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.about.AboutActivity;
 import com.aaron.yespdf.common.CommonActivity;
-import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
+import com.aaron.yespdf.common.DialogManager;
 import com.aaron.yespdf.common.UiManager;
-import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.HotfixEvent;
-import com.aaron.yespdf.common.utils.DialogUtils;
 import com.aaron.yespdf.common.widgets.NewViewPager;
 import com.aaron.yespdf.filepicker.SelectActivity;
 import com.aaron.yespdf.settings.SettingsActivity;
@@ -80,6 +79,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     private Unbinder unbinder;
     private Dialog loadingDialog;
+    private Dialog hotfixDialog;
     private TextView tvDeleteDescription;
     private BottomSheetDialog deleteDialog;
     private PopupWindow pwMenu;
@@ -103,36 +103,51 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onHotfixSuccess(HotfixEvent event) {
         receiveHotfix = true;
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View dialogView = inflater.inflate(R.layout.app_dialog_double_btn, null);
-        Dialog hotfixDialog = DialogUtils.createDialog(this, dialogView);
-        hotfixDialog.setCanceledOnTouchOutside(false);
-        TextView tvTitle = dialogView.findViewById(R.id.app_tv_title);
-        TextView tvContent = dialogView.findViewById(R.id.app_tv_content);
-        Button btnLeft = dialogView.findViewById(R.id.app_btn_left);
-        Button btnRight = dialogView.findViewById(R.id.app_btn_right);
-        tvTitle.setText(R.string.app_find_update);
-        tvContent.setText(R.string.app_restart_to_update);
-        btnLeft.setText(R.string.app_later);
-        btnRight.setText(R.string.app_restart_right_now);
-        btnLeft.setOnClickListener(new OnClickListenerImpl() {
-            @Override
-            public void onViewClick(View v, long interval) {
-                hotfixDialog.dismiss();
-            }
-        });
-        btnRight.setOnClickListener(new OnClickListenerImpl() {
-            @Override
-            public void onViewClick(View v, long interval) {
-                final Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-                if (intent != null) {
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            }
-        });
+        if (hotfixDialog == null) {
+            initHotfixDialog();
+        }
         hotfixDialog.show();
+    }
+
+    private void initHotfixDialog() {
+        hotfixDialog = DialogManager.createDoubleBtnDialog(this, new DialogManager.DoubleBtnDialogCallback() {
+            @Override
+            public void onTitle(TextView tv) {
+                tv.setText(R.string.app_find_update);
+            }
+
+            @Override
+            public void onContent(TextView tv) {
+                tv.setText(R.string.app_restart_to_update);
+            }
+
+            @Override
+            public void onLeft(Button btn) {
+                btn.setText(R.string.app_later);
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        hotfixDialog.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onRight(Button btn) {
+                btn.setText(R.string.app_restart_right_now);
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        final Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                        if (intent != null) {
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -220,6 +235,9 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     @Override
     public void onShowLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = DialogManager.createLoadingDialog(this);
+        }
         loadingDialog.show();
     }
 
@@ -245,7 +263,6 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     }
 
     private void initView() {
-        loadingDialog = DialogUtils.createDialog(this, R.layout.app_dialog_loading);
         createDeleteDialog();
 
         initPwMenu();
@@ -263,16 +280,25 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     }
 
     private void createDeleteDialog() {
-        View view = LayoutInflater.from(this).inflate(R.layout.app_bottomdialog_delete, null);
-        tvDeleteDescription = view.findViewById(R.id.app_tv_description);
-        Button btnCancel = view.findViewById(R.id.app_btn_cancel);
-        Button btnDelete = view.findViewById(R.id.app_btn_delete);
-        btnCancel.setOnClickListener(v -> deleteDialog.dismiss());
-        btnDelete.setOnClickListener(v -> {
-            deleteDialog.dismiss();
-            operation.delete();
+        deleteDialog = DialogManager.createDeleteDialog(this, new DialogManager.DeleteDialogCallback() {
+            @Override
+            public void onContent(TextView tv) {
+                tvDeleteDescription = tv;
+            }
+
+            @Override
+            public void onLeft(Button btn) {
+                btn.setOnClickListener(v -> deleteDialog.dismiss());
+            }
+
+            @Override
+            public void onRight(Button btn) {
+                btn.setOnClickListener(v -> {
+                    deleteDialog.dismiss();
+                    operation.delete();
+                });
+            }
         });
-        deleteDialog = DialogUtils.createBottomSheetDialog(this, view);
     }
 
     private void setListener() {
@@ -296,12 +322,12 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
                     .callback(new PermissionUtils.SimpleCallback() {
                         @Override
                         public void onGranted() {
-                            ArrayList<String> imported = new ArrayList<>();
-                            List<PDF> pdfList = DBHelper.queryAllPDF();
-                            for (PDF pdf : pdfList) {
-                                imported.add(pdf.getPath());
-                            }
-                            SelectActivity.start(MainActivity.this, SELECT_REQUEST_CODE, imported);
+//                            ArrayList<String> imported = new ArrayList<>();
+//                            List<PDF> pdfList = DBHelper.queryAllPDF();
+//                            for (PDF pdf : pdfList) {
+//                                imported.add(pdf.getPath());
+//                            }
+                            SelectActivity.start(MainActivity.this, SELECT_REQUEST_CODE, (ArrayList<String>) DataManager.getPathList());
                         }
 
                         @Override

@@ -72,6 +72,6 @@ public class AutoScanFragment extends BaseFragment {
 
     @OnClick(R2.id.app_tv_scan)
     public void onStartScan() {
-        ScanActivity.start(activity, (ArrayList<String>) activity.importeds, REQUEST_CODE);
+        ScanActivity.start(activity, (ArrayList<String>) activity.importeds, SelectActivity.REQUEST_CODE);
     }
 }

@@ -19,8 +19,9 @@
         android:id="@+id/app_et_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:textSize="@dimen/base_text_large"
         android:hint="@string/app_type_new_group_name"/>
 
     <LinearLayout
