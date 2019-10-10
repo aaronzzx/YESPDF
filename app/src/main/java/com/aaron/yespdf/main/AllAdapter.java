@@ -128,6 +128,9 @@ class AllAdapter extends AbstractAdapter<Cover> {
     private void setCover(ImageView ivCover, String path) {
         if (!StringUtils.isEmpty(path)) {
             ImageLoader.load(context, new DefaultOption.Builder(path).into(ivCover));
+        } else {
+            ivCover.setScaleType(ImageView.ScaleType.FIT_XY);
+            ivCover.setImageResource(R.drawable.app_img_none_cover);
         }
     }
 }

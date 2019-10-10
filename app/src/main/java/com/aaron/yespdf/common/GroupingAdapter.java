@@ -82,7 +82,7 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             CoverHolder holder = (CoverHolder) viewHolder;
             holder.tvTitle.setText(R.string.app_add_new_group);
             holder.ivCover.setScaleType(ImageView.ScaleType.FIT_XY);
-            holder.ivCover.setImageResource(R.drawable.app_bg_add);
+            holder.ivCover.setImageResource(R.drawable.app_img_add_group);
             ViewGroup.LayoutParams lp = holder.ivCover.getLayoutParams();
             lp.height = ConvertUtils.dp2px(152);
             holder.ivCover.requestLayout();
@@ -118,6 +118,9 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void setCover(ImageView ivCover, String path) {
         if (!StringUtils.isEmpty(path)) {
             ImageLoader.load(context, new DefaultOption.Builder(path).into(ivCover));
+        } else {
+            ivCover.setScaleType(ImageView.ScaleType.FIT_XY);
+            ivCover.setImageResource(R.drawable.app_img_none_cover);
         }
     }
 

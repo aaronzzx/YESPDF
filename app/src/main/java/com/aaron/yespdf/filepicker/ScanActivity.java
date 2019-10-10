@@ -49,7 +49,6 @@ import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @ParallaxBack
@@ -85,7 +84,6 @@ public class ScanActivity extends CommonActivity {
 
     private TextView tvScanCount;
     private TextView tvPdfCount;
-    private Disposable scanDisp;
     private int scanCount;
     private int pdfCount;
     private boolean stopScan;
@@ -106,8 +104,10 @@ public class ScanActivity extends CommonActivity {
             if (!isFinishing()) {
                 ibtnSelectAll.setSelected(false);
                 tvImport.setText(R.string.app_import_count);
-                boolean enableSelectAll = adapter.reset();
-                ibtnSelectAll.setEnabled(enableSelectAll);
+                if (stopScan) {
+                    boolean enableSelectAll = adapter.reset();
+                    ibtnSelectAll.setEnabled(enableSelectAll);
+                }
             }
         }
     };
@@ -251,7 +251,7 @@ public class ScanActivity extends CommonActivity {
         rv.setAdapter(adapter);
 
         scanDialog.show();
-        scanDisp = Observable.create((ObservableOnSubscribe<Double>) emitter -> {
+        Observable.create((ObservableOnSubscribe<Double>) emitter -> {
                     emitter.onNext(traverseFile());
                 })
                 .subscribeOn(Schedulers.computation())
@@ -260,9 +260,9 @@ public class ScanActivity extends CommonActivity {
                 .subscribe(cost -> {
                             scanDialog.dismiss();
                             adapter.notifyDataSetChanged();
-                    if (!stopScan) {
-                        UiManager.showShort(getString(R.string.app_scan_finish) + cost + getString(R.string.app_second_has_blank));
-                    }
+//                    if (!stopScan) {
+//                        UiManager.showShort(getString(R.string.app_scan_finish) + cost + getString(R.string.app_second_has_blank));
+//                    }
                 }, throwable -> LogUtils.e(throwable.getMessage()));
     }
 
@@ -278,6 +278,7 @@ public class ScanActivity extends CommonActivity {
             int temp = traverseFileCount;
             SystemClock.sleep(500);
             if (temp == traverseFileCount) {
+                stopScan = true;
                 long end = System.currentTimeMillis();
                 double cost = (double) (end - start - 500) / 1000;
                 LogUtils.e("总共耗时：" + cost + " 秒");

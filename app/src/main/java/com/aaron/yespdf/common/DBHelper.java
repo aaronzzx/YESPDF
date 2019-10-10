@@ -19,7 +19,6 @@ import com.blankj.utilcode.util.StringUtils;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.List;
 public final class DBHelper {
 
     private static DaoSession sDaoSession;
-    private static boolean sSaveBitmapComplete;
+//    private static boolean sSaveBitmapComplete;
 
     public static void init(Context context, String dbName) {
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, dbName);
@@ -163,16 +162,47 @@ public final class DBHelper {
     }
 
     public static boolean insert(List<String> pathList) {
-        if (pathList == null || pathList.isEmpty()) return false;
-        String actualPath = pathList.get(0);
-        // 去除了文件名称的父路径
-        String parentPath = actualPath.substring(0, actualPath.lastIndexOf("/"));
-        // 所属文件夹
-        String name = parentPath.substring(parentPath.lastIndexOf("/") + 1);
-        // 插入 Collection 对象
-        Collection c = new Collection(name);
-        sDaoSession.insertOrReplace(c);
-        return insertPDFs(name, pathList);
+        if (pathList == null || pathList.isEmpty()) {
+            return false;
+        }
+        for (String path : pathList) {
+            // 去除了文件名称的父路径
+            String parentPath = path.substring(0, path.lastIndexOf("/"));
+            LogUtils.e("parentPath: " + parentPath);
+            // 所属文件夹
+            String dir = parentPath.substring(parentPath.lastIndexOf("/") + 1);
+            LogUtils.e("dir: " + dir);
+            // 插入 Collection 对象
+            Collection c = new Collection(dir);
+            sDaoSession.insertOrReplace(c);
+
+            String bookmarkPage = "";
+            int curPage = 0;
+            int totalPage = PdfUtils.getPdfTotalPage(path);
+            String name = path.substring(path.lastIndexOf("/"), path.length() - 4);
+            String progress = "0.0%";
+            String cover = PathUtils.getInternalAppDataPath() + name + ".jpg";
+            // 制作 PDF 封面并缓存
+            long start = System.currentTimeMillis();
+            cover = PdfUtils.saveBitmap(PdfUtils.pdfToBitmap(path, 0), cover);
+            long end = System.currentTimeMillis();
+            LogUtils.e(name + " cost: " + (end - start) + " milliseconds");
+//            sSaveBitmapComplete = true;
+
+            PDF pdf = new PDF();
+            pdf.setDir(dir);
+            pdf.setName(name.substring(1)); // 去除斜杠
+            pdf.setCover(cover);
+            pdf.setPath(path);
+            pdf.setProgress(progress);
+            pdf.setCurPage(curPage);
+            pdf.setBookmark(bookmarkPage);
+            pdf.setTotalPage(totalPage);
+            pdf.setLatestRead(0);
+            sDaoSession.insertOrReplace(pdf);
+//            sSaveBitmapComplete = false;
+        }
+        return true;
     }
 
     public static boolean insert(List<String> pathList, String groupName) {
@@ -207,19 +237,10 @@ public final class DBHelper {
             String progress = "0.0%";
             String cover = PathUtils.getInternalAppDataPath() + name + ".jpg";
             // 制作 PDF 封面并缓存
-            try {
-                long start = System.currentTimeMillis();
-                PdfUtils.saveBitmap(PdfUtils.pdfToBitmap(path, 0), cover);
-                long end = System.currentTimeMillis();
-                LogUtils.e(name + " cost: " + (end - start) + " milliseconds");
-                sSaveBitmapComplete = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            while (!sSaveBitmapComplete) {
-                LogUtils.v("Saving PDF cover, Wait a moment.");
-            }
+            long start = System.currentTimeMillis();
+            PdfUtils.saveBitmap(PdfUtils.pdfToBitmap(path, 0), cover);
+            long end = System.currentTimeMillis();
+            LogUtils.e(name + " cost: " + (end - start) + " milliseconds");
 
             PDF pdf = new PDF();
             pdf.setDir(dir);
@@ -232,7 +253,6 @@ public final class DBHelper {
             pdf.setTotalPage(totalPage);
             pdf.setLatestRead(0);
             sDaoSession.insertOrReplace(pdf);
-            sSaveBitmapComplete = false;
         }
         return true;
     }

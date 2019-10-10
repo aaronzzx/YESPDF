@@ -3,6 +3,7 @@ package com.aaron.yespdf.common;
 import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.Cover;
 import com.aaron.yespdf.common.bean.PDF;
+import com.blankj.utilcode.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,10 @@ public final class DataManager {
         collectionList = DBHelper.queryAllCollection();
         updatePathList();
         updateCoverList();
+        LogUtils.e("pdfList: " + pdfList);
+        LogUtils.e("collectionList: " + collectionList);
+        LogUtils.e("pathList: " + pathList);
+        LogUtils.e("coverList: " + coverList);
     }
 
     public static void updateAll() {
@@ -55,8 +60,7 @@ public final class DataManager {
             List<PDF> list;
             switch (temp.size()) {
                 case 0:
-                    list = new ArrayList<>();
-                    break;
+                    continue;
                 case 1:
                     list = temp.subList(0, 1);
                     break;
