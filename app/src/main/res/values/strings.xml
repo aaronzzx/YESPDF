@@ -5,6 +5,8 @@
     <string name="app_auto_scan">自动扫描</string>
     <string name="app_scan_right_now">立即扫描</string>
     <string name="app_stop_scan">停止扫描</string>
+    <string name="app_scan_finish">扫描完成，耗时&#160;</string>
+    <string name="app_second_has_blank">&#160;秒</string>
     <string name="app_already_scan">已扫描&#160;</string>
     <string name="app_file_">&#160;个文件…</string>
     <string name="app_find">找到：</string>

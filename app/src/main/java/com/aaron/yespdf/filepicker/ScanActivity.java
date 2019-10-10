@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.Button;
@@ -91,6 +92,7 @@ public class ScanActivity extends CommonActivity {
     private String newGroupName;
 
     private ExecutorService threadPool;
+    private int traverseFileCount = 0;
 
     private Unbinder unbinder;
     private AbstractAdapter adapter;
@@ -173,10 +175,12 @@ public class ScanActivity extends CommonActivity {
                     @Override
                     public void onViewClick(View v, long interval) {
                         scanDialog.dismiss();
-                        if (scanDisp != null && !scanDisp.isDisposed()) {
-                            scanDisp.dispose();
-                            stopScan = true;
-                        }
+                        stopScan = true;
+                        threadPool.shutdownNow();
+//                        if (scanDisp != null && !scanDisp.isDisposed()) {
+//                            scanDisp.dispose();
+//
+//                        }
                     }
                 });
             }
@@ -247,32 +251,49 @@ public class ScanActivity extends CommonActivity {
         rv.setAdapter(adapter);
 
         scanDialog.show();
-        scanDisp = Observable.create((ObservableOnSubscribe<Integer>) emitter -> {
-                    traverseFile();
-                    emitter.onNext(0);
+        scanDisp = Observable.create((ObservableOnSubscribe<Double>) emitter -> {
+                    emitter.onNext(traverseFile());
                 })
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(integer -> {
-//                            scanDialog.dismiss();
+                .subscribe(cost -> {
+                            scanDialog.dismiss();
                             adapter.notifyDataSetChanged();
-                        }, throwable -> LogUtils.e(throwable.getMessage()));
+                    if (!stopScan) {
+                        UiManager.showShort(getString(R.string.app_scan_finish) + cost + getString(R.string.app_second_has_blank));
+                    }
+                }, throwable -> LogUtils.e(throwable.getMessage()));
     }
 
-    private void traverseFile() {
+    private double traverseFile() {
+        long start = System.currentTimeMillis();
         List<SDCardUtils.SDCardInfo> result = SDCardUtils.getSDCardInfo();
         for (SDCardUtils.SDCardInfo info : result) {
             if (!stopScan && "mounted".equals(info.getState())) {
                 traverse(new File(info.getPath()));
             }
         }
+        while (true) {
+            int temp = traverseFileCount;
+            SystemClock.sleep(500);
+            if (temp == traverseFileCount) {
+                long end = System.currentTimeMillis();
+                double cost = (double) (end - start - 500) / 1000;
+                LogUtils.e("总共耗时：" + cost + " 秒");
+                return cost;
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private synchronized void traverse(File file) {
+        if (stopScan) {
+            return;
+        }
         threadPool.execute(() -> {
             List<File> fileList = listable.listFile(file.getAbsolutePath());
+            traverseFileCount += fileList.size();
             for (File f : fileList) {
                 if (stopScan) {
                     return;
