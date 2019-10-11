@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,8 +26,8 @@ public class AutoScanFragment extends BaseFragment {
 
     private static final int REQUEST_CODE = 1;
 
-    @BindView(R.id.app_tv_scan)
-    TextView tvScan;
+    @BindView(R.id.app_btn_scan)
+    Button btnScan;
 
     private Unbinder unbinder;
     private SelectActivity activity;
@@ -54,6 +54,8 @@ public class AutoScanFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         activity.ibtnSelectAll.setVisibility(View.GONE);
+        activity.ibtnSearch.setVisibility(View.GONE);
+        activity.closeSearchView();
     }
 
     @Override
@@ -70,7 +72,7 @@ public class AutoScanFragment extends BaseFragment {
         }
     }
 
-    @OnClick(R2.id.app_tv_scan)
+    @OnClick(R2.id.app_btn_scan)
     public void onStartScan() {
         ScanActivity.start(activity, (ArrayList<String>) activity.importeds, SelectActivity.REQUEST_CODE);
     }

@@ -121,11 +121,11 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
 
                 @Override
                 public void onSuccess(List<String> dirList) {
-                    DataManager.updateCollection();
+                    DataManager.updateAll();
                     UiManager.showShort(R.string.app_delete_completed);
                     ((MainActivity) mActivity).finishOperation();
                     adapter.notifyDataSetChanged();
-//                    EventBus.getDefault().post(new AllDeleteEvent(dirList));
+                    EventBus.getDefault().post(new AllDeleteEvent(dirList));
                 }
             });
         }

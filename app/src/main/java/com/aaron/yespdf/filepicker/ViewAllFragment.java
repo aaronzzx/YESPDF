@@ -51,12 +51,12 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     TextView tvPath;
     @BindView(R2.id.app_rv_select)
     RecyclerView rvSelect;
-    @BindView(R2.id.app_tv_import_count)
-    TextView tvImportCount;
+    @BindView(R2.id.app_btn_import_count)
+    Button btnImportCount;
 
     private IViewAllContract.P presenter;
     private Unbinder unbinder;
-    private AbstractAdapter adapter;
+    private ViewAllAdapter adapter;
     private SelectActivity activity;
     private BottomSheetDialog importDialog;
     private BottomSheetDialog groupingDialog;
@@ -78,7 +78,7 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
         @Override
         public void onChanged() {
             activity.ibtnSelectAll.setSelected(false);
-            tvImportCount.setText(R.string.app_import_count);
+            btnImportCount.setText(R.string.app_import_count);
             boolean enableSelectAll = adapter.reset();
             activity.ibtnSelectAll.setEnabled(enableSelectAll);
         }
@@ -109,20 +109,27 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     public void onResume() {
         super.onResume();
         activity.ibtnSelectAll.setVisibility(View.VISIBLE);
-        tvImportCount.setFocusableInTouchMode(true);
-        tvImportCount.requestFocus();
-        tvImportCount.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (!presenter.canFinish()) {
-                        presenter.goBack();
-                        return true;
+        activity.ibtnSearch.setVisibility(View.VISIBLE);
+        activity.setViewAllAdapter(adapter);
+        activity.setRevealParam();
+
+        View view = getView();
+        if (view != null) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+            view.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View view, int keyCode, KeyEvent event) {
+                    if (activity.ibtnSearch.getVisibility() != View.GONE && event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
+                        if (!presenter.canFinish()) {
+                            presenter.goBack();
+                            return true;
+                        }
                     }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -174,8 +181,10 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     @Override
     public void onSelectResult(List<String> pathList, int total) {
         LogUtils.e(pathList);
-        activity.ibtnSelectAll.setSelected(pathList.size() == total);
-        tvImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
+        if (total != 0) {
+            activity.ibtnSelectAll.setSelected(pathList.size() == total);
+        }
+        btnImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
         selectList.clear();
         selectList.addAll(pathList);
     }
@@ -183,7 +192,7 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     private void initView() {
         tvPath.setOnClickListener(onClickListener);
         tvPath.setTag(IViewAllContract.P.ROOT_PATH); // 原始路径
-        tvImportCount.setOnClickListener(new OnClickListenerImpl() {
+        btnImportCount.setOnClickListener(new OnClickListenerImpl() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onViewClick(View v, long interval) {

@@ -1,31 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/base_white">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/app_toolbar"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_scrollFlags="scroll|enterAlways"
-        style="@style/AppToolbarStyle"
-        tools:title="@string/app_name_en">
+        android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/app_ibtn_check"
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/app_toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:padding="8dp"
-            android:layout_gravity="end"
-            android:background="@null"
-            android:src="@drawable/app_sel_select_all" />
+            style="@style/AppToolbarStyle"
+            tools:title="@string/app_name_en">
 
-    </androidx.appcompat.widget.Toolbar>
+            <ImageButton
+                android:id="@+id/app_ibtn_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp"
+                android:layout_gravity="end"
+                android:background="@null"
+                android:src="@drawable/app_sel_select_all" />
+
+            <ImageButton
+                android:id="@+id/app_ibtn_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp"
+                android:layout_gravity="end"
+                android:background="@null"
+                android:src="@drawable/app_ic_search_black_24dp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <include layout="@layout/app_include_searchview"
+            android:id="@+id/app_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+    </FrameLayout>
 
     <View
         android:layout_width="match_parent"

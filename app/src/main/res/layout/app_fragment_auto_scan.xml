@@ -11,8 +11,8 @@
         android:scaleY="0.3"
         android:src="@drawable/app_img_auto_scan"/>
 
-    <TextView
-        android:id="@+id/app_tv_scan"
+    <Button
+        android:id="@+id/app_btn_scan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -22,6 +22,6 @@
         android:textSize="@dimen/base_text_large"
         android:textStyle="bold"
         android:textColor="@color/base_white"
-        android:background="@color/app_color_accent_shallow"/>
+        android:background="@drawable/app_bg_rect_red_ripple"/>
 
 </LinearLayout>

@@ -70,8 +70,8 @@ public class ScanActivity extends CommonActivity {
     ImageButton ibtnSelectAll;
     @BindView(R2.id.app_rv_select)
     RecyclerView rv;
-    @BindView(R2.id.app_tv_import_count)
-    TextView tvImport;
+    @BindView(R2.id.app_btn_import_count)
+    Button btnImport;
 
     // 揭露动画参数
     private int duration = 250;
@@ -103,7 +103,7 @@ public class ScanActivity extends CommonActivity {
         public void onChanged() {
             if (!isFinishing()) {
                 ibtnSelectAll.setSelected(false);
-                tvImport.setText(R.string.app_import_count);
+                btnImport.setText(R.string.app_import_count);
                 if (stopScan) {
                     boolean enableSelectAll = adapter.reset();
                     ibtnSelectAll.setEnabled(enableSelectAll);
@@ -224,7 +224,7 @@ public class ScanActivity extends CommonActivity {
             v.setSelected(!v.isSelected());
             adapter.selectAll(v.isSelected());
         });
-        tvImport.setOnClickListener(new OnClickListenerImpl() {
+        btnImport.setOnClickListener(new OnClickListenerImpl() {
             @Override
             public void onViewClick(View v, long interval) {
                 if (selectList.isEmpty()) {
@@ -250,8 +250,10 @@ public class ScanActivity extends CommonActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onSelectResult(List<String> pathList, int total) {
-                ibtnSelectAll.setSelected(pathList.size() == total);
-                tvImport.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
+                if (total != 0) {
+                    ibtnSelectAll.setSelected(pathList.size() == total);
+                }
+                btnImport.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
                 selectList.clear();
                 selectList.addAll(pathList);
             }
@@ -466,14 +468,10 @@ public class ScanActivity extends CommonActivity {
         animator.setDuration(duration);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationStart(Animator animation) {
+            public void onAnimationEnd(Animator animation) {
                 if (KeyboardUtils.isSoftInputVisible(ScanActivity.this)) {
                     KeyboardUtils.hideSoftInput(ScanActivity.this);
                 }
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
                 searchView.setVisibility(View.GONE);
             }
         });

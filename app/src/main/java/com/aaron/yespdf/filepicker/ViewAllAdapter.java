@@ -100,7 +100,7 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
         ViewHolder holder = new ViewHolder(itemView);
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
-            File file = fileList.get(pos);
+            File file = filterList.get(pos);
             if (file.isDirectory()) {
                 callback.onDirTap(file.getAbsolutePath());
             } else {
@@ -199,19 +199,30 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
     @Override
     public void selectAll(boolean selectAll) {
         checkArray.clear();
-        for (File file : fileList) {
-            if (file.isFile() && !importedList.contains(file.getAbsolutePath())) {
-                checkArray.put(fileList.indexOf(file), selectAll);
-            }
-        }
         selectList.clear();
-        if (selectAll) {
-            for (int i = 0; i < getItemCount(); i++) {
-                if (fileList.get(i).isFile()) {
-                    selectList.add(fileList.get(i).getAbsolutePath());
-                }
+        for (File file : filterList) {
+            if (file.isFile() && !importedList.contains(file.getAbsolutePath())) {
+                checkArray.put(filterList.indexOf(file), selectAll);
+            }
+            if (selectAll && file.isFile() && !importedList.contains(file.getAbsolutePath())) {
+                selectList.add(file.getAbsolutePath());
             }
         }
+
+//        selectList.clear();
+//        if (selectAll) {
+////            for (int i = 0; i < getItemCount(); i++) {
+////                File file = filterList.get(i);
+////                if (file.isFile() && !importedList.contains(file.getAbsolutePath())) {
+////                    selectList.add(filterList.get(i).getAbsolutePath());
+////                }
+////            }
+//            for (File file : filterList) {
+//                if (file.isFile() && !importedList.contains(file.getAbsolutePath())) {
+//                    selectList.add(file.getAbsolutePath());
+//                }
+//            }
+//        }
         callback.onSelectResult(selectList, fileCount());
         notifyItemRangeChanged(0, getItemCount(), 0);
     }
@@ -219,7 +230,8 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
     @Override
     boolean reset() {
         checkArray.clear();
-        for (File file : fileList) {
+        selectList.clear();
+        for (File file : filterList) {
             if (file.isFile() && !importedList.contains(file.getAbsolutePath())) {
                 return true;
             }
@@ -229,8 +241,10 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
 
     private int fileCount() {
         int count = 0;
-        for (File file : fileList) {
-            if (file.isFile()) count++;
+        for (File file : filterList) {
+            if (file.isFile() && !importedList.contains(file.getAbsolutePath())) {
+                count++;
+            }
         }
         return count;
     }

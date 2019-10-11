@@ -45,11 +45,14 @@ class ViewAllPresenter extends IViewAllContract.P {
     @Override
     void listStorage() {
         if (isFirstIn) {
+            isFirstIn = false;
             String lastPath = model.queryLastPath();
-            if (!StringUtils.isEmpty(lastPath) && !ROOT_PATH.equals(lastPath)) {
+            if (StringUtils.isEmpty(lastPath) || ROOT_PATH.equals(lastPath)) {
+                listStorage();
+            } else {
                 listFile(lastPath);
             }
-            isFirstIn = false;
+            return;
         }
         model.listStorage(new IViewAllContract.FileCallback<List<SDCardUtils.SDCardInfo>>() {
             @Override

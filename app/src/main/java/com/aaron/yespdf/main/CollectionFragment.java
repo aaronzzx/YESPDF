@@ -190,13 +190,14 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<List<String>>() {
             @Override
             public List<String> doInBackground() {
-//                pdfList.removeAll(selectPDFList);
+                pdfList.removeAll(selectPDFList);
+                if (pdfList.isEmpty()) DBHelper.deleteCollection(name);
                 return DBHelper.deletePDF(selectPDFList);
             }
 
             @Override
             public void onSuccess(List<String> nameList) {
-                DataManager.updatePDFs();
+                DataManager.updateAll();
                 UiManager.showShort(R.string.app_delete_completed);
                 cancelSelect();
                 adapter.notifyDataSetChanged();
@@ -269,7 +270,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
                 return;
             }
         }
-//        pdfList.removeAll(selectPDFList);
+        pdfList.removeAll(selectPDFList);
         DataManager.updatePDFs();
         DBHelper.insertNewCollection(name, selectPDFList);
         cancelSelect();
@@ -286,7 +287,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             cancelSelect();
             return;
         }
-//        pdfList.removeAll(selectPDFList);
+        pdfList.removeAll(selectPDFList);
         DataManager.updatePDFs();
         DBHelper.insertPDFsToCollection(dir, selectPDFList);
         cancelSelect();
@@ -363,6 +364,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         });
         tvRegrouping.setOnClickListener(v -> {
             if (regroupingDialog == null) {
+                LogUtils.e("regroupingDialog == null");
                 regroupingDialog = DialogManager.createGroupingDialog(getActivity(), true, this);
             }
             regroupingDialog.show();

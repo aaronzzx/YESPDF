@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -146,6 +147,23 @@ public final class DialogManager {
         return scanDialog;
     }
 
+    public static BottomSheetDialog createImportInfoDialog(Context context, ImportInfoDialogCallback callback) {
+        View view = LayoutInflater.from(context.getApplicationContext())
+                .inflate(R.layout.app_bottomdialog_import_info, null);
+        TextView tvTitle = view.findViewById(R.id.app_tv_title);
+        ProgressBar progressBar = view.findViewById(R.id.app_progress_bar);
+        TextView tvProgressInfo = view.findViewById(R.id.app_tv_progress);
+        Button btnStopImport = view.findViewById(R.id.app_btn_stop_import);
+        callback.onTitle(tvTitle);
+        callback.onProgress(progressBar);
+        callback.onProgressInfo(tvProgressInfo);
+        callback.onStopImport(btnStopImport);
+        BottomSheetDialog scanDialog = DialogUtils.createBottomSheetDialog(context, view);
+        scanDialog.setCanceledOnTouchOutside(false);
+        scanDialog.setCancelable(false);
+        return scanDialog;
+    }
+
     public interface AlertDialogCallback {
         void onTitle(TextView tv);
 
@@ -204,6 +222,16 @@ public final class DialogManager {
         void onContent(TextView tv);
 
         void onButton(Button btn);
+    }
+
+    public interface ImportInfoDialogCallback {
+        void onTitle(TextView tv);
+
+        void onProgress(ProgressBar progressBar);
+
+        void onProgressInfo(TextView tv);
+
+        void onStopImport(Button btn);
     }
 
     private DialogManager() {}

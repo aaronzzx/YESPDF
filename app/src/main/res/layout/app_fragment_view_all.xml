@@ -32,8 +32,8 @@
         android:layout_weight="1"
         android:scrollbars="vertical"/>
 
-    <TextView
-        android:id="@+id/app_tv_import_count"
+    <Button
+        android:id="@+id/app_btn_import_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -43,6 +43,6 @@
         android:textSize="@dimen/base_text_large"
         android:textStyle="bold"
         android:textColor="@color/base_white"
-        android:background="@color/app_color_accent_shallow"/>
+        android:background="@drawable/app_bg_rect_red_ripple"/>
 
 </LinearLayout>

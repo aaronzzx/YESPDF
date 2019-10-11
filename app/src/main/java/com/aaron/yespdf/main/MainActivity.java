@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.DialogManager;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.event.HotfixEvent;
+import com.aaron.yespdf.common.event.ImportEvent;
 import com.aaron.yespdf.common.widgets.NewViewPager;
 import com.aaron.yespdf.filepicker.SelectActivity;
 import com.aaron.yespdf.settings.SettingsActivity;
@@ -85,6 +87,12 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     private PopupWindow pwMenu;
     private FragmentPagerAdapter fragmentPagerAdapter;
 
+    // 导入回调
+    private BottomSheetDialog importInfoDialog;
+    private TextView tvDialogTitle;
+    private ProgressBar pbDialogProgress;
+    private TextView tvDialogProgressInfo;
+
     private boolean receiveHotfix = false;
 
     @Override
@@ -107,6 +115,43 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
             initHotfixDialog();
         }
         hotfixDialog.show();
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onImportEvent(ImportEvent event) {
+        if (importInfoDialog != null && !importInfoDialog.isShowing()) {
+            event.stop = true;
+            return;
+        }
+        tvDialogTitle.setText(getString(R.string.app_importing) + "「" + event.name + "」");
+        if (pbDialogProgress.getMax() == 0) pbDialogProgress.setMax(event.totalProgress);
+        pbDialogProgress.setProgress(event.curProgress);
+        tvDialogProgressInfo.setText(event.curProgress + " / " + event.totalProgress);
+    }
+
+    private void initImportInfoDialog() {
+        importInfoDialog = DialogManager.createImportInfoDialog(this, new DialogManager.ImportInfoDialogCallback() {
+            @Override
+            public void onTitle(TextView tv) {
+                tvDialogTitle = tv;
+            }
+
+            @Override
+            public void onProgress(ProgressBar progressBar) {
+                pbDialogProgress = progressBar;
+            }
+
+            @Override
+            public void onProgressInfo(TextView tv) {
+                tvDialogProgressInfo = tv;
+            }
+
+            @Override
+            public void onStopImport(Button btn) {
+                btn.setOnClickListener(v -> importInfoDialog.dismiss());
+            }
+        });
     }
 
     private void initHotfixDialog() {
@@ -235,15 +280,19 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     @Override
     public void onShowLoading() {
-        if (loadingDialog == null) {
-            loadingDialog = DialogManager.createLoadingDialog(this);
+//        if (loadingDialog == null) {
+//            loadingDialog = DialogManager.createLoadingDialog(this);
+//        }
+//        loadingDialog.show();
+        if (importInfoDialog == null) {
+            initImportInfoDialog();
         }
-        loadingDialog.show();
+        importInfoDialog.show();
     }
 
     @Override
     public void onHideLoading() {
-        loadingDialog.dismiss();
+        importInfoDialog.dismiss();
     }
 
     @Override

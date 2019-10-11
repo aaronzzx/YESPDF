@@ -1,8 +1,13 @@
 package com.aaron.yespdf.filepicker;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.widget.EditText;
 import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
@@ -11,10 +16,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.aaron.base.impl.TextWatcherImpl;
 import com.aaron.base.util.StatusBarUtils;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
+import com.blankj.utilcode.util.KeyboardUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 import com.google.android.material.tabs.TabLayout;
 
@@ -42,8 +49,18 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
 
     static final String EXTRA_IMPORTED = "EXTRA_IMPORTED";
 
+    @BindView(R2.id.app_search_view)
+    View searchView;
+    @BindView(R2.id.app_ibtn_back)
+    ImageButton ibtnCancelSearch;
+    @BindView(R2.id.app_et_search)
+    EditText etSearch;
+    @BindView(R2.id.app_ibtn_clear)
+    ImageButton ibtnClear;
     @BindView(R2.id.app_ibtn_check)
     ImageButton ibtnSelectAll;
+    @BindView(R2.id.app_ibtn_search)
+    ImageButton ibtnSearch;
     @BindView(R2.id.app_tab_layout)
     TabLayout tabLayout;
     @BindView(R.id.app_vp)
@@ -57,12 +74,19 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
 //    @BindView(R2.id.app_rv_select)
 //    RecyclerView rvSelect;
 //    @BindView(R2.id.app_tv_import_count)
-//    TextView tvImportCount;
+//    TextView btnImportCount;
 //
     List<String> importeds;
+
+    // 揭露动画参数
+    private int duration = 250;
+    private int centerX;
+    private int centerY;
+    private float radius;
 //
 //    private IViewAllContract.P presenter;
     private Unbinder unbinder;
+    private ViewAllAdapter viewAllAdapter;
     private FragmentPagerAdapter fragmentPagerAdapter;
 //    private AbstractAdapter adapter;
 //
@@ -82,7 +106,7 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
 //        @Override
 //        public void onChanged() {
 //            ibtnSelectAll.setSelected(false);
-//            tvImportCount.setText(R.string.app_import_count);
+//            btnImportCount.setText(R.string.app_import_count);
 //            boolean enableSelectAll = adapter.reset();
 //            ibtnSelectAll.setEnabled(enableSelectAll);
 //        }
@@ -94,14 +118,28 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
         activity.startActivityForResult(starter, requestCode);
     }
 
+    void setViewAllAdapter(ViewAllAdapter viewAllAdapter) {
+        this.viewAllAdapter = viewAllAdapter;
+    }
+
+    void setRevealParam() {
+        searchView.post(() -> {
+            centerX = ibtnSearch.getLeft() + ibtnSearch.getMeasuredWidth() / 2;
+            centerY = ibtnSearch.getTop() + ibtnSearch.getMeasuredHeight() / 2;
+            int width = centerX * 2;
+            int height = searchView.getMeasuredHeight();
+            radius = (float) (Math.sqrt(width * width + height * height) / 2);
+        });
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        unbinder = ButterKnife.bind(this);
+        initToolbar();
         toolbar.setPadding(0, 0, 0, 0);
         StatusBarUtils.setStatusBarLight(this, true);
 //        attachP();
-        unbinder = ButterKnife.bind(this);
-        initToolbar();
         initView();
 //        presenter.listStorage();
     }
@@ -137,6 +175,15 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (searchView.getVisibility() == View.VISIBLE) {
+            closeSearchView();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -189,14 +236,44 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
 //    void onSelectResult(List<String> pathList, int total) {
 //        LogUtils.e(pathList);
 //        ibtnSelectAll.setSelected(pathList.size() == total);
-//        tvImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
+//        btnImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
 //        selectList.clear();
 //        selectList.addAll(pathList);
 //    }
 
+
     private void initView() {
         Intent data = getIntent();
         importeds = data.getStringArrayListExtra(EXTRA_IMPORTED);
+
+//        searchView.post(() -> {
+//            centerX = ibtnSearch.getLeft() + ibtnSearch.getMeasuredWidth() / 2;
+//            centerY = ibtnSearch.getTop() + ibtnSearch.getMeasuredHeight() / 2;
+//            int width = centerX * 2;
+//            int height = searchView.getMeasuredHeight();
+//            radius = (float) (Math.sqrt(width * width + height * height) / 2);
+//            LogUtils.e("centerX: " + centerX);
+//            LogUtils.e("centerY: " + centerY);
+//            LogUtils.e("radius: " + radius);
+//        });
+
+        ibtnCancelSearch.setOnClickListener(v -> {
+            closeSearchView();
+        });
+        ibtnSearch.setOnClickListener(v -> openSearchView());
+        ibtnClear.setOnClickListener(v -> {
+            etSearch.setText("");
+            if (!KeyboardUtils.isSoftInputVisible(this)) {
+                KeyboardUtils.showSoftInput(this);
+            }
+        });
+        etSearch.addTextChangedListener(new TextWatcherImpl() {
+            @Override
+            public void onTextChanged(CharSequence c, int i, int i1, int i2) {
+                ibtnClear.setVisibility(c.length() == 0 ? View.GONE : View.VISIBLE);
+                viewAllAdapter.getFilter().filter(c);
+            }
+        });
 
         tabLayout.setupWithViewPager(vp);
         fragmentPagerAdapter = new SelectFragmentAdapter(getSupportFragmentManager());
@@ -204,7 +281,7 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
 
 //        tvPath.setOnClickListener(onClickListener);
 //        tvPath.setTag(IViewAllContract.P.ROOT_PATH); // 原始路径
-//        tvImportCount.setOnClickListener(new OnClickListenerImpl() {
+//        btnImportCount.setOnClickListener(new OnClickListenerImpl() {
 //            @SuppressLint("SetTextI18n")
 //            @Override
 //            public void onViewClick(View v, long interval) {
@@ -239,5 +316,38 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black);
         }
         toolbar.setTitle(R.string.app_import_file);
+    }
+
+    private void openSearchView() {
+        Animator animator = ViewAnimationUtils.createCircularReveal(searchView, centerX, centerY, 0, radius);
+        animator.setDuration(duration);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                searchView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                etSearch.requestFocus();
+                KeyboardUtils.showSoftInput(SelectActivity.this);
+            }
+        });
+        animator.start();
+    }
+
+    void closeSearchView() {
+        Animator animator = ViewAnimationUtils.createCircularReveal(searchView, centerX, centerY, radius, 0);
+        animator.setDuration(duration);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (KeyboardUtils.isSoftInputVisible(SelectActivity.this)) {
+                    KeyboardUtils.hideSoftInput(SelectActivity.this);
+                }
+                searchView.setVisibility(View.GONE);
+            }
+        });
+        animator.start();
     }
 }

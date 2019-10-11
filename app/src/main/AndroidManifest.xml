@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:replace="icon,label,theme">
-        <activity android:name=".filepicker.ScanActivity"></activity>
+        <activity android:name=".filepicker.ScanActivity"/>
         <activity
             android:name=".main.MainActivity"
             android:screenOrientation="portrait">

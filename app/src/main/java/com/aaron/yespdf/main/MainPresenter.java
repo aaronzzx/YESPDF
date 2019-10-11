@@ -55,6 +55,7 @@ class MainPresenter implements IMainContract.P {
             @Override
             public void onSuccess(Boolean success) {
                 DataManager.updateAll();
+                view.onUpdate();
                 view.onHideLoading();
 //                if (success) {
 //                    view.onShowMessage(R.string.app_import_success);
