@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,7 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.EmptyHolder;
 import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.TimeUtils;
 
 import java.io.File;
@@ -25,11 +29,15 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class ViewAllAdapter extends AbstractAdapter {
+class ViewAllAdapter extends AbstractAdapter implements Filterable {
+
+    private static final int TYPE_EMPTY = 1;
+    private static final int TYPE_CONTENT = 2;
 
     private Context context;
     private Callback callback;
 
+    private List<File> filterList;
     private List<File> fileList;
     private List<String> importedList;
 
@@ -41,6 +49,42 @@ class ViewAllAdapter extends AbstractAdapter {
         this.fileList = fileList;
         this.importedList = importedList;
         this.callback = callback;
+        this.filterList = fileList;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                if (constraint == null) {
+                    filterList = fileList;
+                    FilterResults results = new FilterResults();
+                    results.values = filterList;
+                    return results;
+                }
+                String keyword = constraint.toString();
+                if (StringUtils.isEmpty(keyword)) {
+                    filterList = fileList;
+                } else {
+                    filterList = new ArrayList<>();
+                    for (File file : fileList) {
+                        if (file.getName().contains(keyword)) {
+                            filterList.add(file);
+                        }
+                    }
+                }
+                FilterResults results = new FilterResults();
+                results.values = filterList;
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filterList = (List<File>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     @NonNull
@@ -48,6 +92,10 @@ class ViewAllAdapter extends AbstractAdapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (context == null) context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
+        if (viewType == TYPE_EMPTY) {
+            View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
+            return new EmptyHolder(itemView);
+        }
         View itemView = inflater.inflate(R.layout.app_recycler_item_filepicker, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
         holder.itemView.setOnClickListener(v -> {
@@ -74,39 +122,48 @@ class ViewAllAdapter extends AbstractAdapter {
     @SuppressLint("SetTextI18n,SimpleDateFormat")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        ViewHolder holder = (ViewHolder) viewHolder;
-        File file = fileList.get(position);
-        String name = file.getName();
-        String desc = 0 + context.getString(R.string.app_item);
-        String lastModified = TimeUtils.millis2String(file.lastModified(), new SimpleDateFormat("yyyy/MM/dd HH:mm"));
-        if (file.isDirectory()) {
-            holder.ivIcon.setImageResource(R.drawable.app_ic_folder_yellow_24dp);
-            holder.ivNext.setVisibility(View.VISIBLE);
-            holder.cb.setVisibility(View.GONE);
-            File[] files = file.listFiles(new FileFilterImpl());
-            if (files != null) desc = files.length + context.getString(R.string.app_item);
+        if (viewHolder instanceof EmptyHolder) {
+            EmptyHolder holder = (EmptyHolder) viewHolder;
+            holder.itvEmpty.setVisibility(View.VISIBLE);
+            holder.itvEmpty.setText(R.string.app_have_no_file);
+            holder.itvEmpty.setIconTop(R.drawable.app_img_file);
         } else {
-            // 大小 MB 留小数点后一位
-            String size = String.valueOf((double) file.length() / 1024 / 1024);
-            size = size.substring(0, size.indexOf(".") + 2);
-            desc = size + " MB  -  ";
-            holder.ivNext.setVisibility(View.GONE);
-            holder.cb.setVisibility(View.VISIBLE);
-            holder.cb.setPadding(0, 0, 0, 0);
-            if (file.getName().endsWith(".pdf")) {
-                holder.ivIcon.setImageResource(R.drawable.app_ic_pdf);
-            }
-            //判断是否已导入
-            if (!importedList.isEmpty() && importedList.contains(file.getAbsolutePath())) {
-                holder.cb.setEnabled(false);
-                holder.cb.setPadding(0, 0, ConvertUtils.dp2px(2), 0);
+            ViewHolder holder = (ViewHolder) viewHolder;
+            File file = filterList.get(position);
+            String name = file.getName();
+            String desc = 0 + context.getString(R.string.app_item);
+            String lastModified = TimeUtils.millis2String(file.lastModified(), new SimpleDateFormat("yyyy/MM/dd HH:mm"));
+            if (file.isDirectory()) {
+                holder.ivIcon.setImageResource(R.drawable.app_ic_folder_yellow_24dp);
+                holder.ivNext.setVisibility(View.VISIBLE);
+                holder.cb.setVisibility(View.GONE);
+                File[] files = file.listFiles(new FileFilterImpl());
+                if (files != null) desc = files.length + context.getString(R.string.app_item);
             } else {
-                holder.cb.setEnabled(true);
+                // 大小 MB 留小数点后一位
+                String size = String.valueOf((double) file.length() / 1024 / 1024);
+                size = size.substring(0, size.indexOf(".") + 2);
+                desc = size + " MB  -  ";
+                holder.ivNext.setVisibility(View.GONE);
+                holder.cb.setVisibility(View.VISIBLE);
+                holder.cb.setPadding(0, 0, 0, 0);
+                if (file.getName().endsWith(".pdf")) {
+                    holder.ivIcon.setImageResource(R.drawable.app_ic_pdf);
+                }
+                //判断是否已导入
+                if (!importedList.isEmpty() && importedList.contains(file.getAbsolutePath())) {
+                    holder.cb.setEnabled(false);
+                    holder.cb.setPadding(0, 0, ConvertUtils.dp2px(2), 0);
+                } else {
+                    holder.cb.setEnabled(true);
+                }
+                holder.cb.setChecked(checkArray.get(position));
+                holder.tvTitle.setText(name);
+                holder.tvDescription.setText(desc + lastModified);
             }
-            holder.cb.setChecked(checkArray.get(position));
+            holder.tvTitle.setText(name);
+            holder.tvDescription.setText(desc + lastModified);
         }
-        holder.tvTitle.setText(name);
-        holder.tvDescription.setText(desc + lastModified);
     }
 
     @Override
@@ -124,8 +181,19 @@ class ViewAllAdapter extends AbstractAdapter {
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if (filterList == null || filterList.isEmpty()) {
+            return TYPE_EMPTY;
+        }
+        return TYPE_CONTENT;
+    }
+
+    @Override
     public int getItemCount() {
-        return fileList.size();
+        if (filterList == null || filterList.isEmpty()) {
+            return 1;
+        }
+        return filterList.size();
     }
 
     @Override

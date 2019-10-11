@@ -93,7 +93,7 @@ public class ScanActivity extends CommonActivity {
     private int traverseFileCount = 0;
 
     private Unbinder unbinder;
-    private AbstractAdapter adapter;
+    private ViewAllAdapter adapter;
     private BottomSheetDialog scanDialog;
     private BottomSheetDialog importDialog;
     private BottomSheetDialog groupingDialog;
@@ -150,6 +150,15 @@ public class ScanActivity extends CommonActivity {
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        if (searchView.getVisibility() == View.VISIBLE) {
+            closeSearchView();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     private void initView() {
         List<String> imported = getIntent().getStringArrayListExtra(EXTRA_IMPORTED);
@@ -196,7 +205,6 @@ public class ScanActivity extends CommonActivity {
 
         ibtnCancelSearch.setOnClickListener(v -> {
             closeSearchView();
-            etSearch.setText("");
         });
         ibtnSearch.setOnClickListener(v -> openSearchView());
         ibtnClear.setOnClickListener(v -> {
@@ -209,6 +217,7 @@ public class ScanActivity extends CommonActivity {
             @Override
             public void onTextChanged(CharSequence c, int i, int i1, int i2) {
                 ibtnClear.setVisibility(c.length() == 0 ? View.GONE : View.VISIBLE);
+                adapter.getFilter().filter(c);
             }
         });
         ibtnSelectAll.setOnClickListener(v -> {
@@ -260,9 +269,6 @@ public class ScanActivity extends CommonActivity {
                 .subscribe(cost -> {
                             scanDialog.dismiss();
                             adapter.notifyDataSetChanged();
-//                    if (!stopScan) {
-//                        UiManager.showShort(getString(R.string.app_scan_finish) + cost + getString(R.string.app_second_has_blank));
-//                    }
                 }, throwable -> LogUtils.e(throwable.getMessage()));
     }
 
@@ -308,7 +314,7 @@ public class ScanActivity extends CommonActivity {
                     runOnUiThread(() -> {
                         pdfCount++;
                         tvPdfCount.setText(getString(R.string.app_find) + "PDF(" + pdfCount + ")");
-                        adapter.notifyDataSetChanged();
+                        adapter.getFilter().filter(null);
                     });
                 } else {
                     traverse(f);

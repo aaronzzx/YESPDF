@@ -7,8 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scaleX="0.4"
-        android:scaleY="0.4"
+        android:scaleX="0.3"
+        android:scaleY="0.3"
         android:src="@drawable/app_img_auto_scan"/>
 
     <TextView
