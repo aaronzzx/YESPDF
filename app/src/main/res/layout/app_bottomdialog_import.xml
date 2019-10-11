@@ -24,6 +24,8 @@
         android:textSize="@dimen/base_text_large"
         android:hint="@string/app_type_new_group_name"
         android:maxLines="1"
+        android:textCursorDrawable="@drawable/app_text_cursor_red"
+        android:theme="@style/AppEditText"
         android:singleLine="true"/>
 
     <LinearLayout

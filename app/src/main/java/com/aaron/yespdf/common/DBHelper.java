@@ -174,7 +174,7 @@ public final class DBHelper {
         event.totalProgress = pathList.size();
         for (String path : pathList) {
             if (event.stop) return false;
-            event.name = getName(path);
+            event.name = getName(path).substring(1);
             event.curProgress++;
             EventBus.getDefault().post(event);
 

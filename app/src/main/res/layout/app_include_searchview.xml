@@ -38,15 +38,26 @@
             tools:ignore="Autofill,TextFields" />
 
         <ImageButton
-            android:id="@+id/app_ibtn_clear"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/app_ibtn_inverse"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_gravity="center"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
+            android:background="@null"
+            android:visibility="gone"
+            android:src="@drawable/app_ic_inverse"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/app_ibtn_clear"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:background="@null"
-            android:src="@drawable/app_ic_clear_grey_20dp"
             android:visibility="gone"
+            android:src="@drawable/app_ic_clear_grey_20dp"
             tools:ignore="ContentDescription" />
 
     </LinearLayout>

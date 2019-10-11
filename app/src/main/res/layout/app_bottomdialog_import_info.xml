@@ -21,6 +21,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingStart="2dp"
+        android:paddingEnd="4dp"
         android:layout_marginTop="16dp">
 
         <ProgressBar
@@ -29,7 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
-            style="?android:attr/progressBarStyleHorizontal"/>
+            android:max="0"
+            android:progressTint="@color/app_color_accent"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
         <TextView
             android:id="@+id/app_tv_progress"

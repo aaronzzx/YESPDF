@@ -55,6 +55,8 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
     ImageButton ibtnCancelSearch;
     @BindView(R2.id.app_et_search)
     EditText etSearch;
+    @BindView(R2.id.app_ibtn_inverse)
+    ImageButton ibtnInverse;
     @BindView(R2.id.app_ibtn_clear)
     ImageButton ibtnClear;
     @BindView(R2.id.app_ibtn_check)
@@ -86,7 +88,7 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
 //
 //    private IViewAllContract.P presenter;
     private Unbinder unbinder;
-    private ViewAllAdapter viewAllAdapter;
+    private ViewAllFragment viewAllFragment;
     private FragmentPagerAdapter fragmentPagerAdapter;
 //    private AbstractAdapter adapter;
 //
@@ -118,8 +120,8 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
         activity.startActivityForResult(starter, requestCode);
     }
 
-    void setViewAllAdapter(ViewAllAdapter viewAllAdapter) {
-        this.viewAllAdapter = viewAllAdapter;
+    void setViewAllFragment(ViewAllFragment viewAllFragment) {
+        this.viewAllFragment = viewAllFragment;
     }
 
     void setRevealParam() {
@@ -145,22 +147,20 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (KeyboardUtils.isSoftInputVisible(this)) {
+            KeyboardUtils.hideSoftInput(this);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 //        adapter.unregisterAdapterDataObserver(dataObserver);
         unbinder.unbind();
 //        presenter.detachV();
     }
-
-//    @Override
-//    public void onBackPressed() {
-//        if (presenter.canFinish()) {
-//            super.onBackPressed();
-//        } else {
-//            presenter.goBack();
-//        }
-//    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -181,6 +181,7 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
     public void onBackPressed() {
         if (searchView.getVisibility() == View.VISIBLE) {
             closeSearchView();
+            viewAllFragment.setFocus();
         } else {
             super.onBackPressed();
         }
@@ -261,6 +262,11 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
             closeSearchView();
         });
         ibtnSearch.setOnClickListener(v -> openSearchView());
+        ibtnInverse.setOnClickListener(v -> {
+            ibtnInverse.setSelected(!ibtnInverse.isSelected());
+            viewAllFragment.adapter.setInverse(ibtnInverse.isSelected());
+            viewAllFragment.adapter.getFilter().filter(etSearch.getText());
+        });
         ibtnClear.setOnClickListener(v -> {
             etSearch.setText("");
             if (!KeyboardUtils.isSoftInputVisible(this)) {
@@ -270,8 +276,9 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
         etSearch.addTextChangedListener(new TextWatcherImpl() {
             @Override
             public void onTextChanged(CharSequence c, int i, int i1, int i2) {
+                ibtnInverse.setVisibility(c.length() == 0 ? View.GONE : View.VISIBLE);
                 ibtnClear.setVisibility(c.length() == 0 ? View.GONE : View.VISIBLE);
-                viewAllAdapter.getFilter().filter(c);
+                viewAllFragment.adapter.getFilter().filter(c);
             }
         });
 

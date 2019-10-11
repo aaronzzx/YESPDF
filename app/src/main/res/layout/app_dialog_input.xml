@@ -40,7 +40,10 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginRight="16dp"
+                android:maxLines="1"
                 android:inputType="textPassword"
+                android:textCursorDrawable="@drawable/app_text_cursor_red"
+                android:theme="@style/AppEditText"
                 android:textSize="@dimen/base_text_large" />
 
             <View

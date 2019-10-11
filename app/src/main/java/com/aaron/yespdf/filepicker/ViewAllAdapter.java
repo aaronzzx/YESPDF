@@ -37,6 +37,8 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
     private Context context;
     private Callback callback;
 
+    private boolean inverse;
+
     private List<File> filterList;
     private List<File> fileList;
     private List<String> importedList;
@@ -50,6 +52,10 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
         this.importedList = importedList;
         this.callback = callback;
         this.filterList = fileList;
+    }
+
+    public void setInverse(boolean inverse) {
+        this.inverse = inverse;
     }
 
     @Override
@@ -69,7 +75,8 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
                 } else {
                     filterList = new ArrayList<>();
                     for (File file : fileList) {
-                        if (file.getName().contains(keyword)) {
+                        boolean contains = file.getName().contains(keyword) != inverse;
+                        if (contains) {
                             filterList.add(file);
                         }
                     }

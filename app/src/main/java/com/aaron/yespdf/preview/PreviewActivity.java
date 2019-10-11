@@ -90,6 +90,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
 
     private static final String EXTRA_PDF = "EXTRA_PDF";
     private static final String BUNDLE_CUR_PAGE = "BUNDLE_CUR_PAGE";
+    private static final String BUNDLE_PASSWORD = "BUNDLE_PASSWORD";
 
     private static final int REQUEST_CODE_SETTINGS = 101;
 
@@ -293,6 +294,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(BUNDLE_CUR_PAGE, curPage);
+        outState.putString(BUNDLE_PASSWORD, password);
     }
 
     /**
@@ -441,6 +443,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         pdf = intent.getParcelableExtra(EXTRA_PDF);
         if (pdf != null) {
             curPage = savedInstanceState != null ? savedInstanceState.getInt(BUNDLE_CUR_PAGE) : pdf.getCurPage();
+            password = savedInstanceState != null ? savedInstanceState.getString(BUNDLE_PASSWORD) : null;
             pageCount = pdf.getTotalPage();
         }
     }

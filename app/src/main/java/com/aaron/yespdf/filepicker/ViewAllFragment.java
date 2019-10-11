@@ -53,10 +53,10 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     RecyclerView rvSelect;
     @BindView(R2.id.app_btn_import_count)
     Button btnImportCount;
+    ViewAllAdapter adapter;
 
     private IViewAllContract.P presenter;
     private Unbinder unbinder;
-    private ViewAllAdapter adapter;
     private SelectActivity activity;
     private BottomSheetDialog importDialog;
     private BottomSheetDialog groupingDialog;
@@ -105,31 +105,32 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
         return view;
     }
 
+    void setFocus() {
+        horizontalSv.requestFocus();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         activity.ibtnSelectAll.setVisibility(View.VISIBLE);
         activity.ibtnSearch.setVisibility(View.VISIBLE);
-        activity.setViewAllAdapter(adapter);
+        activity.setViewAllFragment(this);
         activity.setRevealParam();
 
-        View view = getView();
-        if (view != null) {
-            view.setFocusableInTouchMode(true);
-            view.requestFocus();
-            view.setOnKeyListener(new View.OnKeyListener() {
-                @Override
-                public boolean onKey(View view, int keyCode, KeyEvent event) {
-                    if (activity.ibtnSearch.getVisibility() != View.GONE && event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
-                        if (!presenter.canFinish()) {
-                            presenter.goBack();
-                            return true;
-                        }
+        horizontalSv.setFocusableInTouchMode(true);
+        horizontalSv.requestFocus();
+        horizontalSv.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (!presenter.canFinish()) {
+                        presenter.goBack();
+                        return true;
                     }
-                    return false;
                 }
-            });
-        }
+                return false;
+            }
+        });
     }
 
     @Override

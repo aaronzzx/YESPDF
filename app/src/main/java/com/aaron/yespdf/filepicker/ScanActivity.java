@@ -62,6 +62,8 @@ public class ScanActivity extends CommonActivity {
     ImageButton ibtnCancelSearch;
     @BindView(R2.id.app_et_search)
     EditText etSearch;
+    @BindView(R2.id.app_ibtn_inverse)
+    ImageButton ibtnInverse;
     @BindView(R2.id.app_ibtn_clear)
     ImageButton ibtnClear;
     @BindView(R2.id.app_ibtn_search)
@@ -139,6 +141,14 @@ public class ScanActivity extends CommonActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (KeyboardUtils.isSoftInputVisible(this)) {
+            KeyboardUtils.hideSoftInput(this);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
@@ -207,6 +217,11 @@ public class ScanActivity extends CommonActivity {
             closeSearchView();
         });
         ibtnSearch.setOnClickListener(v -> openSearchView());
+        ibtnInverse.setOnClickListener(v -> {
+            ibtnInverse.setSelected(!ibtnInverse.isSelected());
+            adapter.setInverse(ibtnInverse.isSelected());
+            adapter.getFilter().filter(etSearch.getText());
+        });
         ibtnClear.setOnClickListener(v -> {
             etSearch.setText("");
             if (!KeyboardUtils.isSoftInputVisible(this)) {
@@ -216,6 +231,7 @@ public class ScanActivity extends CommonActivity {
         etSearch.addTextChangedListener(new TextWatcherImpl() {
             @Override
             public void onTextChanged(CharSequence c, int i, int i1, int i2) {
+                ibtnInverse.setVisibility(c.length() == 0 ? View.GONE : View.VISIBLE);
                 ibtnClear.setVisibility(c.length() == 0 ? View.GONE : View.VISIBLE);
                 adapter.getFilter().filter(c);
             }
