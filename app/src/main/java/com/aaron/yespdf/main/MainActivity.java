@@ -125,7 +125,9 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
             return;
         }
         tvDialogTitle.setText(getString(R.string.app_importing) + "「" + event.name + "」");
-        if (pbDialogProgress.getMax() == 0) pbDialogProgress.setMax(event.totalProgress);
+        if (pbDialogProgress.getMax() == 0) {
+            pbDialogProgress.setMax(event.totalProgress);
+        }
         pbDialogProgress.setProgress(event.curProgress);
         tvDialogProgressInfo.setText(event.curProgress + " / " + event.totalProgress);
     }
@@ -293,6 +295,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     @Override
     public void onHideLoading() {
         importInfoDialog.dismiss();
+        pbDialogProgress.setMax(0);
     }
 
     @Override

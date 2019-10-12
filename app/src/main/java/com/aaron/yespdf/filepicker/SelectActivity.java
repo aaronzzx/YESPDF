@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -120,10 +121,6 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
         activity.startActivityForResult(starter, requestCode);
     }
 
-    void setViewAllFragment(ViewAllFragment viewAllFragment) {
-        this.viewAllFragment = viewAllFragment;
-    }
-
     void setRevealParam() {
         searchView.post(() -> {
             centerX = ibtnSearch.getLeft() + ibtnSearch.getMeasuredWidth() / 2;
@@ -160,6 +157,15 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
 //        adapter.unregisterAdapterDataObserver(dataObserver);
         unbinder.unbind();
 //        presenter.detachV();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        List<Fragment> list = getSupportFragmentManager().getFragments();
+        for (Fragment f : list) {
+            if (f instanceof ViewAllFragment) this.viewAllFragment = (ViewAllFragment) f;
+        }
     }
 
     @Override

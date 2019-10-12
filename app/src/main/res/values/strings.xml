@@ -3,6 +3,7 @@
     <string name="app_recent">最近</string>
     <string name="app_all">全部</string>
     <string name="app_auto_scan">自动扫描</string>
+    <string name="app_scan_result">扫描结果</string>
     <string name="app_scan_right_now">立即扫描</string>
     <string name="app_stop_scan">停止扫描</string>
     <string name="app_scan_finish">扫描完成，耗时&#160;</string>

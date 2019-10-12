@@ -43,18 +43,12 @@
             android:id="@+id/app_search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_gravity="center"
             android:visibility="gone"/>
 
     </FrameLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.7dp"
-        android:layout_gravity="bottom"
-        android:background="@color/base_black_divider_shallow"/>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/app_tab_layout"

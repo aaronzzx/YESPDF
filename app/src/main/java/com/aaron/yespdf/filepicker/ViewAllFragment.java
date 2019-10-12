@@ -24,6 +24,7 @@ import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.DialogManager;
 import com.aaron.yespdf.common.GroupingAdapter;
 import com.aaron.yespdf.common.UiManager;
+import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -63,7 +64,7 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
 
     private String newGroupName;
     private List<File> fileList = new ArrayList<>();
-    private List<String> selectList = new ArrayList<>();
+    List<String> selectList = new ArrayList<>();
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -77,6 +78,7 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     private RecyclerView.AdapterDataObserver dataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onChanged() {
+            selectList.clear();
             activity.ibtnSelectAll.setSelected(false);
             btnImportCount.setText(R.string.app_import_count);
             boolean enableSelectAll = adapter.reset();
@@ -114,7 +116,6 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
         super.onResume();
         activity.ibtnSelectAll.setVisibility(View.VISIBLE);
         activity.ibtnSearch.setVisibility(View.VISIBLE);
-        activity.setViewAllFragment(this);
         activity.setRevealParam();
 
         horizontalSv.setFocusableInTouchMode(true);
@@ -181,7 +182,7 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     @SuppressLint("SetTextI18n")
     @Override
     public void onSelectResult(List<String> pathList, int total) {
-        LogUtils.e(pathList);
+        LogUtils.e(pathList.size());
         if (total != 0) {
             activity.ibtnSelectAll.setSelected(pathList.size() == total);
         }
@@ -197,6 +198,9 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
             @SuppressLint("SetTextI18n")
             @Override
             public void onViewClick(View v, long interval) {
+                if (KeyboardUtils.isSoftInputVisible(activity)) {
+                    KeyboardUtils.hideSoftInput(activity);
+                }
                 if (selectList.isEmpty()) {
                     UiManager.showShort(R.string.app_have_not_select);
                 } else {
@@ -204,10 +208,6 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
                         initImportDialog();
                     }
                     importDialog.show();
-//                    Intent data = new Intent();
-//                    data.putStringArrayListExtra(SelectActivity.EXTRA_SELECTED, (ArrayList<String>) selectList);
-//                    activity.setResult(RESULT_OK, data);
-//                    activity.finish();
                 }
             }
         });

@@ -180,10 +180,8 @@ public final class DBHelper {
 
             // 去除了文件名称的父路径
             String parentPath = path.substring(0, path.lastIndexOf("/"));
-            LogUtils.e("parentPath: " + parentPath);
             // 所属文件夹
             String dir = parentPath.substring(parentPath.lastIndexOf("/") + 1);
-            LogUtils.e("dir: " + dir);
             // 插入 Collection 对象
             Collection c = new Collection(dir);
             sDaoSession.insertOrReplace(c);

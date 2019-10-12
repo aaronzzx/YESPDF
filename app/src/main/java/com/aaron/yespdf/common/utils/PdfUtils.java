@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
 import android.os.ParcelFileDescriptor;
 
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.StringUtils;
 
 import java.io.File;
@@ -34,8 +33,6 @@ public final class PdfUtils {
     }
 
     public static String saveBitmap(Bitmap bitmap, String savePath) {
-        LogUtils.e("bitmap: " + bitmap);
-        LogUtils.e("savePath: " + savePath);
         if (bitmap == null) return null;
         File file = new File(savePath);
         if (file.exists()) return savePath;

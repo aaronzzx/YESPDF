@@ -92,7 +92,6 @@ public class ScanActivity extends CommonActivity {
     private String newGroupName;
 
     private ExecutorService threadPool;
-    private int traverseFileCount = 0;
 
     private Unbinder unbinder;
     private ViewAllAdapter adapter;
@@ -104,6 +103,7 @@ public class ScanActivity extends CommonActivity {
         @Override
         public void onChanged() {
             if (!isFinishing()) {
+                selectList.clear();
                 ibtnSelectAll.setSelected(false);
                 btnImport.setText(R.string.app_import_count);
                 if (stopScan) {
@@ -196,10 +196,6 @@ public class ScanActivity extends CommonActivity {
                         scanDialog.dismiss();
                         stopScan = true;
                         threadPool.shutdownNow();
-//                        if (scanDisp != null && !scanDisp.isDisposed()) {
-//                            scanDisp.dispose();
-//
-//                        }
                     }
                 });
             }
@@ -243,6 +239,9 @@ public class ScanActivity extends CommonActivity {
         btnImport.setOnClickListener(new OnClickListenerImpl() {
             @Override
             public void onViewClick(View v, long interval) {
+                if (KeyboardUtils.isSoftInputVisible(ScanActivity.this)) {
+                    KeyboardUtils.hideSoftInput(ScanActivity.this);
+                }
                 if (selectList.isEmpty()) {
                     UiManager.showShort(R.string.app_have_not_select);
                 } else {
@@ -266,6 +265,7 @@ public class ScanActivity extends CommonActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onSelectResult(List<String> pathList, int total) {
+                LogUtils.e(pathList.size());
                 if (total != 0) {
                     ibtnSelectAll.setSelected(pathList.size() == total);
                 }
@@ -281,7 +281,7 @@ public class ScanActivity extends CommonActivity {
         Observable.create((ObservableOnSubscribe<Double>) emitter -> {
                     emitter.onNext(traverseFile());
                 })
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(cost -> {
@@ -299,17 +299,19 @@ public class ScanActivity extends CommonActivity {
             }
         }
         while (true) {
-            int temp = traverseFileCount;
-            SystemClock.sleep(500);
-            if (temp == traverseFileCount) {
+            int temp = scanCount;
+            SystemClock.sleep(1000);
+            if (temp == scanCount) {
                 stopScan = true;
                 long end = System.currentTimeMillis();
-                double cost = (double) (end - start - 500) / 1000;
+                double cost = (double) (end - start - 1000) / 1000;
                 LogUtils.e("总共耗时：" + cost + " 秒");
                 return cost;
             }
         }
     }
+
+//    private int refreshLayoutFlag = 2000;
 
     @SuppressLint("SetTextI18n")
     private synchronized void traverse(File file) {
@@ -318,21 +320,24 @@ public class ScanActivity extends CommonActivity {
         }
         threadPool.execute(() -> {
             List<File> fileList = listable.listFile(file.getAbsolutePath());
-            traverseFileCount += fileList.size();
             for (File f : fileList) {
                 if (stopScan) {
                     return;
                 }
+                scanCount++;
                 runOnUiThread(() -> {
-                    scanCount++;
                     tvScanCount.setText(getString(R.string.app_already_scan) + scanCount + getString(R.string.app_file_));
                 });
                 if (f.isFile()) {
                     this.fileList.add(f);
+                    pdfCount++;
                     runOnUiThread(() -> {
-                        pdfCount++;
+                        toolbar.setTitle(getString(R.string.app_scan_result) + "(" + pdfCount + ")");
                         tvPdfCount.setText(getString(R.string.app_find) + "PDF(" + pdfCount + ")");
-                        adapter.getFilter().filter(null);
+//                        if (scanCount > refreshLayoutFlag) {
+//                            adapter.notifyDataSetChanged();
+//                            refreshLayoutFlag += 5000;
+//                        }
                     });
                 } else {
                     traverse(f);
@@ -372,9 +377,6 @@ public class ScanActivity extends CommonActivity {
                     @Override
                     public void onViewClick(View v, long interval) {
                         setResultBack(SelectActivity.TYPE_BASE_FOLDER, null);
-//                        DataManager.updatePDFs();
-//                        DataManager.updateCollection();
-//                        DBHelper.insert(selectList);
                     }
                 });
             }
@@ -388,9 +390,6 @@ public class ScanActivity extends CommonActivity {
                             UiManager.showShort(R.string.app_type_new_group_name);
                         } else {
                             setResultBack(SelectActivity.TYPE_CUSTOM, newGroupName);
-//                            DataManager.updatePDFs();
-//                            DataManager.updateCollection();
-//                            DBHelper.insert(selectList, newGroupName);
                         }
                     }
                 });
@@ -402,54 +401,15 @@ public class ScanActivity extends CommonActivity {
         groupingDialog = DialogManager.createGroupingDialog(ScanActivity.this, false, new GroupingAdapter.Callback() {
             @Override
             public void onAddNewGroup() {
-//                if (inputDialog == null) {
-//                    initInputDialog();
-//                }
-//                inputDialog.show();
                 // empty
             }
 
             @Override
             public void onAddToGroup(String dir) {
                 setResultBack(SelectActivity.TYPE_TO_EXIST, dir);
-//                DataManager.updatePDFs();
-//                DataManager.updateCollection();
-//                DBHelper.insert(selectList, dir);
             }
         });
     }
-
-//    private void initInputDialog() {
-//        inputDialog = DialogManager.createInputDialog(ScanActivity.this, new DialogManager.InputDialogCallback() {
-//            @Override
-//            public void onTitle(TextView tv) {
-//                tv.setText(R.string.app_add_new_group);
-//            }
-//
-//            @Override
-//            public void onInput(EditText et) {
-//                etInput = et;
-//                et.setInputType(InputType.TYPE_CLASS_TEXT);
-//                et.setHint(R.string.app_type_new_group_name);
-//            }
-//
-//            @Override
-//            public void onLeft(Button btn) {
-//                btn.setText(R.string.app_cancel);
-//                btn.setOnClickListener(v -> inputDialog.dismiss());
-//            }
-//
-//            @Override
-//            public void onRight(Button btn) {
-//                btn.setText(R.string.app_confirm);
-//                btn.setOnClickListener(v -> {
-//                    DataManager.updatePDFs();
-//                    DataManager.updateCollection();
-//                    DBHelper.insert(selectList, etInput.getText().toString());
-//                });
-//            }
-//        });
-//    }
 
     private void initToolbar() {
         ActionBar actionBar = getSupportActionBar();
@@ -458,7 +418,7 @@ public class ScanActivity extends CommonActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black);
         }
-        toolbar.setTitle(R.string.app_auto_scan);
+        toolbar.setTitle(R.string.app_scan_result);
     }
 
     private void openSearchView() {
