@@ -151,7 +151,12 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
             @Override
             public void onStopImport(Button btn) {
-                btn.setOnClickListener(v -> importInfoDialog.dismiss());
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        importInfoDialog.dismiss();
+                    }
+                });
             }
         });
     }

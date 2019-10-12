@@ -385,11 +385,8 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         etName.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK && etName.hasFocus()) {
-                    cancelRename();
-                    return true;
-                }
-                return false;
+                cancelRename();
+                return true;
             }
         });
         ibtnClear.setOnClickListener(v -> {
