@@ -129,7 +129,9 @@ public final class DialogManager {
         List<Cover> list = DataManager.getCoverList();
         RecyclerView.Adapter adapter = new GroupingAdapter(lm, list, callback, enableAddNew);
         rv.setAdapter(adapter);
-        return DialogUtils.createBottomSheetDialog(context, view, R.style.AppRegroupingAnim, true);
+        BottomSheetDialog dialog = DialogUtils.createBottomSheetDialog(context, view, R.style.AppRegroupingAnim, true);
+        dialog.setOnDismissListener(dialogTemp -> rv.scrollToPosition(0));
+        return dialog;
     }
 
     public static BottomSheetDialog createScanDialog(Context context, ScanDialogCallback callback) {
