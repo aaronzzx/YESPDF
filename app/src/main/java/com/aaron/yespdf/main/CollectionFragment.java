@@ -290,16 +290,19 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             return;
         }
         pdfList.removeAll(selectPDFList);
-        DataManager.updatePDFs();
         DBHelper.insertPDFsToCollection(dir, selectPDFList);
+        DataManager.updatePDFs();
         cancelSelect();
         notifyGroupUpdate();
     }
 
     private void notifyGroupUpdate() {
-        adapter.notifyDataSetChanged();
+        if (pdfList.isEmpty()) {
+            dismiss();
+        } else {
+            adapter.notifyDataSetChanged();
+        }
         EventBus.getDefault().post(new AllEvent(pdfList.isEmpty(), name));
-        if (pdfList.isEmpty()) dismiss();
     }
 
     @Override

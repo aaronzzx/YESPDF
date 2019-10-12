@@ -116,12 +116,13 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
                 @Override
                 public List<String> doInBackground() {
 //                    coverList.removeAll(selectCollections);
-                    return DBHelper.deleteCollection(selectCollections);
+                    List<String> list = DBHelper.deleteCollection(selectCollections);
+                    DataManager.updateAll();
+                    return list;
                 }
 
                 @Override
                 public void onSuccess(List<String> dirList) {
-                    DataManager.updateAll();
                     UiManager.showShort(R.string.app_delete_completed);
                     ((MainActivity) mActivity).finishOperation();
                     adapter.notifyDataSetChanged();
@@ -149,7 +150,7 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
     void update() {
         DataManager.updateCollection();
         adapter.cancelSelect();
-        adapter.notifyItemRangeChanged(0, coverList.size());
+        adapter.notifyDataSetChanged();
     }
 
     private void initView() {
