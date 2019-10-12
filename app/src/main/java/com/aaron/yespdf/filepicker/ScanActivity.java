@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -86,6 +88,7 @@ public class ScanActivity extends CommonActivity {
 
     private TextView tvScanCount;
     private TextView tvPdfCount;
+    private Button btnStopScan;
     private int scanCount;
     private int pdfCount;
     private boolean stopScan;
@@ -190,12 +193,15 @@ public class ScanActivity extends CommonActivity {
 
             @Override
             public void onButton(Button btn) {
-                btn.setOnClickListener(new OnClickListenerImpl() {
+                btnStopScan = btn;
+                btnStopScan.setOnClickListener(new OnClickListenerImpl() {
                     @Override
                     public void onViewClick(View v, long interval) {
-                        scanDialog.dismiss();
+                        btnStopScan.setSelected(true);
                         stopScan = true;
+                        scanDialog.dismiss();
                         threadPool.shutdownNow();
+                        updateUI();
                     }
                 });
             }
@@ -285,8 +291,10 @@ public class ScanActivity extends CommonActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(cost -> {
-                            scanDialog.dismiss();
-                            adapter.notifyDataSetChanged();
+                    if (!btnStopScan.isSelected()) {
+                        scanDialog.dismiss();
+                        updateUI();
+                    }
                 }, throwable -> LogUtils.e(throwable.getMessage()));
     }
 
@@ -461,5 +469,12 @@ public class ScanActivity extends CommonActivity {
         data.putExtra(SelectActivity.EXTRA_GROUP_NAME, groupName);
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    private void updateUI() {
+        LayoutAnimationController lac = AnimationUtils.loadLayoutAnimation(this, R.anim.app_layout_fall_down);
+        rv.setLayoutAnimation(lac);
+        rv.getAdapter().notifyDataSetChanged();
+        rv.scheduleLayoutAnimation();
     }
 }

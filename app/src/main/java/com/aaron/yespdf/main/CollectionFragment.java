@@ -168,6 +168,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
 
     @Override
     public void onStartOperation() {
+        etName.setEnabled(false);
         cancelRename();
         tvTitle.setText(getString(R.string.app_selected_zero));
         ibtnSelectAll.setSelected(false);
@@ -215,6 +216,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
 
     @Override
     public void cancelSelect() {
+        etName.setEnabled(true);
         OperationBarHelper.hide(vgOperationBar);
         adapter.cancelSelect();
         tvRegrouping.setVisibility(View.GONE);
@@ -313,9 +315,6 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
             etName.setText(name);
             pdfList.addAll(DataManager.getPdfList(name));
         }
-//        for (Collection c : DBHelper.queryAllCollection()) {
-//            savedCollections.add(c.getName());
-//        }
 
         createDeleteDialog();
         setListener();
@@ -364,7 +363,6 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
         });
         tvRegrouping.setOnClickListener(v -> {
             if (regroupingDialog == null) {
-                LogUtils.e("regroupingDialog == null");
                 regroupingDialog = DialogManager.createGroupingDialog(getActivity(), true, this);
             }
             regroupingDialog.show();

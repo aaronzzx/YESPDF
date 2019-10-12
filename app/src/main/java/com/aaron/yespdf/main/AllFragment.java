@@ -147,15 +147,12 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
     }
 
     void update() {
-//        coverList.clear();
-//        coverList.addAll(DBHelper.queryAllCollection());
         DataManager.updateCollection();
-        adapter.notifyDataSetChanged();
+        adapter.cancelSelect();
+        adapter.notifyItemRangeChanged(0, coverList.size());
     }
 
     private void initView() {
-//        coverList.addAll(DBHelper.queryAllCollection());
-
         rvAll.addItemDecoration(new XGridDecoration());
         rvAll.addItemDecoration(new YGridDecoration());
         GridLayoutManager lm = new GridLayoutManager(mActivity, 3);

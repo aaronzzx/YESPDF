@@ -138,9 +138,7 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
         initToolbar();
         toolbar.setPadding(0, 0, 0, 0);
         StatusBarUtils.setStatusBarLight(this, true);
-//        attachP();
         initView();
-//        presenter.listStorage();
     }
 
     @Override
@@ -154,9 +152,7 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        adapter.unregisterAdapterDataObserver(dataObserver);
         unbinder.unbind();
-//        presenter.detachV();
     }
 
     @Override
@@ -203,66 +199,10 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
         return findViewById(R.id.app_toolbar);
     }
 
-//    @Override
-//    public void attachP() {
-//        presenter = new ViewAllPresenter(this);
-//    }
-//
-//    @Override
-//    public void onShowMessage(int stringId) {
-//        UiManager.showShort(stringId);
-//    }
-//
-//    @Override
-//    public void onShowFileList(List<File> fileList) {
-//        this.fileList.clear();
-//        this.fileList.addAll(fileList);
-//        adapter.notifyDataSetChanged();
-//    }
-//
-//    @Override
-//    public void onShowPath(List<String> pathList) {
-//        vgPath.removeViews(1, vgPath.getChildCount() - 1);
-//        LayoutInflater inflater = LayoutInflater.from(this);
-//        StringBuilder parent = new StringBuilder(IViewAllContract.P.ROOT_PATH);
-//        for (String dirName : pathList) {
-//            TextView tvPath = (TextView) inflater.inflate(R.layout.app_include_tv_path, null);
-//            tvPath.setOnClickListener(onClickListener);
-//            tvPath.setText(dirName);
-//            parent.append("/").append(dirName); // 当前节点生成后即变成下一节点的父节点
-//            tvPath.setTag(parent.toString());
-//            vgPath.addView(tvPath);
-//        }
-//    }
-//
-//    void onDirTap(String dirPath) {
-//        presenter.listFile(dirPath);
-//    }
-//
-//    @SuppressLint("SetTextI18n")
-//    void onSelectResult(List<String> pathList, int total) {
-//        LogUtils.e(pathList);
-//        ibtnSelectAll.setSelected(pathList.size() == total);
-//        btnImportCount.setText(getString(R.string.app_import) + "(" + pathList.size() + ")");
-//        selectList.clear();
-//        selectList.addAll(pathList);
-//    }
-
 
     private void initView() {
         Intent data = getIntent();
         importeds = data.getStringArrayListExtra(EXTRA_IMPORTED);
-
-//        searchView.post(() -> {
-//            centerX = ibtnSearch.getLeft() + ibtnSearch.getMeasuredWidth() / 2;
-//            centerY = ibtnSearch.getTop() + ibtnSearch.getMeasuredHeight() / 2;
-//            int width = centerX * 2;
-//            int height = searchView.getMeasuredHeight();
-//            radius = (float) (Math.sqrt(width * width + height * height) / 2);
-//            LogUtils.e("centerX: " + centerX);
-//            LogUtils.e("centerY: " + centerY);
-//            LogUtils.e("radius: " + radius);
-//        });
 
         ibtnCancelSearch.setOnClickListener(v -> {
             closeSearchView();
@@ -291,34 +231,6 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
         tabLayout.setupWithViewPager(vp);
         fragmentPagerAdapter = new SelectFragmentAdapter(getSupportFragmentManager());
         vp.setAdapter(fragmentPagerAdapter);
-
-//        tvPath.setOnClickListener(onClickListener);
-//        tvPath.setTag(IViewAllContract.P.ROOT_PATH); // 原始路径
-//        btnImportCount.setOnClickListener(new OnClickListenerImpl() {
-//            @SuppressLint("SetTextI18n")
-//            @Override
-//            public void onViewClick(View v, long interval) {
-//                if (selectList.isEmpty()) {
-//                    UiManager.showShort(R.string.app_have_not_select);
-//                } else {
-//                    Intent data = new Intent();
-//                    data.putStringArrayListExtra(EXTRA_SELECTED, (ArrayList<String>) selectList);
-//                    setResult(RESULT_OK, data);
-//                    finish();
-//                }
-//            }
-//        });
-//        ibtnSelectAll.setOnClickListener(v -> {
-//            ibtnSelectAll.setSelected(!ibtnSelectAll.isSelected());
-//            adapter.selectAll(ibtnSelectAll.isSelected());
-//        });
-//
-//        ibtnSelectAll.setEnabled(false); // XML 设置无效，只能这里初始化
-//        RecyclerView.LayoutManager lm = new LinearLayoutManager(this);
-//        rvSelect.setLayoutManager(lm);
-//        adapter = new SelectAdapter(fileList, importeds);
-//        adapter.registerAdapterDataObserver(dataObserver);
-//        rvSelect.setAdapter(adapter);
     }
 
     private void initToolbar() {

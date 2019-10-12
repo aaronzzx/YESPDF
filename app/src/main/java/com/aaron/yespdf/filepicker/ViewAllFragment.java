@@ -125,6 +125,8 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
             public boolean onKey(View view, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
                     if (!presenter.canFinish()) {
+                        activity.ibtnInverse.setSelected(false);
+                        activity.etSearch.setText("");
                         presenter.goBack();
                         return true;
                     }
