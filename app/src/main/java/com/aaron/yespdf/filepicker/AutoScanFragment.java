@@ -12,14 +12,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.aaron.base.base.BaseFragment;
+import com.aaron.base.impl.OnClickListenerImpl;
 import com.aaron.yespdf.R;
-import com.aaron.yespdf.R2;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class AutoScanFragment extends BaseFragment {
@@ -47,6 +46,7 @@ public class AutoScanFragment extends BaseFragment {
         activity = (SelectActivity) getActivity();
         View view = inflater.inflate(R.layout.app_fragment_auto_scan, container, false);
         unbinder = ButterKnife.bind(this, view);
+        initView();
         return view;
     }
 
@@ -72,8 +72,12 @@ public class AutoScanFragment extends BaseFragment {
         }
     }
 
-    @OnClick(R2.id.app_btn_scan)
-    public void onStartScan() {
-        ScanActivity.start(activity, (ArrayList<String>) activity.importeds, SelectActivity.REQUEST_CODE);
+    private void initView() {
+        btnScan.setOnClickListener(new OnClickListenerImpl() {
+            @Override
+            public void onViewClick(View v, long interval) {
+                ScanActivity.start(activity, (ArrayList<String>) activity.importeds, SelectActivity.REQUEST_CODE);
+            }
+        });
     }
 }
