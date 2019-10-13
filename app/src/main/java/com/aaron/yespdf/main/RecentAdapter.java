@@ -14,6 +14,7 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.App;
 import com.aaron.yespdf.common.CoverHolder;
 import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.EmptyHolder;
 import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.bean.PDF;
@@ -121,6 +122,7 @@ class RecentAdapter extends AbstractAdapter<PDF> {
                 pdf.setLatestRead(Long.parseLong(TimeUtils.millis2String(cur, df)));
                 DBHelper.updatePDF(pdf);
                 DBHelper.insertRecent(pdf);
+                DataManager.updateRecentPDFs();
                 PreviewActivity.start(context, pdf);
                 EventBus.getDefault().post(recentPDFEvent);
             }

@@ -225,5 +225,6 @@ public class RecentFragment extends BaseFragment implements IOperation, Abstract
 
     private void initData() {
         recentPDFList.addAll(DBHelper.queryRecentPDF());
+//        recentPDFList = DataManager.getRecentPdfList();
     }
 }

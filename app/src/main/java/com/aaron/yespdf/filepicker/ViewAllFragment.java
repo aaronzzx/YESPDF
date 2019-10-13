@@ -137,6 +137,12 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        horizontalSv.setOnKeyListener(null);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         adapter.unregisterAdapterDataObserver(dataObserver);
@@ -287,19 +293,12 @@ public class ViewAllFragment extends BaseFragment implements IViewAllContract.V,
         groupingDialog = DialogManager.createGroupingDialog(activity, false, new GroupingAdapter.Callback() {
             @Override
             public void onAddNewGroup() {
-//                if (inputDialog == null) {
-//                    initInputDialog();
-//                }
-//                inputDialog.show();
                 // empty
             }
 
             @Override
             public void onAddToGroup(String dir) {
                 setResultBack(SelectActivity.TYPE_TO_EXIST, dir);
-//                DataManager.updatePDFs();
-//                DataManager.updateCollection();
-//                DBHelper.insert(selectList, dir);
             }
         });
     }

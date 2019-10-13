@@ -209,6 +209,9 @@ public class SelectActivity extends CommonActivity/* implements IViewAllContract
         });
         ibtnSearch.setOnClickListener(v -> openSearchView());
         ibtnInverse.setOnClickListener(v -> {
+            if (KeyboardUtils.isSoftInputVisible(this)) {
+                KeyboardUtils.hideSoftInput(this);
+            }
             ibtnInverse.setSelected(!ibtnInverse.isSelected());
             viewAllFragment.adapter.setInverse(ibtnInverse.isSelected());
             viewAllFragment.adapter.getFilter().filter(etSearch.getText());

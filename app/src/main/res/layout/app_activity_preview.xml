@@ -29,8 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:fitsSystemWindows="true"
-        android:alpha="0.0"
         android:visibility="gone"
+        android:alpha="0.0"
         android:orientation="vertical">
 
         <LinearLayout

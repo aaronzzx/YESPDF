@@ -220,6 +220,9 @@ public class ScanActivity extends CommonActivity {
         });
         ibtnSearch.setOnClickListener(v -> openSearchView());
         ibtnInverse.setOnClickListener(v -> {
+            if (KeyboardUtils.isSoftInputVisible(this)) {
+                KeyboardUtils.hideSoftInput(this);
+            }
             ibtnInverse.setSelected(!ibtnInverse.isSelected());
             adapter.setInverse(ibtnInverse.isSelected());
             adapter.getFilter().filter(etSearch.getText());

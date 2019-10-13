@@ -155,6 +155,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
                     @Override
                     public void onViewClick(View v, long interval) {
                         importInfoDialog.dismiss();
+                        pbDialogProgress.setMax(0);
                     }
                 });
             }
@@ -204,6 +205,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         attachP();
         EventBus.getDefault().register(this);
@@ -235,7 +237,11 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.app_more) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.app_search) {
+            SearchActivity.start(this);
+
+        } else if (itemId == R.id.app_more) {
             View parent = getWindow().getDecorView();
             int x = ConvertUtils.dp2px(6);
             int y = ConvertUtils.dp2px(80);

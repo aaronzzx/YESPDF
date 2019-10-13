@@ -33,11 +33,20 @@ abstract class AbstractAdapter<T> extends RecyclerView.Adapter<RecyclerView.View
     protected boolean selectMode;
     protected SparseBooleanArray checkArray;
 
+    private boolean canSelect = true;
+
     AbstractAdapter(ICommInterface<T> commInterface, List<T> sourceList) {
         this.commInterface = commInterface;
         this.sourceList = sourceList;
         selectList = new ArrayList<>();
         checkArray = new SparseBooleanArray();
+    }
+
+    AbstractAdapter(List<T> sourceList, boolean canSelect) {
+        this.sourceList = sourceList;
+        selectList = new ArrayList<>();
+        checkArray = new SparseBooleanArray();
+        this.canSelect = canSelect;
     }
 
     @NonNull
@@ -51,20 +60,22 @@ abstract class AbstractAdapter<T> extends RecyclerView.Adapter<RecyclerView.View
         }
         RecyclerView.ViewHolder holder = createHolder(parent, viewType);
         holder.itemView.setOnClickListener(v -> onTap(holder, holder.getAdapterPosition()));
-        holder.itemView.setOnLongClickListener(v -> {
-            if (!(holder instanceof EmptyHolder) && !selectMode) {
-                int pos = holder.getAdapterPosition();
-                commInterface.onStartOperation();
-                checkArray.put(pos, true);
-                checkCurrent(holder, pos);
-                selectList.add(sourceList.get(pos));
-                commInterface.onSelect(selectList, selectList.size() == getItemCount());
-                selectMode = true;
-                notifyItemRangeChanged(0, getItemCount(), 0);
-                return true;
-            }
-            return false;
-        });
+        if (canSelect) {
+            holder.itemView.setOnLongClickListener(v -> {
+                if (!(holder instanceof EmptyHolder) && !selectMode) {
+                    int pos = holder.getAdapterPosition();
+                    commInterface.onStartOperation();
+                    checkArray.put(pos, true);
+                    checkCurrent(holder, pos);
+                    selectList.add(sourceList.get(pos));
+                    commInterface.onSelect(selectList, selectList.size() == getItemCount());
+                    selectMode = true;
+                    notifyItemRangeChanged(0, getItemCount(), 0);
+                    return true;
+                }
+                return false;
+            });
+        }
         return holder;
     }
 

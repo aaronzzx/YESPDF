@@ -42,6 +42,7 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.DialogManager;
 import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.UiManager;
@@ -176,6 +177,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     private IBkFragInterface bkFragInterface;
     private Disposable autoDisp; // 自动滚动
     private boolean isPause;
+    private boolean hideBar;
 
     private Map<Long, PdfDocument.Bookmark> contentMap = new HashMap<>();
     private Map<Long, Bookmark> bookmarkMap = new HashMap<>();
@@ -244,6 +246,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
             pdf.setProgress(progress);
             pdf.setBookmark(GsonUtils.toJson(bookmarkMap.values()));
             DBHelper.updatePDF(pdf);
+            DataManager.updatePDFs();
             // 这里发出事件主要是更新界面阅读进度
             EventBus.getDefault().post(new RecentPDFEvent(true));
         }
@@ -450,6 +453,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
 
     @SuppressLint("ClickableViewAccessibility")
     private void setListener() {
+        llBottomBar.setOnClickListener(v -> {});
         ibtnQuickbarAction.setOnClickListener(v -> {
             // 当前页就是操作后的上一页或者下一页
             if (v.isSelected()) {
@@ -463,8 +467,12 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         });
         tvPreviousChapter.setOnClickListener(v -> {
             // 减 1 是为了防止当前页面有标题的情况下无法跳转，因为是按标题来跳转
+            if (hideBar) {
+                return; // 防误触
+            }
+
             int targetPage = pdfView.getCurrentPage() - 1;
-            if (!pageList.isEmpty() && targetPage < pageList.size()) {
+            if (!pageList.isEmpty() && targetPage >= pageList.get(0)) {
                 if (llQuickBar.getVisibility() != View.VISIBLE) {
                     showQuickbar();
                 }
@@ -480,9 +488,13 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
             }
         });
         tvNextChapter.setOnClickListener(v -> {
+            if (hideBar) {
+                return; // 防误触
+            }
+
             // 这里的原理和上面跳转上一章节一样
             int targetPage = pdfView.getCurrentPage() + 1;
-            if (!pageList.isEmpty() && targetPage < pageList.size()) {
+            if (!pageList.isEmpty() && targetPage <= pageList.get(pageList.size() - 1)) {
                 pdfViewBg.setVisibility(View.VISIBLE);
                 if (llQuickBar.getVisibility() != View.VISIBLE) {
                     showQuickbar();
@@ -683,7 +695,9 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
                 ibtnQuickbarAction.setSelected(false);
                 previousPage = seekBar.getProgress();
 
-                showQuickbar();
+                if (!hideBar) {
+                    showQuickbar();
+                }
             }
 
             @Override
@@ -1001,6 +1015,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     }
 
     private void showBar() {
+        hideBar = false;
         toolbar.animate().setDuration(250).alpha(1)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -1025,6 +1040,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     }
 
     private void hideBar() {
+        hideBar = true;
         toolbar.animate().setDuration(250).alpha(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override

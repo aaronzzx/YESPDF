@@ -69,6 +69,8 @@
     <string name="app_bookmark">书签</string>
     <string name="app_have_no_add_bookmark">没有添加书签</string>
     <string name="app_have_no_recent">没有阅读记录</string>
+    <string name="app_search_null">搜索不到文件</string>
+    <string name="app_search">搜索</string>
     <string name="app_have_no_all">没有添加文件</string>
     <string name="app_auto_scroll">自动滚动</string>
     <string name="app_total">共&#160;</string>

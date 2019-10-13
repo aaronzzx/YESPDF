@@ -54,7 +54,7 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
         this.filterList = fileList;
     }
 
-    public void setInverse(boolean inverse) {
+    void setInverse(boolean inverse) {
         this.inverse = inverse;
     }
 

@@ -3,7 +3,6 @@ package com.aaron.yespdf.common;
 import com.aaron.yespdf.common.bean.Collection;
 import com.aaron.yespdf.common.bean.Cover;
 import com.aaron.yespdf.common.bean.PDF;
-import com.blankj.utilcode.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ public final class DataManager {
 
     private static List<String> pathList;
     private static List<PDF> pdfList;
+    private static List<PDF> recentPdfList;
     private static List<Collection> collectionList;
 
     private static List<Cover> coverList = new ArrayList<>();
@@ -22,18 +22,17 @@ public final class DataManager {
 
     static void init() {
         pdfList = DBHelper.queryAllPDF();
+        recentPdfList = DBHelper.queryRecentPDF();
         collectionList = DBHelper.queryAllCollection();
         updatePathList();
         updateCoverList();
-        LogUtils.e("pdfList: " + pdfList);
-        LogUtils.e("collectionList: " + collectionList);
-        LogUtils.e("pathList: " + pathList);
-        LogUtils.e("coverList: " + coverList);
     }
 
     public static void updateAll() {
         DataManager.collectionList.clear();
         DataManager.collectionList.addAll(DBHelper.queryAllCollection());
+        DataManager.recentPdfList.clear();
+        DataManager.recentPdfList.addAll(DBHelper.queryRecentPDF());
         DataManager.pdfList.clear();
         DataManager.pdfList.addAll(DBHelper.queryAllPDF());
         updatePathList();
@@ -45,6 +44,11 @@ public final class DataManager {
         DataManager.pdfList.addAll(DBHelper.queryAllPDF());
         updatePathList();
         updateCoverList();
+    }
+
+    public static void updateRecentPDFs() {
+        DataManager.recentPdfList.clear();
+        DataManager.recentPdfList.addAll(DBHelper.queryRecentPDF());
     }
 
     public static void updateCollection() {
@@ -93,6 +97,10 @@ public final class DataManager {
         for (PDF pdf : pdfList) {
             pathList.add(pdf.getPath());
         }
+    }
+
+    public static List<PDF> getRecentPdfList() {
+        return recentPdfList;
     }
 
     public static List<String> getPathList() {

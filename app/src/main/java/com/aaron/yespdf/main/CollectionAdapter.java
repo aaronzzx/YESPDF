@@ -14,6 +14,7 @@ import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.CoverHolder;
 import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.EmptyHolder;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
@@ -112,6 +113,7 @@ class CollectionAdapter extends AbstractAdapter<PDF> {
                 pdf.setLatestRead(Long.parseLong(TimeUtils.millis2String(cur, df)));
                 DBHelper.updatePDF(pdf);
                 DBHelper.insertRecent(pdf);
+                DataManager.updatePDFs();
                 PreviewActivity.start(context, pdf);
                 EventBus.getDefault().post(recentPDFEvent);
                 holder.itemView.postDelayed(() -> {

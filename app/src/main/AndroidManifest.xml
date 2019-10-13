@@ -12,10 +12,12 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:replace="icon,label,theme">
-        <activity android:name=".filepicker.ScanActivity"/>
+        <activity android:name=".main.SearchActivity"></activity>
+        <activity android:name=".filepicker.ScanActivity" />
         <activity
             android:name=".main.MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,9 +41,9 @@
             android:name=".filepicker.SelectActivity"
             android:screenOrientation="portrait" />
     </application>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

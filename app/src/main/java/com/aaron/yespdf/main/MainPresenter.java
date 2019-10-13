@@ -39,12 +39,10 @@ class MainPresenter implements IMainContract.P {
             @Override
             public Boolean doInBackground() {
                 switch (type) {
-                    case SelectActivity.TYPE_TO_EXIST:
-                        DBHelper.insertPDFsToExist(pathList, groupName);
-                        break;
                     case SelectActivity.TYPE_BASE_FOLDER:
                         DBHelper.insert(pathList);
                         break;
+                    case SelectActivity.TYPE_TO_EXIST:
                     case SelectActivity.TYPE_CUSTOM:
                         DBHelper.insert(pathList, groupName);
                         break;
