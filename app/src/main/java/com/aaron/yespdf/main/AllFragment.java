@@ -44,7 +44,7 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
     RecyclerView rvAll;
 
     private Unbinder unbinder;
-    private AbstractAdapter<Cover> adapter;
+    private AllAdapter adapter;
 
     private List<Cover> coverList = DataManager.getCoverList();
     private List<Cover> selectCollections = new ArrayList<>();
@@ -149,7 +149,7 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
 
     void update() {
         DataManager.updateCollection();
-        adapter.cancelSelect();
+        adapter.reset();
         adapter.notifyDataSetChanged();
     }
 

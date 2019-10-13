@@ -355,6 +355,7 @@ public class CollectionFragment extends DialogFragment implements IOperation, Ab
 
     @SuppressLint("SetTextI18n")
     private void setListener() {
+        vgOperationBar.setOnClickListener(v -> {});
         realtimeBlurView.setOnClickListener(v -> {
             if (etName.hasFocus()) {
                 cancelRename();

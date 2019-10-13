@@ -365,6 +365,7 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     }
 
     private void setListener() {
+        vgOperationBar.setOnClickListener(v -> {});
         ibtnCancel.setOnClickListener(v -> finishOperation());
         ibtnDelete.setOnClickListener(v -> {
             tvDeleteDescription.setText(operation.deleteDescription());

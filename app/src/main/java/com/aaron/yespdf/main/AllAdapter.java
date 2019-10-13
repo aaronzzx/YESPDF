@@ -118,6 +118,12 @@ class AllAdapter extends AbstractAdapter<Cover> {
         }
     }
 
+    void reset() {
+        selectMode = false;
+        checkArray.clear();
+        selectList.clear();
+    }
+
     private void setVisibility(CollectionHolder holder, int count) {
         holder.ivCover1.setVisibility(count >= 1 ? View.VISIBLE : View.INVISIBLE);
         holder.ivCover2.setVisibility(count >= 2 ? View.VISIBLE : View.INVISIBLE);
