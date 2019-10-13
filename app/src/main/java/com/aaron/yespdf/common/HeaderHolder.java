@@ -12,6 +12,9 @@ import com.aaron.yespdf.R;
  * @author Aaron aaronzzxup@gmail.com
  */
 public class HeaderHolder extends RecyclerView.ViewHolder {
+
+    public static final int DEFAULT_LAYOUT = R.layout.app_recycler_item_search_header;
+
     public TextView tvCount;
 
     public HeaderHolder(@NonNull View itemView) {
