@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:replace="icon,label,theme">
-        <activity android:name=".main.SearchActivity"></activity>
+        <activity android:name=".main.SearchActivity"/>
         <activity android:name=".filepicker.ScanActivity" />
         <activity
             android:name=".main.MainActivity"
