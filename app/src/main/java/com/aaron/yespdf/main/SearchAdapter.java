@@ -117,7 +117,7 @@ class SearchAdapter extends AbstractAdapter<PDF> implements Filterable {
     void bindHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder instanceof CoverHolder && position < getItemCount()) {
             CoverHolder holder = (CoverHolder) viewHolder;
-            PDF pdf = filterList.get(position);
+            PDF pdf = filterList.get(position - 1);
             String cover = pdf.getCover();
             String bookName = pdf.getName();
             holder.tvTitle.setText(bookName);
