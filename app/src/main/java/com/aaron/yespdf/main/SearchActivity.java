@@ -133,7 +133,7 @@ public class SearchActivity extends CommonActivity {
         lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (adapter.isEmpty()) {
+                if (adapter.isEmpty() || position == 0) {
                     return 3;
                 }
                 return 1;

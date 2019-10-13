@@ -74,7 +74,7 @@
     <string name="app_have_no_all">没有添加文件</string>
     <string name="app_auto_scroll">自动滚动</string>
     <string name="app_total">共&#160;</string>
-    <string name="app_count">本&#160;</string>
+    <string name="app_count">&#160;本</string>
     <string name="app_already_read">已读&#160;</string>
     <string name="app_item">项&#160; - &#160;</string>
     <string name="app_horizontal_does_not_support_auto_scroll">水平阅读不支持自动滚动</string>

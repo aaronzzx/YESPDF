@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.EmptyHolder;
+import com.aaron.yespdf.common.HeaderHolder;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.TimeUtils;
@@ -33,6 +34,7 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
 
     private static final int TYPE_EMPTY = 1;
     private static final int TYPE_CONTENT = 2;
+    private static final int TYPE_HEADER = 3;
 
     private Context context;
     private Callback callback;
@@ -102,6 +104,14 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
         if (viewType == TYPE_EMPTY) {
             View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
             return new EmptyHolder(itemView);
+        } else if (viewType == TYPE_HEADER) {
+            View itemView = inflater.inflate(R.layout.app_recycler_item_search_header, parent, false);
+            HeaderHolder holder = new HeaderHolder(itemView);
+            int horizontal = ConvertUtils.dp2px(16);
+            int top = ConvertUtils.dp2px(8);
+            holder.itemView.setPadding(horizontal, top, horizontal, 0);
+            holder.itemView.setVisibility(View.GONE);
+            return holder;
         }
         View itemView = inflater.inflate(R.layout.app_recycler_item_filepicker, parent, false);
         ViewHolder holder = new ViewHolder(itemView);
@@ -134,6 +144,12 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
             holder.itvEmpty.setVisibility(View.VISIBLE);
             holder.itvEmpty.setText(R.string.app_have_no_file);
             holder.itvEmpty.setIconTop(R.drawable.app_img_file);
+        } else if (viewHolder instanceof HeaderHolder) {
+            HeaderHolder holder = (HeaderHolder) viewHolder;
+            holder.itemView.setVisibility(View.VISIBLE);
+            int count = filterList.size();
+            holder.tvCount.setText(context.getString(R.string.app_total) + count + context.getString(R.string.app_count));
+
         } else {
             ViewHolder holder = (ViewHolder) viewHolder;
             File file = filterList.get(position);
@@ -192,6 +208,9 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
         if (filterList == null || filterList.isEmpty()) {
             return TYPE_EMPTY;
         }
+        if (position == 0 && filterList.size() != fileList.size()) {
+            return TYPE_HEADER;
+        }
         return TYPE_CONTENT;
     }
 
@@ -215,21 +234,6 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
                 selectList.add(file.getAbsolutePath());
             }
         }
-
-//        selectList.clear();
-//        if (selectAll) {
-////            for (int i = 0; i < getItemCount(); i++) {
-////                File file = filterList.get(i);
-////                if (file.isFile() && !importedList.contains(file.getAbsolutePath())) {
-////                    selectList.add(filterList.get(i).getAbsolutePath());
-////                }
-////            }
-//            for (File file : filterList) {
-//                if (file.isFile() && !importedList.contains(file.getAbsolutePath())) {
-//                    selectList.add(file.getAbsolutePath());
-//                }
-//            }
-//        }
         callback.onSelectResult(selectList, fileCount());
         notifyItemRangeChanged(0, getItemCount(), 0);
     }

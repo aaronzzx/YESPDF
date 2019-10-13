@@ -17,6 +17,7 @@ import com.aaron.yespdf.common.CoverHolder;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.EmptyHolder;
+import com.aaron.yespdf.common.HeaderHolder;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.preview.PreviewActivity;
@@ -37,6 +38,7 @@ class SearchAdapter extends AbstractAdapter<PDF> implements Filterable {
 
     private static final int TYPE_EMPTY = 1;
     private static final int TYPE_CONTENT = 2;
+    private static final int TYPE_HEADER = 3;
 
     private boolean inverse;
     private RecentPDFEvent recentPDFEvent;
@@ -102,6 +104,9 @@ class SearchAdapter extends AbstractAdapter<PDF> implements Filterable {
         if (viewType == TYPE_EMPTY) {
             View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
             return new EmptyHolder(itemView);
+        } else if (viewType == TYPE_HEADER) {
+            View itemView = inflater.inflate(R.layout.app_recycler_item_search_header, parent, false);
+            return new HeaderHolder(itemView);
         }
         View itemView = inflater.inflate(CoverHolder.DEFAULT_LAYOUT, parent, false);
         return new CoverHolder(itemView);
@@ -124,6 +129,12 @@ class SearchAdapter extends AbstractAdapter<PDF> implements Filterable {
                 holder.ivCover.setImageResource(R.drawable.app_img_none_cover);
             }
             handleCheckBox(holder.cb, position);
+
+        } else if (viewHolder instanceof HeaderHolder) {
+            HeaderHolder holder = (HeaderHolder) viewHolder;
+            int count = filterList.size();
+            holder.tvCount.setText(context.getString(R.string.app_total) + count + context.getString(R.string.app_count));
+
         } else if (viewHolder instanceof EmptyHolder) {
             EmptyHolder holder = (EmptyHolder) viewHolder;
             holder.itvEmpty.setVisibility(View.VISIBLE);
@@ -150,13 +161,16 @@ class SearchAdapter extends AbstractAdapter<PDF> implements Filterable {
         if (filterList == null || filterList.isEmpty()) {
             return TYPE_EMPTY;
         }
+        if (position == 0) {
+            return TYPE_HEADER;
+        }
         return TYPE_CONTENT;
     }
 
     @Override
     void onTap(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder instanceof CoverHolder) {
-            PDF pdf = filterList.get(position);
+            PDF pdf = filterList.get(position - 1);
             long cur = System.currentTimeMillis();
             @SuppressLint("SimpleDateFormat")
             DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
