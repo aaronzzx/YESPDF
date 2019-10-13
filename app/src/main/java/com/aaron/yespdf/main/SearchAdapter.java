@@ -102,10 +102,10 @@ class SearchAdapter extends AbstractAdapter<PDF> implements Filterable {
     @Override
     RecyclerView.ViewHolder createHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_EMPTY) {
-            View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
+            View itemView = inflater.inflate(EmptyHolder.DEFAULT_LAYOUT, parent, false);
             return new EmptyHolder(itemView);
         } else if (viewType == TYPE_HEADER) {
-            View itemView = inflater.inflate(R.layout.app_recycler_item_search_header, parent, false);
+            View itemView = inflater.inflate(HeaderHolder.DEFAULT_LAYOUT, parent, false);
             return new HeaderHolder(itemView);
         }
         View itemView = inflater.inflate(CoverHolder.DEFAULT_LAYOUT, parent, false);
@@ -153,7 +153,7 @@ class SearchAdapter extends AbstractAdapter<PDF> implements Filterable {
         if (filterList == null || filterList.isEmpty()) {
             return 1;
         }
-        return filterList.size();
+        return filterList.size() + 1;
     }
 
     @Override

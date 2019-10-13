@@ -2,11 +2,13 @@ package com.aaron.yespdf.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -18,9 +20,9 @@ import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.XGridDecoration;
-import com.aaron.yespdf.common.YGridDecoration;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
+import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxBack;
 
@@ -128,7 +130,7 @@ public class SearchActivity extends CommonActivity {
         });
 
         rv.addItemDecoration(new XGridDecoration());
-        rv.addItemDecoration(new YGridDecoration());
+        rv.addItemDecoration(new YItemDecoration());
         GridLayoutManager lm = new GridLayoutManager(this, 3);
         lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -148,6 +150,15 @@ public class SearchActivity extends CommonActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
+        }
+    }
+
+    private static class YItemDecoration extends RecyclerView.ItemDecoration {
+        @Override
+        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            int pos = parent.getChildAdapterPosition(view);
+            if (pos == 0) return;
+            outRect.bottom = ConvertUtils.dp2px(24);
         }
     }
 }

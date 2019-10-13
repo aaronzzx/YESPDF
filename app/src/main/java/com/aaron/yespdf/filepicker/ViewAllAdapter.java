@@ -152,7 +152,8 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
 
         } else {
             ViewHolder holder = (ViewHolder) viewHolder;
-            File file = filterList.get(position);
+            int temp = filterList.size() == getItemCount() ? position : position - 1;
+            File file = filterList.get(temp);
             String name = file.getName();
             String desc = 0 + context.getString(R.string.app_item);
             String lastModified = TimeUtils.millis2String(file.lastModified(), new SimpleDateFormat("yyyy/MM/dd HH:mm"));
@@ -218,6 +219,8 @@ class ViewAllAdapter extends AbstractAdapter implements Filterable {
     public int getItemCount() {
         if (filterList == null || filterList.isEmpty()) {
             return 1;
+        } else if (filterList.size() != fileList.size()) {
+            return filterList.size() + 1;
         }
         return filterList.size();
     }
