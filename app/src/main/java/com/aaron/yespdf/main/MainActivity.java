@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,11 +28,11 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.about.AboutActivity;
 import com.aaron.yespdf.common.CommonActivity;
-import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
+import com.aaron.yespdf.common.DialogManager;
 import com.aaron.yespdf.common.UiManager;
-import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.HotfixEvent;
-import com.aaron.yespdf.common.utils.DialogUtils;
+import com.aaron.yespdf.common.event.ImportEvent;
 import com.aaron.yespdf.common.widgets.NewViewPager;
 import com.aaron.yespdf.filepicker.SelectActivity;
 import com.aaron.yespdf.settings.SettingsActivity;
@@ -80,10 +81,17 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     private Unbinder unbinder;
     private Dialog loadingDialog;
+    private Dialog hotfixDialog;
     private TextView tvDeleteDescription;
     private BottomSheetDialog deleteDialog;
     private PopupWindow pwMenu;
     private FragmentPagerAdapter fragmentPagerAdapter;
+
+    // 导入回调
+    private BottomSheetDialog importInfoDialog;
+    private TextView tvDialogTitle;
+    private ProgressBar pbDialogProgress;
+    private TextView tvDialogProgressInfo;
 
     private boolean receiveHotfix = false;
 
@@ -103,40 +111,101 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onHotfixSuccess(HotfixEvent event) {
         receiveHotfix = true;
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View dialogView = inflater.inflate(R.layout.app_dialog_double_btn, null);
-        Dialog hotfixDialog = DialogUtils.createDialog(this, dialogView);
-        hotfixDialog.setCanceledOnTouchOutside(false);
-        TextView tvTitle = dialogView.findViewById(R.id.app_tv_title);
-        TextView tvContent = dialogView.findViewById(R.id.app_tv_content);
-        Button btnLeft = dialogView.findViewById(R.id.app_btn_left);
-        Button btnRight = dialogView.findViewById(R.id.app_btn_right);
-        tvTitle.setText(R.string.app_find_update);
-        tvContent.setText(R.string.app_restart_to_update);
-        btnLeft.setText(R.string.app_later);
-        btnRight.setText(R.string.app_restart_right_now);
-        btnLeft.setOnClickListener(new OnClickListenerImpl() {
-            @Override
-            public void onViewClick(View v, long interval) {
-                hotfixDialog.dismiss();
-            }
-        });
-        btnRight.setOnClickListener(new OnClickListenerImpl() {
-            @Override
-            public void onViewClick(View v, long interval) {
-                final Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-                if (intent != null) {
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            }
-        });
+        if (hotfixDialog == null) {
+            initHotfixDialog();
+        }
         hotfixDialog.show();
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onImportEvent(ImportEvent event) {
+        if (importInfoDialog != null && !importInfoDialog.isShowing()) {
+            event.stop = true;
+            return;
+        }
+        tvDialogTitle.setText(getString(R.string.app_importing) + "「" + event.name + "」");
+        if (pbDialogProgress.getMax() == 0) {
+            pbDialogProgress.setMax(event.totalProgress);
+        }
+        pbDialogProgress.setProgress(event.curProgress);
+        tvDialogProgressInfo.setText(event.curProgress + " / " + event.totalProgress);
+    }
+
+    private void initImportInfoDialog() {
+        importInfoDialog = DialogManager.createImportInfoDialog(this, new DialogManager.ImportInfoDialogCallback() {
+            @Override
+            public void onTitle(TextView tv) {
+                tvDialogTitle = tv;
+            }
+
+            @Override
+            public void onProgress(ProgressBar progressBar) {
+                pbDialogProgress = progressBar;
+            }
+
+            @Override
+            public void onProgressInfo(TextView tv) {
+                tvDialogProgressInfo = tv;
+            }
+
+            @Override
+            public void onStopImport(Button btn) {
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        importInfoDialog.dismiss();
+                        pbDialogProgress.setMax(0);
+                    }
+                });
+            }
+        });
+    }
+
+    private void initHotfixDialog() {
+        hotfixDialog = DialogManager.createDoubleBtnDialog(this, new DialogManager.DoubleBtnDialogCallback() {
+            @Override
+            public void onTitle(TextView tv) {
+                tv.setText(R.string.app_find_update);
+            }
+
+            @Override
+            public void onContent(TextView tv) {
+                tv.setText(R.string.app_restart_to_update);
+            }
+
+            @Override
+            public void onLeft(Button btn) {
+                btn.setText(R.string.app_later);
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        hotfixDialog.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onRight(Button btn) {
+                btn.setText(R.string.app_restart_right_now);
+                btn.setOnClickListener(new OnClickListenerImpl() {
+                    @Override
+                    public void onViewClick(View v, long interval) {
+                        final Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                        if (intent != null) {
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         attachP();
         EventBus.getDefault().register(this);
@@ -168,7 +237,11 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.app_more) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.app_search) {
+            SearchActivity.start(this);
+
+        } else if (itemId == R.id.app_more) {
             View parent = getWindow().getDecorView();
             int x = ConvertUtils.dp2px(6);
             int y = ConvertUtils.dp2px(80);
@@ -220,12 +293,20 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
 
     @Override
     public void onShowLoading() {
-        loadingDialog.show();
+//        if (loadingDialog == null) {
+//            loadingDialog = DialogManager.createLoadingDialog(this);
+//        }
+//        loadingDialog.show();
+        if (importInfoDialog == null) {
+            initImportInfoDialog();
+        }
+        importInfoDialog.show();
     }
 
     @Override
     public void onHideLoading() {
-        loadingDialog.dismiss();
+        importInfoDialog.dismiss();
+        pbDialogProgress.setMax(0);
     }
 
     @Override
@@ -245,7 +326,6 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     }
 
     private void initView() {
-        loadingDialog = DialogUtils.createDialog(this, R.layout.app_dialog_loading);
         createDeleteDialog();
 
         initPwMenu();
@@ -263,19 +343,29 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
     }
 
     private void createDeleteDialog() {
-        View view = LayoutInflater.from(this).inflate(R.layout.app_bottomdialog_delete, null);
-        tvDeleteDescription = view.findViewById(R.id.app_tv_description);
-        Button btnCancel = view.findViewById(R.id.app_btn_cancel);
-        Button btnDelete = view.findViewById(R.id.app_btn_delete);
-        btnCancel.setOnClickListener(v -> deleteDialog.dismiss());
-        btnDelete.setOnClickListener(v -> {
-            deleteDialog.dismiss();
-            operation.delete();
+        deleteDialog = DialogManager.createDeleteDialog(this, new DialogManager.DeleteDialogCallback() {
+            @Override
+            public void onContent(TextView tv) {
+                tvDeleteDescription = tv;
+            }
+
+            @Override
+            public void onLeft(Button btn) {
+                btn.setOnClickListener(v -> deleteDialog.dismiss());
+            }
+
+            @Override
+            public void onRight(Button btn) {
+                btn.setOnClickListener(v -> {
+                    deleteDialog.dismiss();
+                    operation.delete();
+                });
+            }
         });
-        deleteDialog = DialogUtils.createBottomSheetDialog(this, view);
     }
 
     private void setListener() {
+        vgOperationBar.setOnClickListener(v -> {});
         ibtnCancel.setOnClickListener(v -> finishOperation());
         ibtnDelete.setOnClickListener(v -> {
             tvDeleteDescription.setText(operation.deleteDescription());
@@ -296,12 +386,12 @@ public class MainActivity extends CommonActivity implements IMainContract.V {
                     .callback(new PermissionUtils.SimpleCallback() {
                         @Override
                         public void onGranted() {
-                            ArrayList<String> imported = new ArrayList<>();
-                            List<PDF> pdfList = DBHelper.queryAllPDF();
-                            for (PDF pdf : pdfList) {
-                                imported.add(pdf.getPath());
-                            }
-                            SelectActivity.start(MainActivity.this, SELECT_REQUEST_CODE, imported);
+//                            ArrayList<String> imported = new ArrayList<>();
+//                            List<PDF> pdfList = DBHelper.queryAllPDF();
+//                            for (PDF pdf : pdfList) {
+//                                imported.add(pdf.getPath());
+//                            }
+                            SelectActivity.start(MainActivity.this, SELECT_REQUEST_CODE, (ArrayList<String>) DataManager.getPathList());
                         }
 
                         @Override

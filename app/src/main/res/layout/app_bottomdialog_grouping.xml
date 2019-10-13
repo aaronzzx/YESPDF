@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/base_white">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/base_black"
+        android:textSize="@dimen/base_text_xxhlarge"
+        android:text="@string/app_exist_group" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/app_rv_group"
+        android:layout_width="match_parent"
+        android:layout_height="425dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:overScrollMode="never"
+        android:scrollbars="vertical"/>
+
+</LinearLayout>

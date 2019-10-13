@@ -5,7 +5,7 @@
     <item android:drawable="@color/base_white"/>
 
     <item android:gravity="bottom|center_horizontal"
-        android:bottom="32dp">
+        android:bottom="16dp">
         <bitmap android:src="@drawable/app_splash_logo" />
     </item>
 </layer-list>

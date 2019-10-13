@@ -3,6 +3,7 @@ package com.aaron.yespdf.main;
 import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,12 +12,15 @@ import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.common.App;
+import com.aaron.yespdf.common.CoverHolder;
 import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.EmptyHolder;
 import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
 import com.aaron.yespdf.preview.PreviewActivity;
+import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,7 +58,12 @@ class RecentAdapter extends AbstractAdapter<PDF> {
             String bookName = pdf.getName();
             holder.tvTitle.setText(bookName);
             holder.tvProgress.setText(context.getString(R.string.app_already_read) + pdf.getProgress());
-            ImageLoader.load(context, new DefaultOption.Builder(cover).into(holder.ivCover));
+            if (!StringUtils.isEmpty(cover)) {
+                ImageLoader.load(context, new DefaultOption.Builder(cover).into(holder.ivCover));
+            } else {
+                holder.ivCover.setScaleType(ImageView.ScaleType.FIT_XY);
+                holder.ivCover.setImageResource(R.drawable.app_img_none_cover);
+            }
             handleCheckBox(holder.cb, position);
         } else if (viewHolder instanceof EmptyHolder) {
             EmptyHolder holder = (EmptyHolder) viewHolder;
@@ -113,6 +122,7 @@ class RecentAdapter extends AbstractAdapter<PDF> {
                 pdf.setLatestRead(Long.parseLong(TimeUtils.millis2String(cur, df)));
                 DBHelper.updatePDF(pdf);
                 DBHelper.insertRecent(pdf);
+                DataManager.updateRecentPDFs();
                 PreviewActivity.start(context, pdf);
                 EventBus.getDefault().post(recentPDFEvent);
             }

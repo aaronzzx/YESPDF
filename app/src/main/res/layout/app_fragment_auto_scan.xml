@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleX="0.4"
+        android:scaleY="0.4"
+        android:src="@drawable/app_ic_radar"/>
+
+    <Button
+        android:id="@+id/app_btn_scan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:text="@string/app_scan_right_now"
+        android:textSize="@dimen/base_text_large"
+        android:textStyle="bold"
+        android:textColor="@color/base_white"
+        android:background="@drawable/app_bg_rect_red_ripple"/>
+
+</LinearLayout>

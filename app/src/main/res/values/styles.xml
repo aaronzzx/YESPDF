@@ -6,7 +6,19 @@
         <item name="colorPrimary">@color/app_color_primary</item>
         <item name="colorPrimaryDark">@color/app_color_primary_dark</item>
         <item name="colorAccent">@color/app_color_accent</item>
+        <item name="android:windowBackground">@color/base_white</item>
+    </style>
+
+    <style name="AppSplash" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/app_bg_launch</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="AppEditText" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@android:color/darker_gray</item>
+        <item name="colorControlActivated">@color/app_color_accent</item>
     </style>
 
     <style name="AppDialogAnim">
@@ -17,6 +29,11 @@
     <style name="AppBottomDialogAnim">
         <item name="android:windowEnterAnimation">@anim/app_window_slide_enter</item>
         <item name="android:windowExitAnimation">@anim/app_window_slide_exit</item>
+    </style>
+
+    <style name="AppRegroupingAnim">
+        <item name="android:windowEnterAnimation">@anim/app_window_group_in</item>
+        <item name="android:windowExitAnimation">@anim/app_window_group_out</item>
     </style>
 
     <!-- 目录标题加粗 -->
@@ -52,8 +69,24 @@
         <item name="tabRippleColor">@color/base_transparent</item>
     </style>
 
+    <style name="AppSelectTabStyle" parent="Widget.Design.TabLayout">
+        <item name="tabPaddingStart">16dp</item>
+        <item name="tabPaddingEnd">16dp</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabTextAppearance">@style/AppSelectTabTextStyle</item>
+        <item name="tabTextColor">@color/base_black_hint</item>
+        <item name="tabSelectedTextColor">@color/base_black</item>
+        <item name="tabRippleColor">@color/base_transparent</item>
+    </style>
+
     <style name="AppTabTextStyle" parent="Widget.Design.TabLayout">
         <item name="android:textSize">@dimen/base_text_xxxhlarge</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppSelectTabTextStyle" parent="Widget.Design.TabLayout">
+        <item name="android:textSize">@dimen/base_text_normal</item>
         <item name="android:textStyle">bold</item>
     </style>
 

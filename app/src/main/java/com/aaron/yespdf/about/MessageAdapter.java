@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aaron.base.image.DefaultOption;
 import com.aaron.base.image.ImageLoader;
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.DialogManager;
 import com.aaron.yespdf.common.UiManager;
-import com.aaron.yespdf.common.utils.DialogUtils;
 import com.blankj.utilcode.util.ImageUtils;
 
 import java.util.List;
@@ -51,23 +51,26 @@ class MessageAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         if (giftDialog == null) {
-            View view = LayoutInflater.from(context).inflate(R.layout.app_bottomdialog_gift, null);
-            giftDialog = DialogUtils.createBottomSheetDialog(context, view);
-            Button btnOpenQrcode = view.findViewById(R.id.app_btn_open_qrcode);
-            Button btnGoWechat = view.findViewById(R.id.app_btn_go_wechat);
-            btnOpenQrcode.setOnClickListener(v -> {
-                qrcodeDialog.show();
-            });
-            btnGoWechat.setOnClickListener(v -> {
-                giftDialog.dismiss();
-                Bitmap bitmap = ImageUtils.drawable2Bitmap(context.getResources().getDrawable(R.drawable.app_img_qrcode));
-                AboutUtils.copyImageToDevice(context, bitmap);
-                AboutUtils.goWeChatScan(context);
-                UiManager.showShort(R.string.app_wechat_scan_notice);
+            giftDialog = DialogManager.createGiftDialog(context, new DialogManager.GiftDialogCallback() {
+                @Override
+                public void onLeft(Button btn) {
+                    btn.setOnClickListener(v -> qrcodeDialog.show());
+                }
+
+                @Override
+                public void onRight(Button btn) {
+                    btn.setOnClickListener(v -> {
+                        giftDialog.dismiss();
+                        Bitmap bitmap = ImageUtils.drawable2Bitmap(context.getResources().getDrawable(R.drawable.app_img_qrcode));
+                        AboutUtils.copyImageToDevice(context, bitmap);
+                        AboutUtils.goWeChatScan(context);
+                        UiManager.showShort(R.string.app_wechat_scan_notice);
+                    });
+                }
             });
         }
         if (qrcodeDialog == null) {
-            qrcodeDialog = DialogUtils.createDialog(context, R.layout.app_dialog_qrcode);
+            qrcodeDialog = DialogManager.createQrcodeDialog(context);
             qrcodeDialog.setCanceledOnTouchOutside(true);
         }
         View view = inflater.inflate(R.layout.app_recycler_item_message, parent, false);

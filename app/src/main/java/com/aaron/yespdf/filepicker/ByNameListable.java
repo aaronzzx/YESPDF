@@ -1,6 +1,7 @@
 package com.aaron.yespdf.filepicker;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,10 +12,20 @@ import java.util.List;
  */
 class ByNameListable implements IListable {
 
+    private FileFilter fileFilter;
+
+    ByNameListable() {
+        fileFilter = new FileFilterImpl();
+    }
+
+    ByNameListable(FileFilter fileFilter) {
+        this.fileFilter = fileFilter;
+    }
+
     @Override
     public List<File> listFile(String path) {
         File file = new File(path);
-        File[] files = file.listFiles(new FileFilterImpl());
+        File[] files = file.listFiles(fileFilter);
         List<File> fileList = new ArrayList<>(Arrays.asList(files != null ? files : new File[0]));
         Collections.sort(fileList, (file1, file2) -> {
             if (file1.isDirectory() && !file2.isDirectory()) {

@@ -19,14 +19,38 @@
         android:layout_centerInParent="true"
         android:clipToPadding="false">
 
-        <TextView
-            android:id="@+id/app_tv_name"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/base_black"
-            android:textStyle="bold"
-            android:textSize="@dimen/base_text_xxhlarge" />
+            android:layout_gravity="center">
+
+            <EditText
+                android:id="@+id/app_et_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:maxEms="12"
+                android:textColor="@color/base_black"
+                android:textStyle="bold"
+                android:textSize="@dimen/base_text_xxhlarge"
+                android:textColorHint="@color/base_black_hint"
+                android:background="@null"/>
+
+            <ImageButton
+                android:id="@+id/app_ibtn_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_gravity="center"
+                android:src="@drawable/app_ic_clear_grey_20dp"
+                android:background="@null"
+                android:visibility="gone"/>
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/app_rv_collection"
@@ -41,6 +65,20 @@
             android:scrollbars="vertical" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/app_tv_regrouping"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/app_color_accent"
+        android:textSize="@dimen/base_text_large"
+        android:text="@string/app_regrouping"/>
 
     <include layout="@layout/app_include_operation_bar" />
 

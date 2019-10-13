@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/base_black_divider_shallow"/>
+    <item android:drawable="@drawable/app_ic_pdf_white_40dp"
+        android:gravity="center"/>
+</layer-list>

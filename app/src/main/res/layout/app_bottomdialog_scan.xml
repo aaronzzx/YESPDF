@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@color/base_white">
+
+    <TextView
+        android:id="@+id/app_tv_scan_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/base_black"
+        android:textSize="@dimen/base_text_large"
+        android:textStyle="bold"
+        tools:text="已扫描 20991 个文件..."/>
+
+    <TextView
+        android:id="@+id/app_tv_pdf_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:textSize="@dimen/base_text_large"
+        android:textColor="@color/base_black_shallow"
+        tools:text="找到：PDF(30)"/>
+
+    <Button
+        android:id="@+id/app_btn_stop_scan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/app_bg_round_red_ripple"
+        android:text="@string/app_stop_scan"
+        android:textColor="@color/base_white"
+        android:textSize="@dimen/base_text_large"
+        style="?android:attr/borderlessButtonStyle"/>
+
+</LinearLayout>

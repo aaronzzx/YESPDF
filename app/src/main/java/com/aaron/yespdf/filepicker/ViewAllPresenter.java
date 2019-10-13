@@ -1,6 +1,7 @@
 package com.aaron.yespdf.filepicker;
 
 import com.blankj.utilcode.util.SDCardUtils;
+import com.blankj.utilcode.util.StringUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -9,21 +10,23 @@ import java.util.List;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class SelectP extends ISelectContract.P {
+class ViewAllPresenter extends IViewAllContract.P {
 
     private String curPath = ROOT_PATH;
+    private boolean isFirstIn = true;
 
-    SelectP(ISelectContract.V v) {
+    ViewAllPresenter(IViewAllContract.V v) {
         super(v);
     }
 
     @Override
-    ISelectContract.M model() {
-        return new SelectM();
+    IViewAllContract.M model() {
+        return new ViewAllModel();
     }
 
     @Override
     void detachV() {
+        model.saveLastPath(curPath);
         view = null;
         model = null;
     }
@@ -41,7 +44,17 @@ class SelectP extends ISelectContract.P {
 
     @Override
     void listStorage() {
-        model.listStorage(new ISelectContract.FileCallback<List<SDCardUtils.SDCardInfo>>() {
+        if (isFirstIn) {
+            isFirstIn = false;
+            String lastPath = model.queryLastPath();
+            if (StringUtils.isEmpty(lastPath) || ROOT_PATH.equals(lastPath)) {
+                listStorage();
+            } else {
+                listFile(lastPath);
+            }
+            return;
+        }
+        model.listStorage(new IViewAllContract.FileCallback<List<SDCardUtils.SDCardInfo>>() {
             @Override
             public void onResult(List<SDCardUtils.SDCardInfo> result) {
                 fileList.clear();
@@ -62,7 +75,7 @@ class SelectP extends ISelectContract.P {
             listStorage();
             return;
         }
-        model.listFile(path, new ISelectContract.FileCallback<List<File>>() {
+        model.listFile(path, new IViewAllContract.FileCallback<List<File>>() {
             @Override
             public void onResult(List<File> result) {
                 if (path.length() > 18) {

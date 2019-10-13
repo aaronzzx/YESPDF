@@ -12,4 +12,4 @@
     android:ellipsize="end"
     android:maxEms="16"
     android:drawableEnd="@drawable/app_ic_navigate_next_black_20dp"
-    tools:text="内部存储设备内部存储设备内部存储设备内部存储设备"/>
+    tools:text="内部存储设备"/>

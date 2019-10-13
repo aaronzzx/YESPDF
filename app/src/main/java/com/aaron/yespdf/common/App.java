@@ -48,6 +48,7 @@ public class App extends Application {
 
         leakCanary();
         DBHelper.init(this, AppConfig.DB_NAME);
+        DataManager.init();
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
         bugly();

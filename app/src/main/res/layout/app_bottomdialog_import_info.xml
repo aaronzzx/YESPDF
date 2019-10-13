@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@color/base_white">
+
+    <TextView
+        android:id="@+id/app_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@color/base_black"
+        android:textSize="@dimen/base_text_large"
+        android:textStyle="bold"
+        tools:text="正在导入 「大话设计模式」"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="2dp"
+        android:paddingEnd="4dp"
+        android:layout_marginTop="16dp">
+
+        <ProgressBar
+            android:id="@+id/app_progress_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:max="0"
+            android:progressTint="@color/app_color_accent"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+        <TextView
+            android:id="@+id/app_tv_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center"
+            tools:text="13 / 43"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/app_btn_stop_import"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/app_stop_import"
+        android:textSize="@dimen/base_text_large"
+        android:textColor="@color/base_white"
+        android:background="@drawable/app_bg_round_red_ripple"
+        style="?android:attr/borderlessButtonStyle"/>
+
+</LinearLayout>

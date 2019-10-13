@@ -4,48 +4,96 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/base_white"
-    tools:context=".filepicker.DeprecateSelectActivity">
+    android:background="@color/base_white">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/app_toolbar"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/app_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppToolbarStyle"
+            tools:title="@string/app_name_en">
+
+            <ImageButton
+                android:id="@+id/app_ibtn_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp"
+                android:layout_gravity="end"
+                android:background="@null"
+                android:src="@drawable/app_sel_select_all" />
+
+            <ImageButton
+                android:id="@+id/app_ibtn_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp"
+                android:layout_gravity="end"
+                android:background="@null"
+                android:src="@drawable/app_ic_search_black_24dp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <include layout="@layout/app_include_searchview"
+            android:id="@+id/app_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/app_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/AppToolbarStyle"
-        tools:title="@string/app_name_en">
+        style="@style/AppSelectTabStyle">
 
-        <ImageButton
-            android:id="@+id/app_ibtn_check"
+        <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:padding="8dp"
-            android:layout_gravity="end"
-            android:background="@null"
-            android:src="@drawable/app_sel_select_all" />
+            android:text="@string/app_auto_scan" />
 
-    </androidx.appcompat.widget.Toolbar>
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_view_all" />
 
-    <include layout="@layout/app_include_path" />
+    </com.google.android.material.tabs.TabLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/app_rv_select"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/app_vp"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical"/>
+        android:layout_height="match_parent"/>
 
-    <TextView
-        android:id="@+id/app_tv_import_count"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:text="@string/app_import_count"
-        android:textSize="@dimen/base_text_large"
-        android:textStyle="bold"
-        android:textColor="@color/app_color_accent"
-        android:background="@color/base_white"/>
+<!--    <TextView-->
+<!--        android:id="@+id/app_tv_import_count"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        android:gravity="center"-->
+<!--        android:paddingTop="16dp"-->
+<!--        android:paddingBottom="16dp"-->
+<!--        android:text="@string/app_import_count"-->
+<!--        android:textSize="@dimen/base_text_large"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textColor="@color/base_white"-->
+<!--        android:background="@color/app_color_accent_shallow"/>-->
+
+<!--    <include layout="@layout/app_include_path" />-->
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/app_rv_select"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:scrollbars="vertical"/>-->
 
 </LinearLayout>

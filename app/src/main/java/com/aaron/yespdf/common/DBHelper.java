@@ -4,19 +4,23 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.aaron.yespdf.common.bean.Collection;
+import com.aaron.yespdf.common.bean.Cover;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.bean.RecentPDF;
+import com.aaron.yespdf.common.event.ImportEvent;
+import com.aaron.yespdf.common.greendao.CollectionDao;
 import com.aaron.yespdf.common.greendao.DaoMaster;
 import com.aaron.yespdf.common.greendao.DaoSession;
 import com.aaron.yespdf.common.greendao.PDFDao;
+import com.aaron.yespdf.common.greendao.RecentPDFDao;
 import com.aaron.yespdf.common.utils.PdfUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.StringUtils;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.greendao.query.QueryBuilder;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,13 +31,45 @@ import java.util.List;
 public final class DBHelper {
 
     private static DaoSession sDaoSession;
-    private static boolean sSaveBitmapComplete;
+//    private static boolean sSaveBitmapComplete;
 
     public static void init(Context context, String dbName) {
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, dbName);
         SQLiteDatabase db = helper.getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(db);
         sDaoSession = daoMaster.newSession();
+    }
+
+    public static boolean updateDirName(String oldDirName, String newDirName) {
+        if (StringUtils.isEmpty(newDirName)
+                || oldDirName.equals(newDirName)) {
+            return false;
+        }
+        PDFDao pdfDao = sDaoSession.getPDFDao();
+        RecentPDFDao recentPDFDao = sDaoSession.getRecentPDFDao();
+        CollectionDao collectionDao = sDaoSession.getCollectionDao();
+        List<PDF> pdfList = pdfDao.queryBuilder()
+                .where(PDFDao.Properties.Dir.eq(oldDirName))
+                .list();
+        List<RecentPDF> recentList = recentPDFDao.queryBuilder()
+                .where(RecentPDFDao.Properties.Dir.eq(oldDirName))
+                .list();
+        List<Collection> collectionList = collectionDao.queryBuilder()
+                .where(CollectionDao.Properties.Name.eq(oldDirName))
+                .list();
+        for (PDF pdf : pdfList) {
+            pdf.setDir(newDirName);
+        }
+        for (RecentPDF recent : recentList) {
+            recent.setDir(newDirName);
+        }
+        for (Collection c : collectionList) {
+            c.setName(newDirName);
+        }
+        pdfDao.updateInTx(pdfList);
+        recentPDFDao.updateInTx(recentList);
+        collectionDao.updateInTx(collectionList);
+        return true;
     }
 
     public static void updatePDF(PDF pdf) {
@@ -81,6 +117,12 @@ public final class DBHelper {
         return qb.list();
     }
 
+    public static void insertPDFsToExist(List<String> pathList, String groupName) {
+        for (String path : pathList) {
+            insertPDFs(groupName, path);
+        }
+    }
+
     public static void insertRecent(PDF pdf) {
         String dir = pdf.getDir();
         String name = pdf.getName();
@@ -102,13 +144,14 @@ public final class DBHelper {
         return name;
     }
 
-    public static List<String> deleteCollection(List<Collection> list) {
+    public static List<String> deleteCollection(List<Cover> list) {
         List<String> dirList = new ArrayList<>();
-        for (Collection c : list) {
-            dirList.add(c.getName());
-            sDaoSession.getCollectionDao().delete(c);
-            sDaoSession.getDatabase().execSQL("delete from PDF where dir = ?", new String[]{c.getName()});
-            sDaoSession.getDatabase().execSQL("delete from RECENT_PDF where dir = ?", new String[]{c.getName()});
+        for (Cover c : list) {
+            dirList.add(c.name);
+//            sDaoSession.getCollectionDao().delete(c);
+            sDaoSession.getDatabase().execSQL("delete from Collection where name = ?", new String[]{c.name});
+            sDaoSession.getDatabase().execSQL("delete from PDF where dir = ?", new String[]{c.name});
+            sDaoSession.getDatabase().execSQL("delete from RECENT_PDF where dir = ?", new String[]{c.name});
         }
         return dirList;
     }
@@ -123,55 +166,124 @@ public final class DBHelper {
     }
 
     public static boolean insert(List<String> pathList) {
-        if (pathList == null || pathList.isEmpty()) return false;
-        String actualPath = pathList.get(0);
-        // 去除了文件名称的父路径
-        String parentPath = actualPath.substring(0, actualPath.lastIndexOf("/"));
-        // 所属文件夹
-        String name = parentPath.substring(parentPath.lastIndexOf("/") + 1);
-        // 插入 Collection 对象
-        Collection c = new Collection(name);
-        sDaoSession.insertOrReplace(c);
-        return insertPDFs(name, pathList);
-    }
-
-    private static boolean insertPDFs(String dir, List<String> pathList) {
+        if (pathList == null || pathList.isEmpty()) {
+            return false;
+        }
+        ImportEvent event = new ImportEvent();
+        event.curProgress = 0;
+        event.totalProgress = pathList.size();
         for (String path : pathList) {
-            String bookmarkPage = "";
-            int curPage         = 0;
-            int totalPage       = PdfUtils.getPdfTotalPage(path);
-            String name         = path.substring(path.lastIndexOf("/"), path.length() - 4);
-            String progress     = "0.0%";
-            String cover = PathUtils.getInternalAppDataPath() + name + ".jpg";
-            // 制作 PDF 封面并缓存
-            try {
-                long start = System.currentTimeMillis();
-                PdfUtils.saveBitmap(PdfUtils.pdfToBitmap(path, 0), cover);
-                long end = System.currentTimeMillis();
-                LogUtils.e(name + " cost: " + (end - start) + " milliseconds");
-                sSaveBitmapComplete = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            if (event.stop) return false;
+            event.name = getName(path).substring(1);
+            event.curProgress++;
+            EventBus.getDefault().post(event);
 
-            while (!sSaveBitmapComplete) {
-                LogUtils.v("Saving PDF cover, Wait a moment.");
-            }
+            // 去除了文件名称的父路径
+            String parentPath = path.substring(0, path.lastIndexOf("/"));
+            // 所属文件夹
+            String dir = parentPath.substring(parentPath.lastIndexOf("/") + 1);
+            // 插入 Collection 对象
+            Collection c = new Collection(dir);
+            sDaoSession.insertOrReplace(c);
 
-            PDF pdf = new PDF();
-            pdf.setDir(dir);
-            pdf.setName(name.substring(1)); // 去除斜杠
-            pdf.setCover(cover);
-            pdf.setPath(path);
-            pdf.setProgress(progress);
-            pdf.setCurPage(curPage);
-            pdf.setBookmark(bookmarkPage);
-            pdf.setTotalPage(totalPage);
-            pdf.setLatestRead(0);
-            sDaoSession.insertOrReplace(pdf);
-            sSaveBitmapComplete = false;
+            insertPDFs(dir, path);
+
+//            String bookmarkPage = "";
+//            int curPage = 0;
+//            int totalPage = PdfUtils.getPdfTotalPage(path);
+//            String name = path.substring(path.lastIndexOf("/"), path.length() - 4);
+//            String progress = "0.0%";
+//            String cover = PathUtils.getInternalAppDataPath() + name + ".jpg";
+//            // 制作 PDF 封面并缓存
+//            long start = System.currentTimeMillis();
+//            cover = PdfUtils.saveBitmap(PdfUtils.pdfToBitmap(path, 0), cover);
+//            long end = System.currentTimeMillis();
+//            LogUtils.e(name + " cost: " + (end - start) + " milliseconds");
+//
+//            PDF pdf = new PDF();
+//            pdf.setDir(dir);
+//            pdf.setName(name.substring(1)); // 去除斜杠
+//            pdf.setCover(cover);
+//            pdf.setPath(path);
+//            pdf.setProgress(progress);
+//            pdf.setCurPage(curPage);
+//            pdf.setBookmark(bookmarkPage);
+//            pdf.setTotalPage(totalPage);
+//            pdf.setLatestRead(0);
+//            sDaoSession.insertOrReplace(pdf);
         }
         return true;
+    }
+
+    public static boolean insert(List<String> pathList, String groupName) {
+        if (pathList == null || pathList.isEmpty()) return false;
+//        String actualPath = pathList.get(0);
+        // 去除了文件名称的父路径
+//        String parentPath = actualPath.substring(0, actualPath.lastIndexOf("/"));
+        // 所属文件夹
+//        String name = parentPath.substring(parentPath.lastIndexOf("/") + 1);
+        // 插入 Collection 对象
+        Collection c = new Collection(groupName);
+        sDaoSession.insertOrReplace(c);
+        ImportEvent event = new ImportEvent();
+        event.curProgress = 0;
+        event.totalProgress = pathList.size();
+        for (String path : pathList) {
+            if (event.stop) return false;
+            event.name = getName(path).substring(1);
+            event.curProgress++;
+            EventBus.getDefault().post(event);
+            insertPDFs(groupName, path);
+        }
+        return true;
+    }
+
+    public static void insertNewCollection(String newDirName, List<PDF> pdfList) {
+        Collection c = new Collection(newDirName);
+        sDaoSession.insertOrReplace(c);
+        transferPDFs(newDirName, pdfList);
+    }
+
+    public static void insertPDFsToCollection(String dirName, List<PDF> pdfList) {
+        transferPDFs(dirName, pdfList);
+    }
+
+    private static boolean insertPDFs(String groupName, String filePath) {
+        String bookmarkPage = "";
+        int curPage = 0;
+        int totalPage = PdfUtils.getPdfTotalPage(filePath);
+        String name = getName(filePath);
+        String progress = "0.0%";
+        String cover = PathUtils.getInternalAppDataPath() + name + ".jpg";
+        // 制作 PDF 封面并缓存
+        long start = System.currentTimeMillis();
+        cover = PdfUtils.saveBitmap(PdfUtils.pdfToBitmap(filePath, 0), cover);
+        long end = System.currentTimeMillis();
+        LogUtils.e(name + " cost: " + (end - start) + " milliseconds");
+
+        PDF pdf = new PDF();
+        pdf.setDir(groupName);
+        pdf.setName(name.substring(1)); // 去除斜杠
+        pdf.setCover(cover);
+        pdf.setPath(filePath);
+        pdf.setProgress(progress);
+        pdf.setCurPage(curPage);
+        pdf.setBookmark(bookmarkPage);
+        pdf.setTotalPage(totalPage);
+        pdf.setLatestRead(0);
+        sDaoSession.insertOrReplace(pdf);
+        return true;
+    }
+
+    private static void transferPDFs(String dirName, List<PDF> pdfList) {
+        for (PDF pdf : pdfList) {
+            pdf.setDir(dirName);
+        }
+        sDaoSession.getPDFDao().updateInTx(pdfList);
+    }
+
+    private static String getName(String path) {
+        return path.substring(path.lastIndexOf("/"), path.length() - 4);
     }
 
     private DBHelper() {

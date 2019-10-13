@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/app_search"
+        android:title="@string/app_search"
+        android:icon="@drawable/app_ic_search_black_24dp"
+        app:showAsAction="always"/>
+
     <item
         android:id="@+id/app_more"
         android:title="@string/app_more"

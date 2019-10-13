@@ -2,6 +2,16 @@
     <string name="app_name_en">YES PDF!</string>
     <string name="app_recent">最近</string>
     <string name="app_all">全部</string>
+    <string name="app_auto_scan">自动扫描</string>
+    <string name="app_scan_result">扫描结果</string>
+    <string name="app_scan_right_now">立即扫描</string>
+    <string name="app_stop_scan">停止扫描</string>
+    <string name="app_scan_finish">扫描完成，耗时&#160;</string>
+    <string name="app_second_has_blank">&#160;秒</string>
+    <string name="app_already_scan">已扫描&#160;</string>
+    <string name="app_file_">&#160;个文件…</string>
+    <string name="app_find">找到：</string>
+    <string name="app_view_all">浏览全部</string>
     <string name="app_more">更多</string>
     <string name="app_select_all">全选</string>
     <string name="app_file_is_empty">文件为空</string>
@@ -9,7 +19,10 @@
     <string name="app_parse_error">解析错误</string>
     <string name="app_need_verify_password">需要验证密码</string>
     <string name="app_password_error">密码错误</string>
+    <string name="app_group_name_existed">已存在分组名</string>
     <string name="app_do_not_delete">我不</string>
+    <string name="app_type_new_group_name">输入新的分组名</string>
+    <string name="app_cancel">取消</string>
     <string name="app_confirm">确认</string>
     <string name="app_oop_error">哎呀，出错了</string>
     <string name="app_doc_parse_error">文档解析错误</string>
@@ -26,6 +39,19 @@
     <string name="app_open_wechat_scanner">跳转微信扫一扫</string>
     <string name="app_screenshot">截图进入微信选择图片扫码或使用另一部手机扫码</string>
     <string name="app_wechat_scan_notice">打开右上角菜单，从微信相册中选取收款码</string>
+    <string name="app_not_support_empty_string">不支持空字符</string>
+    <string name="app_regrouping">重新分组</string>
+    <string name="app_group">分组</string>
+    <string name="app_exist_group">现有分组</string>
+    <string name="app_have_no_group">没有分组信息</string>
+    <string name="app_have_no_file">没有文件信息</string>
+    <string name="app_add_new_group">新建分组</string>
+    <string name="app_how_to_group">如何分组？</string>
+    <string name="app_base_on_folder_name">以文件夹命名</string>
+    <string name="app_confirm_name">确定命名</string>
+    <string name="app_import_to_existed">导入到现有分组</string>
+    <string name="app_importing">正在导入</string>
+    <string name="app_stop_import">停止导入</string>
 
     <string name="app_import">导入</string>
     <string name="app_import_count">导入(0)</string>
@@ -43,10 +69,12 @@
     <string name="app_bookmark">书签</string>
     <string name="app_have_no_add_bookmark">没有添加书签</string>
     <string name="app_have_no_recent">没有阅读记录</string>
+    <string name="app_search_null">搜索不到文件</string>
+    <string name="app_search">搜索</string>
     <string name="app_have_no_all">没有添加文件</string>
     <string name="app_auto_scroll">自动滚动</string>
     <string name="app_total">共&#160;</string>
-    <string name="app_count">本&#160;</string>
+    <string name="app_count">&#160;本</string>
     <string name="app_already_read">已读&#160;</string>
     <string name="app_item">项&#160; - &#160;</string>
     <string name="app_horizontal_does_not_support_auto_scroll">水平阅读不支持自动滚动</string>
@@ -88,6 +116,9 @@
     <string name="app_later">稍后</string>
     <string name="app_restart_right_now">重启应用</string>
 
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
     <string-array name="max_recent_count" tools:ignore="ResourceName">
         <item>3</item>
         <item>6</item>

@@ -16,7 +16,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -43,11 +42,12 @@ import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
 import com.aaron.yespdf.common.CommonActivity;
 import com.aaron.yespdf.common.DBHelper;
+import com.aaron.yespdf.common.DataManager;
+import com.aaron.yespdf.common.DialogManager;
 import com.aaron.yespdf.common.Settings;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.bean.PDF;
 import com.aaron.yespdf.common.event.RecentPDFEvent;
-import com.aaron.yespdf.common.utils.DialogUtils;
 import com.aaron.yespdf.settings.SettingsActivity;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.GsonUtils;
@@ -91,6 +91,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
 
     private static final String EXTRA_PDF = "EXTRA_PDF";
     private static final String BUNDLE_CUR_PAGE = "BUNDLE_CUR_PAGE";
+    private static final String BUNDLE_PASSWORD = "BUNDLE_PASSWORD";
 
     private static final int REQUEST_CODE_SETTINGS = 101;
 
@@ -176,6 +177,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     private IBkFragInterface bkFragInterface;
     private Disposable autoDisp; // 自动滚动
     private boolean isPause;
+    private boolean hideBar;
 
     private Map<Long, PdfDocument.Bookmark> contentMap = new HashMap<>();
     private Map<Long, Bookmark> bookmarkMap = new HashMap<>();
@@ -189,6 +191,9 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     private Canvas canvas; // AndroidPDFView 的画布
     private Paint paint; // 画书签的画笔
     private float pageWidth;
+
+    private Dialog alertDialog;
+    private Dialog inputDialog;
 
     /**
      * 非外部文件打开
@@ -241,6 +246,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
             pdf.setProgress(progress);
             pdf.setBookmark(GsonUtils.toJson(bookmarkMap.values()));
             DBHelper.updatePDF(pdf);
+            DataManager.updatePDFs();
             // 这里发出事件主要是更新界面阅读进度
             EventBus.getDefault().post(new RecentPDFEvent(true));
         }
@@ -291,6 +297,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(BUNDLE_CUR_PAGE, curPage);
+        outState.putString(BUNDLE_PASSWORD, password);
     }
 
     /**
@@ -439,12 +446,14 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         pdf = intent.getParcelableExtra(EXTRA_PDF);
         if (pdf != null) {
             curPage = savedInstanceState != null ? savedInstanceState.getInt(BUNDLE_CUR_PAGE) : pdf.getCurPage();
+            password = savedInstanceState != null ? savedInstanceState.getString(BUNDLE_PASSWORD) : null;
             pageCount = pdf.getTotalPage();
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void setListener() {
+        llBottomBar.setOnClickListener(v -> {});
         ibtnQuickbarAction.setOnClickListener(v -> {
             // 当前页就是操作后的上一页或者下一页
             if (v.isSelected()) {
@@ -458,8 +467,12 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         });
         tvPreviousChapter.setOnClickListener(v -> {
             // 减 1 是为了防止当前页面有标题的情况下无法跳转，因为是按标题来跳转
+            if (hideBar) {
+                return; // 防误触
+            }
+
             int targetPage = pdfView.getCurrentPage() - 1;
-            if (!pageList.isEmpty() && targetPage < pageList.size()) {
+            if (!pageList.isEmpty() && targetPage >= pageList.get(0)) {
                 if (llQuickBar.getVisibility() != View.VISIBLE) {
                     showQuickbar();
                 }
@@ -475,9 +488,13 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
             }
         });
         tvNextChapter.setOnClickListener(v -> {
+            if (hideBar) {
+                return; // 防误触
+            }
+
             // 这里的原理和上面跳转上一章节一样
             int targetPage = pdfView.getCurrentPage() + 1;
-            if (!pageList.isEmpty() && targetPage < pageList.size()) {
+            if (!pageList.isEmpty() && targetPage <= pageList.get(pageList.size() - 1)) {
                 pdfViewBg.setVisibility(View.VISIBLE);
                 if (llQuickBar.getVisibility() != View.VISIBLE) {
                     showQuickbar();
@@ -678,7 +695,9 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
                 ibtnQuickbarAction.setSelected(false);
                 previousPage = seekBar.getProgress();
 
-                showQuickbar();
+                if (!hideBar) {
+                    showQuickbar();
+                }
             }
 
             @Override
@@ -858,45 +877,72 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
                 .load();
     }
 
-    private void showInputDialog() {
-        View view = LayoutInflater.from(this).inflate(R.layout.app_dialog_input, null);
-        TextView tvTitle = view.findViewById(R.id.app_tv_title);
-        EditText etInput = view.findViewById(R.id.app_et_input);
-        Button btnCancel = view.findViewById(R.id.app_btn_cancel);
-        Button btnConfirm = view.findViewById(R.id.app_btn_confirm);
-        Dialog dialog = DialogUtils.createDialog(this, view);
-        tvTitle.setText(R.string.app_need_verify_password);
-        btnCancel.setText(R.string.app_do_not_delete);
-        btnConfirm.setText(R.string.app_confirm);
-        btnCancel.setOnClickListener(v -> finish());
-        btnConfirm.setOnClickListener(v -> {
-            initPdf(uri, pdf);
-            dialog.dismiss();
-        });
-        etInput.addTextChangedListener(new TextWatcherImpl() {
+    private void initInputDialog() {
+        inputDialog = DialogManager.createInputDialog(this, new DialogManager.InputDialogCallback() {
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                password = charSequence.toString();
+            public void onTitle(TextView tv) {
+                tv.setText(R.string.app_need_verify_password);
+            }
+
+            @Override
+            public void onInput(EditText et) {
+                et.addTextChangedListener(new TextWatcherImpl() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        password = charSequence.toString();
+                    }
+                });
+            }
+
+            @Override
+            public void onLeft(Button btn) {
+                btn.setText(R.string.app_do_not_delete);
+                btn.setOnClickListener(v -> finish());
+            }
+
+            @Override
+            public void onRight(Button btn) {
+                btn.setText(R.string.app_confirm);
+                btn.setOnClickListener(v -> {
+                    initPdf(uri, pdf);
+                    inputDialog.dismiss();
+                });
             }
         });
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+    }
+
+    private void initAlertDialog() {
+        alertDialog = DialogManager.createAlertDialog(this, new DialogManager.AlertDialogCallback() {
+            @Override
+            public void onTitle(TextView tv) {
+                tv.setText(R.string.app_oop_error);
+            }
+
+            @Override
+            public void onContent(TextView tv) {
+                tv.setText(R.string.app_doc_parse_error);
+            }
+
+            @Override
+            public void onButton(Button btn) {
+                btn.setText(R.string.app_exit_cur_content);
+                btn.setOnClickListener(v -> finish());
+            }
+        });
+    }
+
+    private void showInputDialog() {
+        if (inputDialog == null) {
+            initInputDialog();
+        }
+        inputDialog.show();
     }
 
     private void showAlertDialog() {
-        View view = LayoutInflater.from(this).inflate(R.layout.app_dialog_alert, null);
-        TextView tvTitle = view.findViewById(R.id.app_tv_title);
-        TextView tvContent = view.findViewById(R.id.app_tv_content);
-        Button btn = view.findViewById(R.id.app_btn);
-        tvTitle.setText(R.string.app_oop_error);
-        tvContent.setText(R.string.app_doc_parse_error);
-        btn.setText(R.string.app_exit_cur_content);
-        btn.setOnClickListener(v -> finish());
-        Dialog dialog = DialogUtils.createDialog(this, view);
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        if (alertDialog == null) {
+            initAlertDialog();
+        }
+        alertDialog.show();
     }
 
     private void drawBookmark(Canvas canvas, float pageWidth) {
@@ -969,6 +1015,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     }
 
     private void showBar() {
+        hideBar = false;
         toolbar.animate().setDuration(250).alpha(1)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -993,6 +1040,7 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
     }
 
     private void hideBar() {
+        hideBar = true;
         toolbar.animate().setDuration(250).alpha(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
