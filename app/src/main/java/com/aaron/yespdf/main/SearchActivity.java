@@ -157,8 +157,9 @@ public class SearchActivity extends CommonActivity {
         @Override
         public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
             int pos = parent.getChildAdapterPosition(view);
-            if (pos == 0) return;
-            outRect.bottom = ConvertUtils.dp2px(24);
+            if (pos > 3) {
+                outRect.top = ConvertUtils.dp2px(24);
+            }
         }
     }
 }
