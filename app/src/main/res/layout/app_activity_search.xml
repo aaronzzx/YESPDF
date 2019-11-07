@@ -16,73 +16,9 @@
             android:id="@+id/app_search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_gravity="center"/>
-
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            app:cardCornerRadius="4dp"-->
-<!--            app:cardElevation="0dp"-->
-<!--            android:layout_margin="8dp">-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:paddingTop="4dp"-->
-<!--                android:paddingBottom="4dp">-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/app_ibtn_back"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:src="@drawable/app_ic_back_black"-->
-<!--                    android:tint="#8D8D8D"-->
-<!--                    android:background="@null"/>-->
-
-<!--                <EditText-->
-<!--                    android:id="@+id/app_et_search"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:layout_marginStart="8dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:background="@null"-->
-<!--                    android:maxLines="1"-->
-<!--                    android:singleLine="true"-->
-<!--                    android:textSize="@dimen/base_text_large"-->
-<!--                    android:hint="@string/app_name_en"-->
-<!--                    android:textColorHint="@color/base_black_hint"-->
-<!--                    tools:ignore="Autofill,TextFields" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/app_ibtn_inverse"-->
-<!--                    android:layout_width="36dp"-->
-<!--                    android:layout_height="36dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_marginStart="8dp"-->
-<!--                    android:background="@null"-->
-<!--                    android:visibility="gone"-->
-<!--                    android:src="@drawable/app_ic_inverse"-->
-<!--                    tools:ignore="ContentDescription" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/app_ibtn_clear"-->
-<!--                    android:layout_width="36dp"-->
-<!--                    android:layout_height="36dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_marginStart="8dp"-->
-<!--                    android:layout_marginEnd="8dp"-->
-<!--                    android:background="@null"-->
-<!--                    android:visibility="gone"-->
-<!--                    android:src="@drawable/app_ic_clear_grey_20dp"-->
-<!--                    tools:ignore="ContentDescription" />-->
-
-<!--            </LinearLayout>-->
-
-<!--        </androidx.cardview.widget.CardView>-->
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -90,6 +26,8 @@
         android:id="@+id/app_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="8dp"
+        android:clipToPadding="false"
         android:scrollbars="vertical"/>
 
 </LinearLayout>
