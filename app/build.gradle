@@ -2,21 +2,21 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
 
-apply plugin: 'bugly'
-apply from: 'tinker-support.gradle'
-// 上传符号表插件
-bugly {
-    debug  = false
-    appId  = 'fd084373ed' // 注册时分配的App ID
-    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
-}
+//apply plugin: 'bugly'
+//apply from: 'tinker-support.gradle'
+//// 上传符号表插件
+//bugly {
+//    debug  = false
+//    appId  = 'fd084373ed' // 注册时分配的App ID
+//    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
+//}
 
 android {
     compileSdkVersion 29
 
     resourcePrefix 'app'
     defaultConfig {
-        applicationId "com.aaron.yespdf"
+        applicationId "com.aaron.yespdfdev"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 10
@@ -52,6 +52,12 @@ android {
 
             minifyEnabled true
             shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
+        debug {
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
