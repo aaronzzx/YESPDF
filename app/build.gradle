@@ -2,25 +2,25 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
 
-//apply plugin: 'bugly'
-//apply from: 'tinker-support.gradle'
-//// 上传符号表插件
-//bugly {
-//    debug  = false
-//    appId  = 'fd084373ed' // 注册时分配的App ID
-//    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
-//}
+apply plugin: 'bugly'
+apply from: 'tinker-support.gradle'
+// 上传符号表插件
+bugly {
+    debug  = false
+    appId  = 'fd084373ed' // 注册时分配的App ID
+    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
+}
 
 android {
     compileSdkVersion 29
 
     resourcePrefix 'app'
     defaultConfig {
-        applicationId "com.aaron.yespdfdev"
+        applicationId "com.aaron.yespdf"
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 9
-        versionName "1.0.8"
+        targetSdkVersion 28
+        versionCode 10
+        versionName "1.0.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -74,7 +74,7 @@ greendao {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'com.google.android.material:material:1.2.0-alpha01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
