@@ -43,3 +43,6 @@ dependencies {
 }
 
 apply from: 'bintray.gradle'
+repositories {
+    mavenCentral()
+}

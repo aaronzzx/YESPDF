@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 29
@@ -32,4 +34,9 @@ dependencies {
     implementation 'com.tencent.bugly:crashreport_upgrade:1.4.1'
     implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
     implementation 'com.tencent.tinker:tinker-android-lib:1.9.13.2'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }

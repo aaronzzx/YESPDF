@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aaron.base.base.BaseFragment;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.common.CommonFragment;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.UiManager;
 import com.aaron.yespdf.common.XGridDecoration;
@@ -38,7 +39,7 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class RecentFragment extends BaseFragment implements IOperation, AbstractAdapter.ICommInterface<PDF> {
+public class RecentFragment extends CommonFragment implements IOperation, AbstractAdapter.ICommInterface<PDF> {
 
     @BindView(R2.id.app_rv_recent)
     RecyclerView rvRecent;
@@ -70,7 +71,7 @@ public class RecentFragment extends BaseFragment implements IOperation, Abstract
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) mActivity).setOperation(this);
+        ((MainActivity) activity).injectOperation(this);
     }
 
     @Override
@@ -157,7 +158,7 @@ public class RecentFragment extends BaseFragment implements IOperation, Abstract
 
     @Override
     public void onStartOperation() {
-        ((MainActivity) mActivity).startOperation();
+        ((MainActivity) activity).startOperation();
     }
 
     @Override
@@ -165,7 +166,7 @@ public class RecentFragment extends BaseFragment implements IOperation, Abstract
         LogUtils.e(list);
         selectPDFList.clear();
         selectPDFList.addAll(list);
-        ((MainActivity) mActivity).selectResult(list.size(), selectAll);
+        ((MainActivity) activity).selectResult(list.size(), selectAll);
     }
 
     @Override
@@ -181,7 +182,7 @@ public class RecentFragment extends BaseFragment implements IOperation, Abstract
                 @Override
                 public void onSuccess(List<String> dirList) {
                     UiManager.showShort(R.string.app_delete_completed);
-                    ((MainActivity) mActivity).finishOperation();
+                    ((MainActivity) activity).finishOperation();
                     adapter.notifyDataSetChanged();
                 }
             });
@@ -208,7 +209,7 @@ public class RecentFragment extends BaseFragment implements IOperation, Abstract
 
         rvRecent.addItemDecoration(new XGridDecoration());
         rvRecent.addItemDecoration(new YGridDecoration());
-        GridLayoutManager lm = new GridLayoutManager(mActivity, 3);
+        GridLayoutManager lm = new GridLayoutManager(activity, 3);
         lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {

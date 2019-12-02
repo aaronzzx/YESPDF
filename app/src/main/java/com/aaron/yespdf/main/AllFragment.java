@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aaron.base.base.BaseFragment;
 import com.aaron.yespdf.R;
 import com.aaron.yespdf.R2;
+import com.aaron.yespdf.common.CommonFragment;
 import com.aaron.yespdf.common.DBHelper;
 import com.aaron.yespdf.common.DataManager;
 import com.aaron.yespdf.common.UiManager;
@@ -38,7 +39,7 @@ import butterknife.Unbinder;
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-public class AllFragment extends BaseFragment implements IOperation, AbstractAdapter.ICommInterface<Cover> {
+public class AllFragment extends CommonFragment implements IOperation, AbstractAdapter.ICommInterface<Cover> {
 
     @BindView(R2.id.app_rv_all)
     RecyclerView rvAll;
@@ -70,7 +71,7 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) mActivity).setOperation(this);
+        ((MainActivity) activity).injectOperation(this);
     }
 
     @Override
@@ -99,14 +100,14 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
 
     @Override
     public void onStartOperation() {
-        ((MainActivity) mActivity).startOperation();
+        ((MainActivity) activity).startOperation();
     }
 
     @Override
     public void onSelect(List<Cover> list, boolean selectAll) {
         selectCollections.clear();
         selectCollections.addAll(list);
-        ((MainActivity) mActivity).selectResult(list.size(), selectAll);
+        ((MainActivity) activity).selectResult(list.size(), selectAll);
     }
 
     @Override
@@ -124,7 +125,7 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
                 @Override
                 public void onSuccess(List<String> dirList) {
                     UiManager.showShort(R.string.app_delete_completed);
-                    ((MainActivity) mActivity).finishOperation();
+                    ((MainActivity) activity).finishOperation();
                     adapter.notifyDataSetChanged();
                     EventBus.getDefault().post(new AllDeleteEvent(dirList));
                 }
@@ -156,7 +157,7 @@ public class AllFragment extends BaseFragment implements IOperation, AbstractAda
     private void initView() {
         rvAll.addItemDecoration(new XGridDecoration());
         rvAll.addItemDecoration(new YGridDecoration());
-        GridLayoutManager lm = new GridLayoutManager(mActivity, 3);
+        GridLayoutManager lm = new GridLayoutManager(activity, 3);
         lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
