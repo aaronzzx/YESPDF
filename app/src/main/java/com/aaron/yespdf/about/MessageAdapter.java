@@ -2,10 +2,12 @@ package com.aaron.yespdf.about;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,13 +85,18 @@ class MessageAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     activity.startActivity(introduce);
                     break;
                 case FEEDBACK:
-                    String subject = Info.FEEDBACK_SUBJECT;
-                    String text = Info.FEEDBACK_TEXT;
-                    Intent sendMail = new Intent(Intent.ACTION_SENDTO);
-                    sendMail.setData(Uri.parse(Info.MY_EMAIL));
-                    sendMail.putExtra(Intent.EXTRA_SUBJECT, subject);
-                    sendMail.putExtra(Intent.EXTRA_TEXT, text);
-                    activity.startActivity(sendMail);
+                    try {
+                        String subject = Info.FEEDBACK_SUBJECT;
+                        String text = Info.FEEDBACK_TEXT;
+                        Intent sendMail = new Intent(Intent.ACTION_SENDTO);
+                        sendMail.setData(Uri.parse(Info.MY_EMAIL));
+                        sendMail.putExtra(Intent.EXTRA_SUBJECT, subject);
+                        sendMail.putExtra(Intent.EXTRA_TEXT, text);
+                        activity.startActivity(sendMail);
+                    } catch (Exception e) {
+                        Log.e("MessageAdapter", e.getMessage());
+                        UiManager.showShort(R.string.app_email_app_not_found);
+                    }
                     break;
                 case SOURCE_CODE:
                     Intent sourceCode = new Intent(Intent.ACTION_VIEW);

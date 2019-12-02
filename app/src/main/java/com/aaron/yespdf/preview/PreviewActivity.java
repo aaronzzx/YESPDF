@@ -216,7 +216,6 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LogUtils.e("onCreate");
         super.onCreate(savedInstanceState);
         unbinder = ButterKnife.bind(this);
         initView(savedInstanceState);
@@ -235,14 +234,12 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
 
     @Override
     protected void onPause() {
-        LogUtils.e("onPause");
         super.onPause();
         if (pdf != null) {
 //            int curPage = pdfView.getCurrentPage();
 //            int pageCount = pdfView.getPageCount();
             String progress = getPercent(curPage + 1, pageCount);
             pdf.setCurPage(curPage);
-            LogUtils.e("curPage: " + curPage);
             pdf.setProgress(progress);
             pdf.setBookmark(GsonUtils.toJson(bookmarkMap.values()));
             DBHelper.updatePDF(pdf);
@@ -254,7 +251,6 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
 
     @Override
     protected void onStop() {
-        LogUtils.e("onStop");
         super.onStop();
         hideBar();
         // 书签页回原位
@@ -268,7 +264,6 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
 
     @Override
     protected void onDestroy() {
-        LogUtils.e("onDestroy");
         super.onDestroy();
         pdfView.recycle();
         unbinder.unbind();
@@ -289,7 +284,6 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        LogUtils.e("onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
     }
 
@@ -717,9 +711,12 @@ public class PreviewActivity extends CommonActivity implements IActivityInterfac
         } else if (pdf != null) {
             String bkJson = pdf.getBookmark(); // 获取书签 json
             List<Bookmark> bkList = GsonUtils.fromJson(bkJson, new TypeToken<List<Bookmark>>(){}.getType());
+            LogUtils.e(bkList);
             if (bkList != null) {
                 for (Bookmark bk : bkList) {
-                    bookmarkMap.put((long) bk.getPageId(), bk);
+                    LogUtils.e(bk);
+                    int pageId = bk.getPageId();
+                    bookmarkMap.put((long) pageId, bk);
                 }
             }
             sbProgress.setProgress(curPage);

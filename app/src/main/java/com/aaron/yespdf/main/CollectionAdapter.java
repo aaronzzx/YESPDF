@@ -117,7 +117,9 @@ class CollectionAdapter extends AbstractAdapter<PDF> {
                 PreviewActivity.start(context, pdf);
                 EventBus.getDefault().post(recentPDFEvent);
                 holder.itemView.postDelayed(() -> {
-                    ((DialogFragment) commInterface).dismiss();
+                    if (commInterface != null) {
+                        ((DialogFragment) commInterface).dismiss();
+                    }
                 }, 400);
             }
         }

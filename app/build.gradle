@@ -16,7 +16,7 @@ android {
 
     resourcePrefix 'app'
     defaultConfig {
-        applicationId "com.aaron.yespdfdev"
+        applicationId "com.aaron.yespdf"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 10
@@ -27,7 +27,7 @@ android {
         ndk {
             // 选择要添加的对应cpu类型的.so库。
             // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
-            abiFilters 'armeabi', 'armeabi-v7a'/*, 'arm64-v8a'*//*, 'x86', 'x86_64'*/
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
     }
 
@@ -50,6 +50,9 @@ android {
                 abortOnError false
             }
 
+            manifestPlaceholders = [
+                    app_icon : '@drawable/app_ic_yespdf'
+            ]
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -57,6 +60,10 @@ android {
         }
 
         debug {
+            applicationIdSuffix '.dev'
+            manifestPlaceholders = [
+                    app_icon : '@drawable/app_ic_yespdf_dev'
+            ]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
