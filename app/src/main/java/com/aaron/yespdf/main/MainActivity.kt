@@ -7,7 +7,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Process
 import android.view.*
-import android.widget.*
+import android.widget.PopupWindow
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentPagerAdapter
 import com.aaron.base.impl.OnClickListenerImpl
@@ -15,7 +17,7 @@ import com.aaron.yespdf.R
 import com.aaron.yespdf.about.AboutActivity
 import com.aaron.yespdf.common.CommonActivity
 import com.aaron.yespdf.common.DataManager
-import com.aaron.yespdf.common.DialogManager.*
+import com.aaron.yespdf.common.DialogManager
 import com.aaron.yespdf.common.UiManager
 import com.aaron.yespdf.common.event.HotfixEvent
 import com.aaron.yespdf.common.event.ImportEvent
@@ -79,80 +81,50 @@ class MainActivity : CommonActivity(), IMainView {
         temp
     }
     private val hotfixDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        createDoubleBtnDialog(this, object : DoubleBtnDialogCallback {
-            override fun onTitle(tv: TextView) {
-                tv.setText(R.string.app_find_update)
-            }
-
-            override fun onContent(tv: TextView) {
-                tv.setText(R.string.app_restart_to_update)
-            }
-
-            override fun onLeft(btn: Button) {
-                btn.setText(R.string.app_later)
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        hotfixDialog.dismiss()
+        DialogManager.createDoubleBtnDialog(this) { tvTitle, tvContent, btnLeft, btnRight ->
+            tvTitle.setText(R.string.app_find_update)
+            tvContent.setText(R.string.app_restart_to_update)
+            btnLeft.setText(R.string.app_later)
+            btnLeft.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    hotfixDialog.dismiss()
+                }
+            })
+            btnRight.setText(R.string.app_restart_right_now)
+            btnRight.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    val intent = packageManager.getLaunchIntentForPackage(packageName)
+                    if (intent != null) {
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        startActivity(intent)
+                        Process.killProcess(Process.myPid())
                     }
-                })
-            }
-
-            override fun onRight(btn: Button) {
-                btn.setText(R.string.app_restart_right_now)
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        val intent = packageManager.getLaunchIntentForPackage(packageName)
-                        if (intent != null) {
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            startActivity(intent)
-                            Process.killProcess(Process.myPid())
-                        }
-                    }
-                })
-            }
-        })
+                }
+            })
+        }
     }
     private val deleteDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        createDeleteDialog(this, object : DeleteDialogCallback {
-            override fun onContent(tv: TextView) {
-                tvDeleteDescription = tv
+        DialogManager.createDeleteDialog(this) { tv, btnLeft, btnRight ->
+            tvDeleteDescription = tv
+            btnLeft.setOnClickListener { deleteDialog.dismiss() }
+            btnRight.setOnClickListener {
+                deleteDialog.dismiss()
+                operation?.delete()
             }
-
-            override fun onLeft(btn: Button) {
-                btn.setOnClickListener { deleteDialog.dismiss() }
-            }
-
-            override fun onRight(btn: Button) {
-                btn.setOnClickListener {
-                    deleteDialog.dismiss()
-                    operation?.delete()
-                }
-            }
-        })
+        }
     }
     private val importInfoDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        createImportInfoDialog(this, object : ImportInfoDialogCallback {
-            override fun onTitle(tv: TextView) {
-                tvDialogTitle = tv
-            }
-
-            override fun onProgress(progressBar: ProgressBar) {
-                pbDialogProgress = progressBar
-            }
-
-            override fun onProgressInfo(tv: TextView) {
-                tvDialogProgressInfo = tv
-            }
-
-            override fun onStopImport(btn: Button) {
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        importInfoDialog.dismiss()
-                        pbDialogProgress?.max = 0
-                    }
-                })
-            }
-        })
+        DialogManager.createImportInfoDialog(this) { tvTitle, progressBar, tvProgressInfo, btn ->
+            tvDialogTitle = tvTitle
+            pbDialogProgress = progressBar
+            tvDialogProgressInfo = tvProgressInfo
+            btn.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    importInfoDialog.dismiss()
+                    pbDialogProgress?.max = 0
+                }
+            })
+        }
     }
 
     private var fragmentPagerAdapter: FragmentPagerAdapter? = null

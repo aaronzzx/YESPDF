@@ -16,7 +16,6 @@ import com.aaron.base.image.DefaultOption
 import com.aaron.base.image.ImageLoader
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.DialogManager
-import com.aaron.yespdf.common.DialogManager.GiftDialogCallback
 import com.aaron.yespdf.common.UiManager
 import com.blankj.utilcode.util.ImageUtils
 import kotlinx.android.synthetic.main.app_recycler_item_message.view.*

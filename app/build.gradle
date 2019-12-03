@@ -53,7 +53,8 @@ android {
             }
 
             manifestPlaceholders = [
-                    app_icon : '@drawable/app_ic_yespdf'
+                    app_icon : '@drawable/app_ic_yespdf',
+                    app_name : '@string/app_name_en'
             ]
             minifyEnabled true
             shrinkResources true
@@ -64,7 +65,8 @@ android {
         debug {
             applicationIdSuffix '.dev'
             manifestPlaceholders = [
-                    app_icon : '@drawable/app_ic_yespdf_dev'
+                    app_icon : '@drawable/app_ic_yespdf_dev',
+                    app_name : '@string/app_name_dev'
             ]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

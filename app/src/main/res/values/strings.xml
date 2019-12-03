@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name_en">YES PDF!</string>
+    <string name="app_name_dev">DEV PDF!</string>
     <string name="app_recent">最近</string>
     <string name="app_all">全部</string>
     <string name="app_auto_scan">自动扫描</string>
