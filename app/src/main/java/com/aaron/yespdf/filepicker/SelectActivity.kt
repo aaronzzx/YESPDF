@@ -150,13 +150,12 @@ class SelectActivity : CommonActivity() {
     }
 
     private fun initToolbar() {
-        val actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black)
+        supportActionBar?.run {
+            setDisplayShowTitleEnabled(false)
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.app_ic_action_back_black)
         }
-        toolbar!!.setTitle(R.string.app_import_file)
+        toolbar?.setTitle(R.string.app_import_file)
     }
 
     private fun openSearchView() {

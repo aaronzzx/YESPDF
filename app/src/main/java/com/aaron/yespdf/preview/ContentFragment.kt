@@ -29,10 +29,13 @@ class ContentFragment : CommonFragment(), IContentFragInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val layout = inflater.inflate(R.layout.app_fragment_content, container, false)
+        return inflater.inflate(R.layout.app_fragment_content, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         app_itv_placeholder.setText(R.string.app_have_no_content)
         app_itv_placeholder.setIconTop(R.drawable.app_ic_content_emptyview)
-        return layout
     }
 
     private fun initContent() {

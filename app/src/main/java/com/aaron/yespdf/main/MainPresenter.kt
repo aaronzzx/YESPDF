@@ -15,10 +15,10 @@ internal class MainPresenter(view: IMainView) : IMainPresenter(view) {
     override fun insertPDF(data: Intent?) {
         view.onShowLoading()
         if (data != null) {
-            val pathList: List<String> = data.getStringArrayListExtra(SelectActivity.EXTRA_SELECTED)
+            val pathList: List<String>? = data.getStringArrayListExtra(SelectActivity.EXTRA_SELECTED)
             val type = data.getIntExtra(SelectActivity.EXTRA_TYPE, 0)
             val groupName = data.getStringExtra(SelectActivity.EXTRA_GROUP_NAME)
-            insertPDF(pathList, type, groupName)
+            pathList?.run { insertPDF(this, type, groupName) }
         }
     }
 

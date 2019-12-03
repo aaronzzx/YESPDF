@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,14 +17,16 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/base_text_large"
             android:textColor="@color/base_black"
-            android:layout_alignParentStart="true"/>
+            android:layout_alignParentStart="true"
+            tools:text="greenDAO"/>
         <TextView
             android:id="@+id/app_tv_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/base_text_normal"
             android:textColor="@color/base_black_shallow"
-            android:layout_alignParentEnd="true"/>
+            android:layout_alignParentEnd="true"
+            tools:text="greenrobot"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -34,7 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="@dimen/base_text_normal"
-            android:textColor="@color/base_black_shallow"/>
+            android:textColor="@color/base_black_shallow"
+            tools:text="It is a light fast ORM solution for Android "/>
     </RelativeLayout>
 
 </LinearLayout>

@@ -86,7 +86,7 @@ class LibraryAdapter<T>(
         holder as ViewHolder
         holder.itemView.app_tv_name.text = library.name
         holder.itemView.app_tv_author.text = library.author
-        holder.itemView.app_tv_author.text = library.introduce
+        holder.itemView.app_tv_detail.text = library.introduce
     }
 
     override fun getItemCount(): Int {
@@ -94,5 +94,4 @@ class LibraryAdapter<T>(
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
-
 }
