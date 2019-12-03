@@ -8,8 +8,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +18,6 @@ import com.aaron.base.impl.TextWatcherImpl
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.CommonFragment
 import com.aaron.yespdf.common.DialogManager
-import com.aaron.yespdf.common.DialogManager.ImportDialogCallback
 import com.aaron.yespdf.common.GroupingAdapter
 import com.aaron.yespdf.common.UiManager
 import com.blankj.utilcode.util.KeyboardUtils
@@ -42,43 +39,32 @@ class ViewAllFragment : CommonFragment(), IViewAllView, ViewAllAdapter.Callback 
 
     private lateinit var presenter: IViewAllPresenter
     private val importDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createImportDialog(activity, object : ImportDialogCallback {
-            override fun onInput(et: EditText) {
-                et.addTextChangedListener(object : TextWatcherImpl() {
-                    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                        newGroupName = charSequence.toString()
+        DialogManager.createImportDialog(activity) { etInput, btnLeft, btnCenter, btnRight ->
+            etInput.addTextChangedListener(object : TextWatcherImpl() {
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    newGroupName = charSequence.toString()
+                }
+            })
+            btnLeft.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    groupingDialog.show()
+                }
+            })
+            btnCenter.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    setResultBack(SelectActivity.TYPE_BASE_FOLDER, null)
+                }
+            })
+            btnRight.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    if (StringUtils.isEmpty(newGroupName)) {
+                        UiManager.showShort(R.string.app_type_new_group_name)
+                    } else {
+                        setResultBack(SelectActivity.TYPE_CUSTOM, newGroupName)
                     }
-                })
-            }
-
-            override fun onLeft(btn: Button) {
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        groupingDialog.show()
-                    }
-                })
-            }
-
-            override fun onCenter(btn: Button) {
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        setResultBack(SelectActivity.TYPE_BASE_FOLDER, null)
-                    }
-                })
-            }
-
-            override fun onRight(btn: Button) {
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        if (StringUtils.isEmpty(newGroupName)) {
-                            UiManager.showShort(R.string.app_type_new_group_name)
-                        } else {
-                            setResultBack(SelectActivity.TYPE_CUSTOM, newGroupName)
-                        }
-                    }
-                })
-            }
-        })
+                }
+            })
+        }
     }
 
     private val groupingDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {

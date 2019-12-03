@@ -78,71 +78,50 @@ class ScanActivity : CommonActivity() {
     private var adapter: ViewAllAdapter? = null
 
     private val scanDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createScanDialog(this, object : ScanDialogCallback {
-            @SuppressLint("SetTextI18n")
-            override fun onTitle(tv: TextView) {
-                tvScanCount = tv
-                tvScanCount?.text = getString(R.string.app_already_scan) + 0 + getString(R.string.app_file_)
-            }
-
-            @SuppressLint("SetTextI18n")
-            override fun onContent(tv: TextView) {
-                tvPdfCount = tv
-                tvPdfCount?.text = getString(R.string.app_find) + "PDF(" + 0 + ")"
-            }
-
-            override fun onButton(btn: Button) {
-                btnStopScan = btn
-                btnStopScan?.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        btnStopScan?.isSelected = true
-                        stopScan = true
-                        scanDialog.dismiss()
-                        threadPool?.shutdownNow()
-                        updateUI()
-                    }
-                })
-            }
-        })
+        DialogManager.createScanDialog(this) { tvTitle, tvContent, btn ->
+            tvScanCount = tvTitle
+            tvScanCount?.text = getString(R.string.app_already_scan) + 0 + getString(R.string.app_file_)
+            tvPdfCount = tvContent
+            tvPdfCount?.text = getString(R.string.app_find) + "PDF(" + 0 + ")"
+            btnStopScan = btn
+            btnStopScan?.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    btnStopScan?.isSelected = true
+                    stopScan = true
+                    scanDialog.dismiss()
+                    threadPool?.shutdownNow()
+                    updateUI()
+                }
+            })
+        }
     }
     private val importDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createImportDialog(this, object : ImportDialogCallback {
-            override fun onInput(et: EditText) {
-                et.addTextChangedListener(object : TextWatcherImpl() {
-                    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                        newGroupName = charSequence.toString()
+        DialogManager.createImportDialog(this) { etInput, btnLeft, btnCenter, btnRight ->
+            etInput.addTextChangedListener(object : TextWatcherImpl() {
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    newGroupName = charSequence.toString()
+                }
+            })
+            btnLeft.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    groupingDialog.show()
+                }
+            })
+            btnCenter.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    setResultBack(SelectActivity.TYPE_BASE_FOLDER, null)
+                }
+            })
+            btnRight.setOnClickListener(object : OnClickListenerImpl() {
+                override fun onViewClick(v: View, interval: Long) {
+                    if (StringUtils.isEmpty(newGroupName)) {
+                        UiManager.showShort(R.string.app_type_new_group_name)
+                    } else {
+                        setResultBack(SelectActivity.TYPE_CUSTOM, newGroupName)
                     }
-                })
-            }
-
-            override fun onLeft(btn: Button) {
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        groupingDialog.show()
-                    }
-                })
-            }
-
-            override fun onCenter(btn: Button) {
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        setResultBack(SelectActivity.TYPE_BASE_FOLDER, null)
-                    }
-                })
-            }
-
-            override fun onRight(btn: Button) {
-                btn.setOnClickListener(object : OnClickListenerImpl() {
-                    override fun onViewClick(v: View, interval: Long) {
-                        if (StringUtils.isEmpty(newGroupName)) {
-                            UiManager.showShort(R.string.app_type_new_group_name)
-                        } else {
-                            setResultBack(SelectActivity.TYPE_CUSTOM, newGroupName)
-                        }
-                    }
-                })
-            }
-        })
+                }
+            })
+        }
     }
     private val groupingDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
         DialogManager.createGroupingDialog(this@ScanActivity, false, object : GroupingAdapter.Callback {

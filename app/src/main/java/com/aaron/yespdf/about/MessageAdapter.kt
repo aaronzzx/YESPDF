@@ -27,21 +27,16 @@ class MessageAdapter<T>(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val giftDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createGiftDialog(activity, object : GiftDialogCallback {
-            override fun onLeft(btn: Button) {
-                btn.setOnClickListener { qrcodeDialog.show() }
+        DialogManager.createGiftDialog(activity) { btnLeft, btnRight ->
+            btnLeft.setOnClickListener { qrcodeDialog.show() }
+            btnRight.setOnClickListener {
+                giftDialog.dismiss()
+                val bitmap = ImageUtils.drawable2Bitmap(activity.resources.getDrawable(R.drawable.app_img_qrcode))
+                AboutUtils.copyImageToDevice(activity, bitmap)
+                AboutUtils.goWeChatScan(activity)
+                UiManager.showShort(R.string.app_wechat_scan_notice)
             }
-
-            override fun onRight(btn: Button) {
-                btn.setOnClickListener {
-                    giftDialog.dismiss()
-                    val bitmap = ImageUtils.drawable2Bitmap(activity.resources.getDrawable(R.drawable.app_img_qrcode))
-                    AboutUtils.copyImageToDevice(activity, bitmap)
-                    AboutUtils.goWeChatScan(activity)
-                    UiManager.showShort(R.string.app_wechat_scan_notice)
-                }
-            }
-        })
+        }
     }
     private val qrcodeDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
         DialogManager.createQrcodeDialog(activity)

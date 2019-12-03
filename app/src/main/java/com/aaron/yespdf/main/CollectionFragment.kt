@@ -51,30 +51,19 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
         DialogUtils.createBottomSheetDialog(activity, view)
     }
     private val regroupingDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createGroupingDialog(activity, true, this)
+        DialogManager.createGroupingDialog(context!!, true, this)
     }
     private val addNewGroupDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        val temp = DialogManager.createInputDialog(activity, object : DialogManager.InputDialogCallback {
-            override fun onTitle(tv: TextView) {
-                tv.setText(R.string.app_add_new_group)
-            }
-
-            override fun onInput(et: EditText) {
-                etInput = et
-                et.inputType = InputType.TYPE_CLASS_TEXT
-                et.setHint(R.string.app_type_new_group_name)
-            }
-
-            override fun onLeft(btn: Button) {
-                btn.setText(R.string.app_cancel)
-                btn.setOnClickListener { addNewGroupDialog.dismiss() }
-            }
-
-            override fun onRight(btn: Button) {
-                btn.setText(R.string.app_confirm)
-                btn.setOnClickListener { createNewGroup(etInput?.text.toString()) }
-            }
-        })
+        val temp = DialogManager.createInputDialog(context!!) { tvTitle, etInput, btnLeft, btnRight ->
+            tvTitle.setText(R.string.app_add_new_group)
+            etInput.inputType = InputType.TYPE_CLASS_TEXT
+            etInput.setHint(R.string.app_type_new_group_name)
+            this.etInput = etInput
+            btnLeft.setText(R.string.app_cancel)
+            btnLeft.setOnClickListener { addNewGroupDialog.dismiss() }
+            btnRight.setText(R.string.app_confirm)
+            btnRight.setOnClickListener { createNewGroup(this.etInput?.text.toString()) }
+        }
         temp.setOnDismissListener { etInput?.setText("") }
         temp
     }
@@ -168,7 +157,7 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
                 UiManager.showShort(R.string.app_delete_completed)
                 cancelSelect()
                 adapter!!.notifyDataSetChanged()
-                nameList?.run { EventBus.getDefault().post(PdfDeleteEvent(this, name, pdfList.isEmpty())) }
+                nameList?.run { EventBus.getDefault().post(PdfDeleteEvent(this, name!!, pdfList.isEmpty())) }
                 if (pdfList.isEmpty()) dismiss()
             }
         })
@@ -209,7 +198,7 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
         }
         selectPDFList?.run { pdfList.removeAll(this) }
         DataManager.updatePDFs()
-        DBHelper.insertNewCollection(name, selectPDFList)
+        DBHelper.insertNewCollection(name, selectPDFList!!)
         cancelSelect()
         addNewGroupDialog.dismiss()
         notifyGroupUpdate()
@@ -224,7 +213,7 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
             return
         }
         selectPDFList?.run { pdfList.removeAll(this) }
-        DBHelper.insertPDFsToCollection(dir, selectPDFList)
+        DBHelper.insertPDFsToCollection(dir, selectPDFList!!)
         DataManager.updatePDFs()
         cancelSelect()
         notifyGroupUpdate()
@@ -316,7 +305,7 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
             app_et_name.setText(name)
             UiManager.showShort(R.string.app_not_support_empty_string)
         } else {
-            val success = DBHelper.updateDirName(name, newDirName)
+            val success = DBHelper.updateDirName(name!!, newDirName!!)
             if (success) EventBus.getDefault().post(AllEvent())
         }
     }

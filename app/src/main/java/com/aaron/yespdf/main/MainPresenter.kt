@@ -22,12 +22,12 @@ internal class MainPresenter(view: IMainView) : IMainPresenter(view) {
         }
     }
 
-    private fun insertPDF(pathList: List<String>, type: Int, groupName: String) {
+    private fun insertPDF(pathList: List<String>, type: Int, groupName: String?) {
         ThreadUtils.executeByCached<Boolean>(object : SimpleTask<Boolean?>() {
             override fun doInBackground(): Boolean {
                 when (type) {
                     SelectActivity.TYPE_BASE_FOLDER -> DBHelper.insert(pathList)
-                    SelectActivity.TYPE_TO_EXIST, SelectActivity.TYPE_CUSTOM -> DBHelper.insert(pathList, groupName)
+                    SelectActivity.TYPE_TO_EXIST, SelectActivity.TYPE_CUSTOM -> DBHelper.insert(pathList, groupName!!)
                 }
                 return false
             }

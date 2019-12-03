@@ -15,19 +15,14 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
-import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentPagerAdapter
 import com.aaron.base.impl.OnClickListenerImpl
 import com.aaron.base.impl.TextWatcherImpl
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.*
-import com.aaron.yespdf.common.DialogManager.AlertDialogCallback
-import com.aaron.yespdf.common.DialogManager.InputDialogCallback
 import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.event.RecentPDFEvent
 import com.aaron.yespdf.preview.PreviewActivity
@@ -78,48 +73,29 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     private var paint: Paint? = null // 画书签的画笔
     private var pageWidth = 0F
     private val alertDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createAlertDialog(this, object : AlertDialogCallback {
-            override fun onTitle(tv: TextView) {
-                tv.setText(R.string.app_oop_error)
-            }
-
-            override fun onContent(tv: TextView) {
-                tv.setText(R.string.app_doc_parse_error)
-            }
-
-            override fun onButton(btn: Button) {
-                btn.setText(R.string.app_exit_cur_content)
-                btn.setOnClickListener { finish() }
-            }
-        })
+        DialogManager.createAlertDialog(this) { tvTitle, tvContent, btn ->
+            tvTitle.setText(R.string.app_oop_error)
+            tvContent.setText(R.string.app_doc_parse_error)
+            btn.setText(R.string.app_exit_cur_content)
+            btn.setOnClickListener { finish() }
+        }
     }
     private val inputDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createInputDialog(this, object : InputDialogCallback {
-            override fun onTitle(tv: TextView) {
-                tv.setText(R.string.app_need_verify_password)
-            }
-
-            override fun onInput(et: EditText) {
-                et.addTextChangedListener(object : TextWatcherImpl() {
-                    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                        password = charSequence.toString()
-                    }
-                })
-            }
-
-            override fun onLeft(btn: Button) {
-                btn.setText(R.string.app_do_not_delete)
-                btn.setOnClickListener { finish() }
-            }
-
-            override fun onRight(btn: Button) {
-                btn.setText(R.string.app_confirm)
-                btn.setOnClickListener {
-                    initPdf(uri, pdf)
-                    inputDialog.dismiss()
+        DialogManager.createInputDialog(this) { tvTitle, etInput, btnLeft, btnRight ->
+            tvTitle.setText(R.string.app_need_verify_password)
+            etInput.addTextChangedListener(object : TextWatcherImpl() {
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    password = charSequence.toString()
                 }
+            })
+            btnLeft.setText(R.string.app_do_not_delete)
+            btnLeft.setOnClickListener { finish() }
+            btnRight.setText(R.string.app_confirm)
+            btnRight.setOnClickListener {
+                initPdf(uri, pdf)
+                inputDialog.dismiss()
             }
-        })
+        }
     }
 
     override fun layoutId(): Int {
@@ -152,7 +128,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             pdf?.curPage = curPage
             pdf?.progress = progress
             pdf?.bookmark = GsonUtils.toJson(bookmarkMap.values)
-            DBHelper.updatePDF(pdf)
+            DBHelper.updatePDF(pdf!!)
             DataManager.updatePDFs()
             // 这里发出事件主要是更新界面阅读进度
             EventBus.getDefault().post(RecentPDFEvent(true))
