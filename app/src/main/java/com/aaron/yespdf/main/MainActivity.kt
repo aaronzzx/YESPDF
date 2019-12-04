@@ -213,7 +213,7 @@ class MainActivity : CommonActivity(), IMainView {
             event.stop = true
             return
         }
-        tvDialogTitle?.text = getString(R.string.app_importing) + "「" + event.name + "」"
+        tvDialogTitle?.text = getString(R.string.app_importing, event.name)
         if (pbDialogProgress?.max == 0) {
             pbDialogProgress?.max = event.totalProgress
         }

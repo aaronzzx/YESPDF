@@ -47,7 +47,7 @@
     <string name="app_base_on_folder_name">以文件夹命名</string>
     <string name="app_confirm_name">确定命名</string>
     <string name="app_import_to_existed">导入到现有分组</string>
-    <string name="app_importing">正在导入</string>
+    <string name="app_importing">正在导入「%s」</string>
     <string name="app_stop_import">停止导入</string>
     <string name="app_email_app_not_found">找不到邮箱应用程序</string>
 

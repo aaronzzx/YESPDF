@@ -180,8 +180,7 @@ public class App extends Application {
 //            public void onDestroy(Context context, View view, UpgradeInfo upgradeInfo) {
 //            }
 //        };
-        // TODO: 2019/9/11 正式版加上
-        Bugly.setIsDevelopmentDevice(this, BuildConfig.DEBUG); // 是否开发设备
+        Bugly.setIsDevelopmentDevice(this, false);
         Bugly.init(this, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
     }
 

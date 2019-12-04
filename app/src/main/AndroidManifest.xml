@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
-        tools:replace="icon,label,theme">
+        tools:replace="name,icon,label,theme,android:allowBackup">
         <activity android:name=".main.SearchActivity"/>
         <activity android:name=".filepicker.ScanActivity" />
         <activity

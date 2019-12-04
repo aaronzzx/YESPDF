@@ -1,2 +1,2 @@
-include ':app', ':android-pdf-viewer', ':bugly'
+include ':app', ':android-pdf-viewer'
 rootProject.name='YES PDF!'
