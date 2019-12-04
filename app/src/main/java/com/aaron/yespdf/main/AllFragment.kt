@@ -11,7 +11,7 @@ import com.aaron.yespdf.R
 import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.Cover
 import com.aaron.yespdf.common.event.AllEvent
-import com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+import com.aaron.yespdf.main.AbstractAdapter.IPickCallback
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ThreadUtils
 import com.blankj.utilcode.util.ThreadUtils.SimpleTask
@@ -24,7 +24,7 @@ import java.util.*
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class AllFragment : CommonFragment(), IOperation, ICommInterface<Cover> {
+class AllFragment : CommonFragment(), IOperation, IPickCallback<Cover> {
 
     private var adapter: AllAdapter? = null
     private val coverList = DataManager.getCoverList()
@@ -67,11 +67,11 @@ class AllFragment : CommonFragment(), IOperation, ICommInterface<Cover> {
         update()
     }
 
-    override fun onStartOperation() {
+    override fun onStartPicking() {
         (activity as MainActivity).startOperation()
     }
 
-    override fun onSelect(list: List<Cover>, selectAll: Boolean) {
+    override fun onSelected(list: List<Cover>, selectAll: Boolean) {
         selectCollections.clear()
         selectCollections.addAll(list)
         (activity as MainActivity).selectResult(list.size, selectAll)
@@ -105,7 +105,7 @@ class AllFragment : CommonFragment(), IOperation, ICommInterface<Cover> {
     }
 
     override fun deleteDescription(): String? {
-        return getString(R.string.app_will_delete) + " " + selectCollections.size + " " + getString(R.string.app_delete_for_all)
+        return getString(R.string.app_whether_delete_collection, selectCollections.size)
     }
 
     fun update() {

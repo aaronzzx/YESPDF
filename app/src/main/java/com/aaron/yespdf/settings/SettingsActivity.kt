@@ -51,17 +51,15 @@ class SettingsActivity : CommonActivity() {
     }
 
     private fun initView() {
-        val actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black)
+        supportActionBar?.run {
+            setDisplayShowTitleEnabled(false)
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.app_ic_action_back_black)
         }
-        toolbar!!.setTitle(R.string.app_settings)
+        toolbar?.setTitle(R.string.app_settings)
         val lm = LinearLayoutManager(this)
         app_rv_settings.layoutManager = lm
-        val adapter: RecyclerView.Adapter<*> = SettingsAdapter()
-        app_rv_settings.adapter = adapter
+        app_rv_settings.adapter = SettingsAdapter()
     }
 
     companion object {

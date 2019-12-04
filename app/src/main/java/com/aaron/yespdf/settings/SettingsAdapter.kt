@@ -65,7 +65,7 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 val level = seekBar.progress + 1
-                UiManager.showShort(context.getString(R.string.app_cur_level_is) + level)
+                UiManager.showShort(context.getString(R.string.app_cur_level, level))
                 Settings.setScrollLevel(level.toLong())
             }
         })

@@ -21,7 +21,7 @@ import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.event.AllEvent
 import com.aaron.yespdf.common.utils.DialogUtils
-import com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+import com.aaron.yespdf.main.AbstractAdapter.IPickCallback
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.StringUtils
@@ -36,7 +36,7 @@ import java.util.*
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, GroupingAdapter.Callback {
+class CollectionFragment : DialogFragment(), IOperation, IPickCallback<PDF>, GroupingAdapter.Callback {
 
     private val deleteDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
         val view = LayoutInflater.from(activity).inflate(R.layout.app_bottomdialog_delete, null)
@@ -51,10 +51,10 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
         DialogUtils.createBottomSheetDialog(activity, view)
     }
     private val regroupingDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createGroupingDialog(context!!, true, this)
+        DialogManager.createGroupingDialog(activity!!, true, this)
     }
     private val addNewGroupDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        val temp = DialogManager.createInputDialog(context!!) { tvTitle, etInput, btnLeft, btnRight ->
+        val temp = DialogManager.createInputDialog(activity!!) { tvTitle, etInput, btnLeft, btnRight ->
             tvTitle.setText(R.string.app_add_new_group)
             etInput.inputType = InputType.TYPE_CLASS_TEXT
             etInput.setHint(R.string.app_type_new_group_name)
@@ -67,6 +67,9 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
         temp.setOnDismissListener { etInput?.setText("") }
         temp
     }
+//    private val tvOperationBarTitle: TextView by lazy(LazyThreadSafetyMode.NONE) {
+//        activity!!.findViewById<TextView>(R.id.app_tv_title)
+//    }
 
     private var adapter: AbstractAdapter<*>? = null
     private var tvDeleteDescription: TextView? = null
@@ -126,21 +129,21 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
         }
     }
 
-    override fun onStartOperation() {
+    override fun onStartPicking() {
         app_et_name.isEnabled = false
         cancelRename()
-        app_tv_title.text = getString(R.string.app_selected_zero)
+//        app_tv_operationbar_title.text = getString(R.string.app_selected_zero)
         app_ibtn_select_all.isSelected = false
         OperationBarHelper.show(app_vg_operation)
         app_tv_regrouping.visibility = View.VISIBLE
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onSelect(list: List<PDF>, selectAll: Boolean) {
+    override fun onSelected(list: List<PDF>, selectAll: Boolean) {
         LogUtils.e(list)
         app_ibtn_delete.isEnabled = list.isNotEmpty()
         app_ibtn_select_all.isSelected = selectAll
-        app_tv_title.text = getString(R.string.app_selected) + "(" + list.size + ")"
+        app_tv_operationbar_title.text = getString(R.string.app_selected_count, list.size)
         selectPDFList = list
     }
 
@@ -229,7 +232,7 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
     }
 
     override fun deleteDescription(): String? {
-        return null
+        return getString(R.string.app_whether_delete_all, selectPDFList?.size)
     }
 
     private fun initView() {
@@ -276,8 +279,8 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
         }
         app_ibtn_cancel.setOnClickListener { cancelSelect() }
         app_ibtn_delete.setOnClickListener {
-            tvDeleteDescription?.text = getString(R.string.app_will_delete) + " " + selectPDFList?.size + " " + getString(R.string.app_delete_for_collection)
             deleteDialog.show()
+            tvDeleteDescription?.text = getString(R.string.app_whether_delete_all, selectPDFList?.size)
         }
         app_ibtn_select_all.setOnClickListener { selectAll(!it.isSelected) }
         app_et_name.onFocusChangeListener = OnFocusChangeListener { _: View?, hasFocus: Boolean ->
@@ -305,7 +308,7 @@ class CollectionFragment : DialogFragment(), IOperation, ICommInterface<PDF>, Gr
             app_et_name.setText(name)
             UiManager.showShort(R.string.app_not_support_empty_string)
         } else {
-            val success = DBHelper.updateDirName(name!!, newDirName!!)
+            val success = DBHelper.updateDirName(name ?: "", newDirName ?: "")
             if (success) EventBus.getDefault().post(AllEvent())
         }
     }

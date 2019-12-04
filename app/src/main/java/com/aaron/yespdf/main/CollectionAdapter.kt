@@ -26,9 +26,9 @@ import java.text.SimpleDateFormat
  * @author Aaron aaronzzxup@gmail.com
  */
 internal class CollectionAdapter(
-        commInterface: ICommInterface<PDF>,
+        pickCallback: IPickCallback<PDF>,
         sourceList: List<PDF>
-) : AbstractAdapter<PDF>(commInterface, sourceList) {
+) : AbstractAdapter<PDF>(pickCallback, sourceList) {
 
     private val recentPDFEvent: RecentPDFEvent = RecentPDFEvent()
 
@@ -44,7 +44,7 @@ internal class CollectionAdapter(
             val cover = pdf.cover
             val bookName = pdf.name
             viewHolder.tvTitle.text = bookName
-            viewHolder.tvProgress.text = context.getString(R.string.app_already_read) + pdf.progress
+            viewHolder.tvProgress.text = context.getString(R.string.app_already_read, pdf.progress)
             if (!StringUtils.isEmpty(cover)) {
                 ImageLoader.load(context, DefaultOption.Builder(cover).into(viewHolder.ivCover))
             } else {
@@ -85,22 +85,23 @@ internal class CollectionAdapter(
                     selectList.remove(pdf)
                 }
                 checkArray.put(position, isChecked)
-                commInterface!!.onSelect(selectList, selectList.size == itemCount)
+                pickCallback?.onSelected(selectList, selectList.size == itemCount)
             } else {
                 val pdf = sourceList[position]
                 val cur = System.currentTimeMillis()
-                @SuppressLint("SimpleDateFormat") val df: DateFormat = SimpleDateFormat("yyyyMMddHHmmss")
+                @SuppressLint("SimpleDateFormat")
+                val df: DateFormat = SimpleDateFormat("yyyyMMddHHmmss")
                 pdf.latestRead = TimeUtils.millis2String(cur, df).toLong()
                 DBHelper.updatePDF(pdf)
                 DBHelper.insertRecent(pdf)
                 DataManager.updatePDFs()
                 PreviewActivity.start(context, pdf)
                 EventBus.getDefault().post(recentPDFEvent)
-                viewHolder.itemView.postDelayed({
-                    if (commInterface != null) {
-                        (commInterface as DialogFragment).dismiss()
-                    }
-                }, 400)
+//                viewHolder.itemView.postDelayed({
+//                    if (pickCallback != null) {
+//                        (pickCallback as DialogFragment).dismiss()
+//                    }
+//                }, 400)
             }
         }
     }

@@ -24,7 +24,6 @@ interface IViewAllModel : IModel {
 }
 
 interface IViewAllView : IView {
-    fun attachP()
     fun onShowMessage(@StringRes stringId: Int)
     fun onShowFileList(fileList: List<File>?)
     fun onShowPath(pathList: List<String>)

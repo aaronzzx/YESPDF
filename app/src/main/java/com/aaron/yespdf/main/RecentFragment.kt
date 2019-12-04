@@ -12,7 +12,7 @@ import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.event.MaxRecentEvent
 import com.aaron.yespdf.common.event.RecentPDFEvent
-import com.aaron.yespdf.main.AbstractAdapter.ICommInterface
+import com.aaron.yespdf.main.AbstractAdapter.IPickCallback
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ThreadUtils
 import com.blankj.utilcode.util.ThreadUtils.SimpleTask
@@ -25,7 +25,7 @@ import java.util.*
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-class RecentFragment : CommonFragment(), IOperation, ICommInterface<PDF> {
+class RecentFragment : CommonFragment(), IOperation, IPickCallback<PDF> {
 
     private var adapter: AbstractAdapter<PDF>? = null
     private val recentPDFList: MutableList<PDF> = ArrayList()
@@ -118,11 +118,11 @@ class RecentFragment : CommonFragment(), IOperation, ICommInterface<PDF> {
         adapter?.notifyDataSetChanged()
     }
 
-    override fun onStartOperation() {
+    override fun onStartPicking() {
         (activity as MainActivity).startOperation()
     }
 
-    override fun onSelect(list: List<PDF>, selectAll: Boolean) {
+    override fun onSelected(list: List<PDF>, selectAll: Boolean) {
         LogUtils.e(list)
         selectPDFList.clear()
         selectPDFList.addAll(list)
@@ -155,7 +155,7 @@ class RecentFragment : CommonFragment(), IOperation, ICommInterface<PDF> {
     }
 
     override fun deleteDescription(): String? {
-        return getString(R.string.app_will_delete) + " " + selectPDFList.size + " " + getString(R.string.app_delete_for_recent)
+        return getString(R.string.app_whether_delete_recent, selectPDFList.size)
     }
 
     private fun initView() {

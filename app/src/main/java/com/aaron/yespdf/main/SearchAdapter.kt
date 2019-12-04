@@ -19,8 +19,6 @@ import com.blankj.utilcode.util.TimeUtils
 import org.greenrobot.eventbus.EventBus
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -49,17 +47,17 @@ internal class SearchAdapter(
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence): FilterResults {
                 val keyword = constraint.toString()
-                filterList.clear()
+                val temp = ArrayList<PDF>()
                 if (!StringUtils.isEmpty(keyword)) {
                     for (pdf in sourceList) {
                         val contains = pdf.name.contains(keyword) != inverse
                         if (contains) {
-                            filterList.add(pdf)
+                            temp.add(pdf)
                         }
                     }
                 }
                 val results = FilterResults()
-                results.values = filterList
+                results.values = temp
                 return results
             }
 
@@ -90,7 +88,7 @@ internal class SearchAdapter(
             val cover = pdf.cover
             val bookName = pdf.name
             viewHolder.tvTitle.text = bookName
-            viewHolder.tvProgress.text = context.getString(R.string.app_already_read) + pdf.progress
+            viewHolder.tvProgress.text = context.getString(R.string.app_already_read, pdf.progress)
             if (!StringUtils.isEmpty(cover)) {
                 ImageLoader.load(context, DefaultOption.Builder(cover).into(viewHolder.ivCover))
             } else {
@@ -100,7 +98,7 @@ internal class SearchAdapter(
             handleCheckBox(viewHolder.cb, position)
         } else if (viewHolder is HeaderHolder) {
             val count = filterList.size
-            viewHolder.tvCount.text = context.getString(R.string.app_total) + count + context.getString(R.string.app_count)
+            viewHolder.tvCount.text = context.getString(R.string.app_total, count)
         } else if (viewHolder is EmptyHolder) {
             viewHolder.itvEmpty.visibility = View.VISIBLE
             viewHolder.itvEmpty.setText(R.string.app_have_no_file)

@@ -25,10 +25,15 @@ import com.aaron.yespdf.filepicker.SelectActivity
 import com.aaron.yespdf.settings.SettingsActivity
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.ConvertUtils
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.app_activity_main.*
 import kotlinx.android.synthetic.main.app_include_operation_bar.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -49,36 +54,36 @@ class MainActivity : CommonActivity(), IMainView {
         val tvImport = pwView.findViewById<TextView>(R.id.app_tv_import)
         val tvSettings = pwView.findViewById<TextView>(R.id.app_tv_settings)
         val tvAbout = pwView.findViewById<TextView>(R.id.app_tv_about)
-        val temp = PopupWindow(pwView)
-        tvImport.setOnClickListener {
-            PermissionUtils.permission(PermissionConstants.STORAGE)
-                    .callback(object : PermissionUtils.SimpleCallback {
-                        override fun onGranted() {
-                            SelectActivity.start(this@MainActivity, SELECT_REQUEST_CODE, DataManager.getPathList() as ArrayList<String?>)
-                        }
+        PopupWindow(pwView).apply {
+            tvImport.setOnClickListener {
+                PermissionUtils.permission(PermissionConstants.STORAGE)
+                        .callback(object : PermissionUtils.SimpleCallback {
+                            override fun onGranted() {
+                                SelectActivity.start(this@MainActivity, SELECT_REQUEST_CODE, DataManager.getPathList() as ArrayList<String?>)
+                            }
 
-                        override fun onDenied() {
-                            UiManager.showShort(R.string.app_have_no_storage_permission)
-                        }
-                    })
-                    .request()
-            temp.dismiss()
+                            override fun onDenied() {
+                                UiManager.showShort(R.string.app_have_no_storage_permission)
+                            }
+                        })
+                        .request()
+                dismiss()
+            }
+            tvSettings.setOnClickListener {
+                SettingsActivity.start(this@MainActivity)
+                dismiss()
+            }
+            tvAbout.setOnClickListener {
+                AboutActivity.start(this@MainActivity)
+                dismiss()
+            }
+            animationStyle = R.style.AppPwMenu
+            isFocusable = true
+            isOutsideTouchable = true
+            width = ViewGroup.LayoutParams.WRAP_CONTENT
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
+            elevation = ConvertUtils.dp2px(4f).toFloat()
         }
-        tvSettings.setOnClickListener {
-            SettingsActivity.start(this)
-            temp.dismiss()
-        }
-        tvAbout.setOnClickListener {
-            AboutActivity.start(this)
-            temp.dismiss()
-        }
-        temp.animationStyle = R.style.AppPwMenu
-        temp.isFocusable = true
-        temp.isOutsideTouchable = true
-        temp.width = ViewGroup.LayoutParams.WRAP_CONTENT
-        temp.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        temp.elevation = ConvertUtils.dp2px(4f).toFloat()
-        temp
     }
     private val hotfixDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
         DialogManager.createDoubleBtnDialog(this) { tvTitle, tvContent, btnLeft, btnRight ->
@@ -188,7 +193,7 @@ class MainActivity : CommonActivity(), IMainView {
         return R.layout.app_activity_main
     }
 
-    override fun createToolbar(): Toolbar {
+    override fun createToolbar(): Toolbar? {
         return findViewById(R.id.app_toolbar)
     }
 
@@ -196,7 +201,7 @@ class MainActivity : CommonActivity(), IMainView {
      * 热修复完成，提示用户重启应用
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    fun onHotfixSuccess(event: HotfixEvent?) {
+    fun onHotfixSuccess(event: HotfixEvent) {
         receiveHotfix = true
         hotfixDialog.show()
     }
@@ -222,7 +227,7 @@ class MainActivity : CommonActivity(), IMainView {
 
     fun startOperation() {
         app_vp.setScrollable(false)
-        app_tv_title.text = getString(R.string.app_selected_zero)
+//        app_tv_operationbar_title.text = getString(R.string.app_selected_count)
         app_ibtn_select_all.isSelected = false
         OperationBarHelper.show(app_vg_operation)
     }
@@ -237,7 +242,7 @@ class MainActivity : CommonActivity(), IMainView {
     fun selectResult(count: Int, selectAll: Boolean) {
         app_ibtn_delete.isEnabled = count > 0
         app_ibtn_select_all.isSelected = selectAll
-        app_tv_title.text = getString(R.string.app_selected) + "(" + count + ")"
+        app_tv_operationbar_title.text = getString(R.string.app_selected_count, count)
     }
 
     override fun onShowMessage(stringId: Int) {
@@ -276,10 +281,10 @@ class MainActivity : CommonActivity(), IMainView {
         app_vg_operation.setOnClickListener { }
         app_ibtn_cancel.setOnClickListener { finishOperation() }
         app_ibtn_delete.setOnClickListener {
-            tvDeleteDescription?.text = operation?.deleteDescription()
             deleteDialog.show()
+            tvDeleteDescription?.text = operation?.deleteDescription()
         }
-        app_ibtn_select_all.setOnClickListener { operation!!.selectAll(!it.isSelected) }
+        app_ibtn_select_all.setOnClickListener { operation?.selectAll(!it.isSelected) }
     }
 
     companion object {

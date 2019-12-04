@@ -18,11 +18,11 @@ import com.blankj.utilcode.util.StringUtils
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-internal class AllAdapter(
-        commInterface: ICommInterface<Cover>,
+class AllAdapter(
+        pickCallback: IPickCallback<Cover>,
         private val fm: FragmentManager,
         sourceList: List<Cover>
-) : AbstractAdapter<Cover>(commInterface, sourceList) {
+) : AbstractAdapter<Cover>(pickCallback, sourceList) {
 
     override fun createHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = inflater.inflate(CollectionHolder.DEFAULT_LAYOUT, parent, false)
@@ -37,7 +37,7 @@ internal class AllAdapter(
                 val coverList = c.coverList
                 val count = c.count
                 viewHolder.tvTitle.text = c.name
-                viewHolder.tvCount.text = context.getString(R.string.app_total) + count + context.getString(R.string.app_count)
+                viewHolder.tvCount.text = context.getString(R.string.app_total, count)
                 setVisibility(viewHolder, count)
                 if (count == 0) return
                 setCover(viewHolder.ivCover1, coverList[0])
@@ -82,7 +82,7 @@ internal class AllAdapter(
                     selectList.remove(cover)
                 }
                 checkArray.put(position, isChecked)
-                commInterface?.onSelect(selectList, selectList.size == itemCount)
+                pickCallback?.onSelected(selectList, selectList.size == itemCount)
             } else {
                 val name = sourceList[position].name
                 val df: DialogFragment = CollectionFragment.newInstance(name)
@@ -118,5 +118,4 @@ internal class AllAdapter(
             ivCover.setImageResource(R.drawable.app_img_none_cover)
         }
     }
-
 }

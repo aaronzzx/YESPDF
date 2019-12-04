@@ -69,9 +69,9 @@ class ScanActivity : CommonActivity() {
     private val scanDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
         DialogManager.createScanDialog(this) { tvTitle, tvContent, btn ->
             tvScanCount = tvTitle
-            tvScanCount?.text = getString(R.string.app_already_scan) + 0 + getString(R.string.app_file_)
+            tvScanCount?.text = getString(R.string.app_already_scan, 0)
             tvPdfCount = tvContent
-            tvPdfCount?.text = getString(R.string.app_find) + "PDF(" + 0 + ")"
+            tvPdfCount?.text = getString(R.string.app_find, 0)
             btnStopScan = btn
             btnStopScan?.setOnClickListener(object : OnClickListenerImpl() {
                 override fun onViewClick(v: View, interval: Long) {
@@ -127,7 +127,7 @@ class ScanActivity : CommonActivity() {
             if (!isFinishing) {
                 selectList.clear()
                 app_ibtn_select_all.isSelected = false
-                app_btn_import_count.setText(R.string.app_import_count)
+                app_btn_import_count.setText(getString(R.string.app_import_count, 0))
                 if (stopScan) {
                     val enableSelectAll = adapter!!.reset()
                     app_ibtn_select_all.isEnabled = enableSelectAll
@@ -235,7 +235,7 @@ class ScanActivity : CommonActivity() {
                 if (total != 0) {
                     app_ibtn_select_all.isSelected = pathList.size == total
                 }
-                app_btn_import_count.text = getString(R.string.app_import) + "(" + pathList.size + ")"
+                app_btn_import_count.text = getString(R.string.app_import_count, pathList.size)
                 selectList.clear()
                 selectList.addAll(pathList)
             }
@@ -283,20 +283,20 @@ class ScanActivity : CommonActivity() {
         if (stopScan) {
             return
         }
-        threadPool!!.execute {
-            val fileList = listable.listFile(file!!.absolutePath)
+        threadPool?.execute {
+            val fileList = listable.listFile(file?.absolutePath)
             for (f in fileList) {
                 if (stopScan) {
                     return@execute
                 }
                 scanCount++
-                runOnUiThread { tvScanCount!!.text = getString(R.string.app_already_scan) + scanCount + getString(R.string.app_file_) }
+                runOnUiThread { tvScanCount?.text = getString(R.string.app_already_scan, scanCount) }
                 if (f.isFile) {
                     this.fileList.add(f)
                     pdfCount++
                     runOnUiThread {
-                        toolbar!!.title = getString(R.string.app_scan_result) + "(" + pdfCount + ")"
-                        tvPdfCount!!.text = getString(R.string.app_find) + "PDF(" + pdfCount + ")"
+                        toolbar?.title = getString(R.string.app_scan_result, pdfCount)
+                        tvPdfCount?.text = getString(R.string.app_find, pdfCount)
                     }
                 } else {
                     traverse(f)
@@ -312,7 +312,7 @@ class ScanActivity : CommonActivity() {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.app_ic_action_back_black)
         }
-        toolbar!!.setTitle(R.string.app_scan_result)
+        toolbar?.title = getString(R.string.app_scan_result, 0)
     }
 
     private fun openSearchView() {

@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-internal class RecentAdapter(commInterface: ICommInterface<PDF>, sourceList: List<PDF>) : AbstractAdapter<PDF>(commInterface, sourceList) {
+internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<PDF>) : AbstractAdapter<PDF>(pickCallback, sourceList) {
 
     private val recentPDFEvent: RecentPDFEvent = RecentPDFEvent()
 
@@ -37,7 +37,7 @@ internal class RecentAdapter(commInterface: ICommInterface<PDF>, sourceList: Lis
             val cover = pdf.cover
             val bookName = pdf.name
             viewHolder.tvTitle.text = bookName
-            viewHolder.tvProgress.text = context.getString(R.string.app_already_read) + pdf.progress
+            viewHolder.tvProgress.text = context.getString(R.string.app_already_read, pdf.progress)
             if (!StringUtils.isEmpty(cover)) {
                 ImageLoader.load(context, DefaultOption.Builder(cover).into(viewHolder.ivCover))
             } else {
@@ -82,12 +82,12 @@ internal class RecentAdapter(commInterface: ICommInterface<PDF>, sourceList: Lis
                 val isChecked = !viewHolder.cb.isChecked
                 viewHolder.cb.isChecked = isChecked
                 if (viewHolder.cb.isChecked) {
-                    selectList?.add(pdf)
+                    selectList.add(pdf)
                 } else {
-                    selectList?.remove(pdf)
+                    selectList.remove(pdf)
                 }
                 checkArray.put(position, isChecked)
-                commInterface?.onSelect(selectList, selectList?.size == itemCount)
+                pickCallback?.onSelected(selectList, selectList.size == itemCount)
             } else {
                 val pdf = sourceList[position]
                 val cur = System.currentTimeMillis()

@@ -80,8 +80,8 @@ class SearchActivity : CommonActivity() {
                 KeyboardUtils.hideSoftInput(this)
             }
             app_ibtn_inverse.isSelected = !app_ibtn_inverse.isSelected
-            adapter!!.setInverse(app_ibtn_inverse.isSelected)
-            adapter!!.filter.filter(app_et_search.text)
+            adapter?.setInverse(app_ibtn_inverse.isSelected)
+            adapter?.filter?.filter(app_et_search.text)
         }
         app_ibtn_clear.setOnClickListener {
             app_et_search.setText("")
@@ -101,7 +101,7 @@ class SearchActivity : CommonActivity() {
         val lm = GridLayoutManager(this, 3)
         lm.spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (adapter!!.isEmpty || position == 0) {
+                return if (adapter?.isEmpty == true || position == 0) {
                     3
                 } else 1
             }
@@ -112,8 +112,7 @@ class SearchActivity : CommonActivity() {
     }
 
     private fun initToolbar() {
-        val actionBar = supportActionBar
-        actionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     private class YItemDecoration : ItemDecoration() {

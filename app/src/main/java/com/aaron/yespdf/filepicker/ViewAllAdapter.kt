@@ -110,20 +110,20 @@ class ViewAllAdapter(
         } else if (viewHolder is HeaderHolder) {
             viewHolder.itemView.visibility = View.VISIBLE
             val count = filterList.size
-            viewHolder.tvCount.text = context!!.getString(R.string.app_total) + count + context!!.getString(R.string.app_count)
+            viewHolder.tvCount.text = context?.getString(R.string.app_total, count)
         } else {
             val holder = viewHolder as ViewHolder
             val temp = if (filterList.size == itemCount) position else position - 1
             val file = filterList[temp]
             val name = file.name
-            var desc = 0.toString() + context!!.getString(R.string.app_item)
+            var desc = context?.getString(R.string.app_item, 0)
             val lastModified = TimeUtils.millis2String(file.lastModified(), SimpleDateFormat("yyyy/MM/dd HH:mm"))
             if (file.isDirectory) {
                 holder.itemView.app_iv_icon.setImageResource(R.drawable.app_ic_folder_yellow_24dp)
                 holder.itemView.app_iv_next.visibility = View.VISIBLE
                 holder.itemView.app_cb.visibility = View.GONE
                 val files = file.listFiles(FileFilterImpl())
-                if (files != null) desc = files.size.toString() + context!!.getString(R.string.app_item)
+                if (files != null) desc = context?.getString(R.string.app_item, files.size)
             } else { // 大小 MB 留小数点后一位
                 var size = (file.length().toDouble() / 1024 / 1024).toString()
                 size = size.substring(0, size.indexOf(".") + 2)
@@ -175,7 +175,7 @@ class ViewAllAdapter(
         if (filterList.isEmpty()) {
             return 1
         } else if (filterList.size != fileList.size) {
-            return filterList.size
+            return filterList.size + 1
         }
         return filterList.size
     }
@@ -184,10 +184,10 @@ class ViewAllAdapter(
         checkArray.clear()
         selectList.clear()
         for (file in filterList) {
-            if (file.isFile && !importedList!!.contains(file.absolutePath)) {
+            if (file.isFile && importedList?.contains(file.absolutePath) == false) {
                 checkArray.put(filterList.indexOf(file), selectAll)
             }
-            if (selectAll && file.isFile && !importedList!!.contains(file.absolutePath)) {
+            if (selectAll && file.isFile && importedList?.contains(file.absolutePath) == false) {
                 selectList.add(file.absolutePath)
             }
         }
@@ -199,7 +199,7 @@ class ViewAllAdapter(
         checkArray.clear()
         selectList.clear()
         for (file in filterList) {
-            if (file.isFile && !importedList!!.contains(file.absolutePath)) {
+            if (file.isFile && importedList?.contains(file.absolutePath) == false) {
                 return true
             }
         }
@@ -209,7 +209,7 @@ class ViewAllAdapter(
     private fun fileCount(): Int {
         var count = 0
         for (file in filterList) {
-            if (file.isFile && !importedList!!.contains(file.absolutePath)) {
+            if (file.isFile && importedList?.contains(file.absolutePath) == false) {
                 count++
             }
         }

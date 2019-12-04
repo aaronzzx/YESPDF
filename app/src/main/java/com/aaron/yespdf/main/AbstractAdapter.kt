@@ -14,19 +14,19 @@ import java.util.*
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-internal abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
+abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     protected lateinit var context: Context
     protected lateinit var inflater: LayoutInflater
-    protected var commInterface: ICommInterface<T>? = null
+    protected var pickCallback: IPickCallback<T>? = null
     protected val sourceList: List<T>
     protected val selectList: MutableList<T> = ArrayList()
     protected val checkArray: SparseBooleanArray = SparseBooleanArray()
     protected var selectMode = false
     private var canSelect = true
 
-    constructor(commInterface: ICommInterface<T>, sourceList: List<T>) {
-        this.commInterface = commInterface
+    constructor(pickCallback: IPickCallback<T>, sourceList: List<T>) {
+        this.pickCallback = pickCallback
         this.sourceList = sourceList
     }
 
@@ -48,11 +48,11 @@ internal abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.V
             holder.itemView.setOnLongClickListener {
                 if (holder !is EmptyHolder && !selectMode) {
                     val pos = holder.adapterPosition
-                    commInterface?.onStartOperation()
+                    pickCallback?.onStartPicking()
                     checkArray.put(pos, true)
                     checkCurrent(holder, pos)
                     selectList.add(sourceList[pos])
-                    commInterface?.onSelect(selectList, selectList.size == itemCount)
+                    pickCallback?.onSelected(selectList, selectList.size == itemCount)
                     selectMode = true
                     notifyItemRangeChanged(0, itemCount, 0)
                     return@setOnLongClickListener true
@@ -107,7 +107,7 @@ internal abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.V
                 selectList.add(sourceList[i])
             }
         }
-        commInterface?.onSelect(selectList, selectAll)
+        pickCallback?.onSelected(selectList, selectAll)
         notifyItemRangeChanged(0, itemCount, 0)
     }
 
@@ -125,9 +125,9 @@ internal abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.V
     abstract fun onTap(viewHolder: RecyclerView.ViewHolder?, position: Int)
     abstract fun checkCurrent(viewHolder: RecyclerView.ViewHolder?, position: Int)
 
-    internal interface ICommInterface<T> {
-        fun onStartOperation()
-        fun onSelect(list: List<T>, selectAll: Boolean)
+    interface IPickCallback<T> {
+        fun onStartPicking()
+        fun onSelected(list: List<T>, selectAll: Boolean)
     }
 
     companion object {

@@ -14,6 +14,7 @@ import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -155,7 +156,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-            val window = window
             if (Settings.isKeepScreenOn()) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             } else {
@@ -413,7 +413,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             it.isSelected = !it.isSelected
             val curPage = app_pdfview.currentPage
             if (it.isSelected) {
-                drawBookmark(canvas, pageWidth)
                 val title = getTitle(curPage)
                 val time = System.currentTimeMillis()
                 val bk = Bookmark(curPage, title, time)
@@ -608,7 +607,8 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                 }
                 .onPageError { page: Int, throwable: Throwable ->
                     LogUtils.e(throwable.message)
-                    UiManager.showShort(getString(R.string.app_cur_page) + page + getString(R.string.app_parse_error))
+//                    UiManager.showShort(getString(R.string.app_cur_page) + page + getString(R.string.app_parse_error))
+                    UiManager.showShort(getString(R.string.app_cur_page_parse_error, page))
                 }
                 .onDrawAll { canvas: Canvas?, pageWidth: Float, _: Float, displayedPage: Int ->
                     this.canvas = canvas
@@ -734,7 +734,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     private fun drawBookmark(canvas: Canvas?, pageWidth: Float) {
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.app_img_bookmark)
         val left = pageWidth - ConvertUtils.dp2px(36f)
-        canvas!!.drawBitmap(bitmap, left, 0f, paint)
+        canvas?.drawBitmap(bitmap, left, 0f, paint)
     }
 
     private fun showQuickbar() {

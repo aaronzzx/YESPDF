@@ -90,7 +90,7 @@ class ViewAllFragment : CommonFragment(), IViewAllView, ViewAllAdapter.Callback 
         override fun onChanged() {
             selectList.clear()
             (activity as SelectActivity).ibtnSelectAll.isSelected = false
-            app_btn_import_count.setText(R.string.app_import_count)
+            app_btn_import_count.text = getString(R.string.app_import_count, 0)
             val enableSelectAll = adapter?.reset() ?: false
             (activity as SelectActivity).ibtnSelectAll.isEnabled = enableSelectAll
         }
@@ -98,7 +98,7 @@ class ViewAllFragment : CommonFragment(), IViewAllView, ViewAllAdapter.Callback 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? { // Inflate the layout for this fragment
-        attachP()
+        presenter = ViewAllPresenter(this)
         val view = inflater.inflate(R.layout.app_fragment_view_all, container, false)
         presenter.listStorage()
         return view
@@ -144,10 +144,6 @@ class ViewAllFragment : CommonFragment(), IViewAllView, ViewAllAdapter.Callback 
         presenter.detach()
     }
 
-    override fun attachP() {
-        presenter = ViewAllPresenter(this)
-    }
-
     override fun onShowMessage(stringId: Int) {
         UiManager.showShort(stringId)
     }
@@ -182,7 +178,7 @@ class ViewAllFragment : CommonFragment(), IViewAllView, ViewAllAdapter.Callback 
         if (total != 0) {
             (activity as SelectActivity).ibtnSelectAll.isSelected = pathList.size == total
         }
-        app_btn_import_count.text = getString(R.string.app_import) + "(" + pathList.size + ")"
+        app_btn_import_count.text = getString(R.string.app_import_count, pathList.size)
         selectList.clear()
         selectList.addAll(pathList)
     }
