@@ -146,3 +146,19 @@ file=E:\AndroidStudioProjects\YESPDF\app\build\outputs\mapping\release\mapping.t
 sha1=599a6637378d39a9bc09eb136571b50d6a830cca
 appId=fd084373ed
 
+file=E:\AndroidStudioProjects\YESPDF\app\build\outputs\mapping\release\mapping.txt
+sha1=599a6637378d39a9bc09eb136571b50d6a830cca
+appId=fd084373ed
+
+file=E:\AndroidStudioProjects\YESPDF\app\build\outputs\mapping\release\mapping.txt
+sha1=0743640044588afed101bdd64a7e9eef7fdd8550
+appId=fd084373ed
+
+file=E:\AndroidStudioProjects\YESPDF\app\build\outputs\mapping\release\mapping.txt
+sha1=dc8d73fabce9a1699b6bdb54d6b613250d9e7bc0
+appId=fd084373ed
+
+file=E:\AndroidStudioProjects\YESPDF\app\build\outputs\mapping\release\mapping.txt
+sha1=dc8d73fabce9a1699b6bdb54d6b613250d9e7bc0
+appId=fd084373ed
+

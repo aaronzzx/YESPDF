@@ -174,7 +174,6 @@ class ViewAllFragment : CommonFragment(), IViewAllView, ViewAllAdapter.Callback 
 
     @SuppressLint("SetTextI18n")
     override fun onSelectResult(pathList: List<String>, total: Int) {
-        LogUtils.e(pathList.size)
         if (total != 0) {
             (activity as SelectActivity).ibtnSelectAll.isSelected = pathList.size == total
         }
