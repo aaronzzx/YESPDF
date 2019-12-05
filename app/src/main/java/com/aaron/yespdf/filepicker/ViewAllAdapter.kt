@@ -12,6 +12,7 @@ import com.aaron.yespdf.R
 import com.aaron.yespdf.common.EmptyHolder
 import com.aaron.yespdf.common.HeaderHolder
 import com.blankj.utilcode.util.ConvertUtils
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.StringUtils
 import com.blankj.utilcode.util.TimeUtils
 import kotlinx.android.synthetic.main.app_recycler_item_filepicker.view.*
@@ -81,12 +82,12 @@ class ViewAllAdapter(
         val itemView = inflater.inflate(R.layout.app_recycler_item_filepicker, parent, false)
         val holder = ViewHolder(itemView)
         holder.itemView.setOnClickListener {
-            val pos = holder.adapterPosition
+            val pos = holder.adapterPosition - 1
             val file = filterList[pos]
             if (file.isDirectory) {
                 callback.onDirTap(file.absolutePath)
             } else {
-                if (holder.itemView.app_cb.isEnabled && !importedList!!.contains(file.absolutePath)) {
+                if (holder.itemView.app_cb.isEnabled && importedList?.contains(file.absolutePath) == false) {
                     holder.itemView.app_cb.isChecked = !holder.itemView.app_cb.isChecked
                     if (holder.itemView.app_cb.isChecked && !selectList.contains(file.absolutePath)) {
                         selectList.add(file.absolutePath)
@@ -185,7 +186,11 @@ class ViewAllAdapter(
         selectList.clear()
         for (file in filterList) {
             if (file.isFile && importedList?.contains(file.absolutePath) == false) {
-                checkArray.put(filterList.indexOf(file), selectAll)
+                if (fileCount() == fileList.size) {
+                    checkArray.put(filterList.indexOf(file), selectAll)
+                } else {
+                    checkArray.put(filterList.indexOf(file) + 1, selectAll)
+                }
             }
             if (selectAll && file.isFile && importedList?.contains(file.absolutePath) == false) {
                 selectList.add(file.absolutePath)

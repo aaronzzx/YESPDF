@@ -18,11 +18,14 @@ abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder
 
     protected lateinit var context: Context
     protected lateinit var inflater: LayoutInflater
-    protected var pickCallback: IPickCallback<T>? = null
+
     protected val sourceList: List<T>
     protected val selectList: MutableList<T> = ArrayList()
     protected val checkArray: SparseBooleanArray = SparseBooleanArray()
+
+    protected var pickCallback: IPickCallback<T>? = null
     protected var selectMode = false
+
     private var canSelect = true
 
     constructor(pickCallback: IPickCallback<T>, sourceList: List<T>) {
@@ -38,29 +41,28 @@ abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         context = parent.context
         inflater = LayoutInflater.from(context)
-        if (viewType == TYPE_EMPTY) {
-            val itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false)
-            return EmptyHolder(itemView)
-        }
-        val holder = createHolder(parent, viewType)
-        holder.itemView.setOnClickListener { onTap(holder, holder.adapterPosition) }
-        if (canSelect) {
-            holder.itemView.setOnLongClickListener {
-                if (holder !is EmptyHolder && !selectMode) {
-                    val pos = holder.adapterPosition
-                    pickCallback?.onStartPicking()
-                    checkArray.put(pos, true)
-                    checkCurrent(holder, pos)
-                    selectList.add(sourceList[pos])
-                    pickCallback?.onSelected(selectList, selectList.size == itemCount)
-                    selectMode = true
-                    notifyItemRangeChanged(0, itemCount, 0)
-                    return@setOnLongClickListener true
+        return if (viewType == TYPE_EMPTY) {
+            EmptyHolder(inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false))
+        } else {
+            createHolder(parent, viewType).apply {
+                itemView.setOnClickListener { onTap(this, adapterPosition) }
+                if (canSelect) {
+                    itemView.setOnLongClickListener {
+                        if (this !is EmptyHolder && !selectMode) {
+                            pickCallback?.onStartPicking()
+                            checkArray.put(adapterPosition, true)
+                            checkCurrent(this, adapterPosition)
+                            selectList.add(sourceList[adapterPosition])
+                            pickCallback?.onSelected(selectList, selectList.size == itemCount)
+                            selectMode = true
+                            notifyItemRangeChanged(0, itemCount, 0)
+                            return@setOnLongClickListener true
+                        }
+                        false
+                    }
                 }
-                false
             }
         }
-        return holder
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
@@ -75,16 +77,10 @@ abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    override fun getItemCount(): Int {
-        return if (sourceList.isEmpty()) {
-            1
-        } else itemCount()
-    }
+    override fun getItemCount(): Int = if (sourceList.isEmpty()) 1 else itemCount()
 
     override fun getItemViewType(position: Int): Int {
-        return if (sourceList.isEmpty()) {
-            TYPE_EMPTY
-        } else super.getItemViewType(position)
+        return if (sourceList.isEmpty()) TYPE_EMPTY else super.getItemViewType(position)
     }
 
     fun handleCheckBox(cb: CheckBox, position: Int) {
@@ -98,13 +94,13 @@ abstract class AbstractAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     fun selectAll(selectAll: Boolean) {
-        for (i in 0 until itemCount) {
-            checkArray.put(i, selectAll)
+        for (index in 0 until itemCount) {
+            checkArray.put(index, selectAll)
         }
         selectList.clear()
         if (selectAll) {
-            for (i in 0 until itemCount) {
-                selectList.add(sourceList[i])
+            for (index in 0 until itemCount) {
+                selectList.add(sourceList[index])
             }
         }
         pickCallback?.onSelected(selectList, selectAll)

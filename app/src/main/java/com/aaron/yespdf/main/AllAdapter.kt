@@ -25,18 +25,17 @@ class AllAdapter(
 ) : AbstractAdapter<Cover>(pickCallback, sourceList) {
 
     override fun createHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val itemView = inflater.inflate(CollectionHolder.DEFAULT_LAYOUT, parent, false)
-        return CollectionHolder(itemView)
+        return CollectionHolder(inflater.inflate(CollectionHolder.DEFAULT_LAYOUT, parent, false))
     }
 
     @SuppressLint("SetTextI18n")
     override fun bindHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         if (viewHolder is CollectionHolder) {
             if (sourceList.isNotEmpty()) {
-                val c = sourceList[position]
-                val coverList = c.coverList
-                val count = c.count
-                viewHolder.tvTitle.text = c.name
+                val cover = sourceList[position]
+                val coverList = cover.coverList
+                val count = cover.count
+                viewHolder.tvTitle.text = cover.name
                 viewHolder.tvCount.text = context.getString(R.string.app_total, count)
                 setVisibility(viewHolder, count)
                 if (count == 0) return
@@ -66,9 +65,7 @@ class AllAdapter(
         }
     }
 
-    override fun itemCount(): Int {
-        return sourceList.size
-    }
+    override fun itemCount(): Int = sourceList.size
 
     override fun onTap(viewHolder: RecyclerView.ViewHolder?, position: Int) {
         if (viewHolder is CollectionHolder) {

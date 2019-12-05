@@ -5,7 +5,7 @@ import android.view.View
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-internal object OperationBarHelper {
+object OperationBarHelper {
     fun show(view: View) {
         view.visibility = View.VISIBLE
     }
