@@ -1,6 +1,5 @@
 package com.aaron.yespdf.main
 
-import android.content.Intent
 import androidx.annotation.StringRes
 import com.aaron.yespdf.common.IPresenter
 import com.aaron.yespdf.common.IView
@@ -16,5 +15,5 @@ interface IMainView : IView {
 }
 
 abstract class IMainPresenter(view: IMainView) : IPresenter<IMainView>(view) {
-    abstract fun insertPDF(data: Intent?)
+    abstract fun insertPDF(paths: List<String>?, type: Int?, groupName: String?)
 }

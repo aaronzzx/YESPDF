@@ -5,8 +5,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/base_black">
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="@color/base_white">
 
     <TextView
         android:id="@+id/app_tv"
@@ -16,7 +16,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:textColor="@color/base_white"
+        android:textColor="@color/base_black"
         tools:text="支付成功"/>
 
 </androidx.cardview.widget.CardView>

@@ -11,7 +11,6 @@ import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.FragmentPagerAdapter
 import com.aaron.base.impl.OnClickListenerImpl
 import com.aaron.yespdf.R
 import com.aaron.yespdf.about.AboutActivity
@@ -25,15 +24,10 @@ import com.aaron.yespdf.filepicker.SelectActivity
 import com.aaron.yespdf.settings.SettingsActivity
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.ConvertUtils
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.app_activity_main.*
 import kotlinx.android.synthetic.main.app_include_operation_bar.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -42,7 +36,6 @@ import java.util.*
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-@SuppressLint("InflateParams")
 class MainActivity : CommonActivity(), IMainView {
 
     private val presenter: IMainPresenter by lazy(LazyThreadSafetyMode.NONE) {
@@ -50,6 +43,7 @@ class MainActivity : CommonActivity(), IMainView {
     }
 
     private val pwMenu: PopupWindow by lazy(LazyThreadSafetyMode.NONE) {
+        @SuppressLint("InflateParams")
         val pwView = LayoutInflater.from(this).inflate(R.layout.app_pw_main, null)
         val tvImport = pwView.findViewById<TextView>(R.id.app_tv_import)
         val tvSettings = pwView.findViewById<TextView>(R.id.app_tv_settings)
@@ -132,7 +126,6 @@ class MainActivity : CommonActivity(), IMainView {
         }
     }
 
-    private var fragmentPagerAdapter: FragmentPagerAdapter? = null
     private var operation: IOperation? = null
     private var tvDeleteDescription: TextView? = null
     private var tvDialogTitle: TextView? = null
@@ -156,7 +149,10 @@ class MainActivity : CommonActivity(), IMainView {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SELECT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            presenter.insertPDF(data)
+            val pathList = data?.getStringArrayListExtra(SelectActivity.EXTRA_SELECTED)
+            val type = data?.getIntExtra(SelectActivity.EXTRA_TYPE, 0)
+            val groupName = data?.getStringExtra(SelectActivity.EXTRA_GROUP_NAME)
+            presenter.insertPDF(pathList, type, groupName)
         }
     }
 
@@ -170,10 +166,9 @@ class MainActivity : CommonActivity(), IMainView {
         if (itemId == R.id.app_search) {
             SearchActivity.start(this)
         } else if (itemId == R.id.app_more) {
-            val parent = window.decorView
             val x = ConvertUtils.dp2px(6f)
             val y = ConvertUtils.dp2px(80f)
-            pwMenu.showAtLocation(parent, Gravity.TOP or Gravity.END, x, y)
+            pwMenu.showAtLocation(window.decorView, Gravity.TOP or Gravity.END, x, y)
         }
         return true
     }
@@ -189,24 +184,16 @@ class MainActivity : CommonActivity(), IMainView {
         }
     }
 
-    override fun layoutId(): Int {
-        return R.layout.app_activity_main
-    }
+    override fun layoutId(): Int = R.layout.app_activity_main
 
-    override fun createToolbar(): Toolbar? {
-        return findViewById(R.id.app_toolbar)
-    }
+    override fun createToolbar(): Toolbar? = findViewById(R.id.app_toolbar)
 
-    /**
-     * 热修复完成，提示用户重启应用
-     */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     fun onHotfixSuccess(event: HotfixEvent) {
         receiveHotfix = true
         hotfixDialog.show()
     }
 
-    @SuppressLint("SetTextI18n")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onImportEvent(event: ImportEvent) {
         if (!importInfoDialog.isShowing) {
@@ -218,7 +205,7 @@ class MainActivity : CommonActivity(), IMainView {
             pbDialogProgress?.max = event.totalProgress
         }
         pbDialogProgress?.progress = event.curProgress
-        tvDialogProgressInfo?.text = "${event.curProgress} / ${event.totalProgress}"
+        tvDialogProgressInfo?.text = getString(R.string.app_import_progress, event.curProgress, event.totalProgress)
     }
 
     fun injectOperation(fragment: IOperation) {
@@ -227,7 +214,6 @@ class MainActivity : CommonActivity(), IMainView {
 
     fun startOperation() {
         app_vp.setScrollable(false)
-//        app_tv_operationbar_title.text = getString(R.string.app_selected_count)
         app_ibtn_select_all.isSelected = false
         OperationBarHelper.show(app_vg_operation)
     }
@@ -238,20 +224,15 @@ class MainActivity : CommonActivity(), IMainView {
         operation?.cancelSelect()
     }
 
-    @SuppressLint("SetTextI18n")
     fun selectResult(count: Int, selectAll: Boolean) {
         app_ibtn_delete.isEnabled = count > 0
         app_ibtn_select_all.isSelected = selectAll
         app_tv_operationbar_title.text = getString(R.string.app_selected_count, count)
     }
 
-    override fun onShowMessage(stringId: Int) {
-        UiManager.showShort(stringId)
-    }
+    override fun onShowMessage(stringId: Int): Unit = UiManager.showShort(stringId)
 
-    override fun onShowLoading() {
-        importInfoDialog.show()
-    }
+    override fun onShowLoading(): Unit = importInfoDialog.show()
 
     override fun onHideLoading() {
         importInfoDialog.dismiss()
@@ -259,32 +240,25 @@ class MainActivity : CommonActivity(), IMainView {
     }
 
     override fun onUpdate() {
-        val list = supportFragmentManager.fragments
-        for (fragment in list) {
-            if (fragment is AllFragment) {
-                fragment.update()
+        for (fragment in supportFragmentManager.fragments) {
+            (fragment as? AllFragment)?.run {
+                update()
                 return
             }
         }
     }
 
     private fun initView() {
-        setListener()
-        app_tab_layout.setupWithViewPager(app_vp)
-        fragmentPagerAdapter = MainFragmentAdapter(supportFragmentManager)
-        app_vp.adapter = fragmentPagerAdapter
-        val actionBar = supportActionBar
-        actionBar?.setDisplayShowTitleEnabled(false)
-    }
-
-    private fun setListener() {
-        app_vg_operation.setOnClickListener { }
         app_ibtn_cancel.setOnClickListener { finishOperation() }
         app_ibtn_delete.setOnClickListener {
             deleteDialog.show()
             tvDeleteDescription?.text = operation?.deleteDescription()
         }
         app_ibtn_select_all.setOnClickListener { operation?.selectAll(!it.isSelected) }
+
+        app_tab_layout.setupWithViewPager(app_vp)
+        app_vp.adapter = MainFragmentAdapter(supportFragmentManager)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     companion object {
