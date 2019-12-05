@@ -4,14 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
 
-//apply from: 'tinker-support.gradle'
-//// 上传符号表插件
-//apply plugin: 'bugly'
-//bugly {
-//    debug  = false
-//    appId  = 'fd084373ed' // 注册时分配的App ID
-//    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
-//}
+apply from: 'tinker-support.gradle'
+// 上传符号表插件
+apply plugin: 'bugly'
+bugly {
+    debug  = false
+    appId  = 'fd084373ed' // 注册时分配的App ID
+    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
+}
 
 android {
     compileSdkVersion 29
