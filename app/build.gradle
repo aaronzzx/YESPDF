@@ -51,7 +51,6 @@ android {
                 checkReleaseBuilds false
                 abortOnError false
             }
-
             manifestPlaceholders = [
                     app_icon : '@drawable/app_ic_yespdf',
                     app_name : '@string/app_name_en'
