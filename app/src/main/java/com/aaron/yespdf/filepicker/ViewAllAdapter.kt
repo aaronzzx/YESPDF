@@ -2,6 +2,7 @@ package com.aaron.yespdf.filepicker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -82,7 +83,9 @@ class ViewAllAdapter(
         val itemView = inflater.inflate(R.layout.app_recycler_item_filepicker, parent, false)
         val holder = ViewHolder(itemView)
         holder.itemView.setOnClickListener {
-            val pos = holder.adapterPosition - 1
+            val pos = if (itemCount == fileList.size) holder.adapterPosition else holder.adapterPosition - 1
+            Log.e("ViewAllAdapter", "pos: $pos")
+            println("ViewAllAdapter, pos: $pos")
             val file = filterList[pos]
             if (file.isDirectory) {
                 callback.onDirTap(file.absolutePath)
