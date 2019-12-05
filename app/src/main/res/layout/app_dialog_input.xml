@@ -29,6 +29,7 @@
                 android:layout_marginRight="16dp"
                 android:gravity="center"
                 android:textSize="@dimen/base_text_hlarge"
+                android:textColor="@color/base_black"
                 tools:text="需要验证密码" />
 
             <EditText

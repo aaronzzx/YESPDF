@@ -19,7 +19,7 @@
         android:src="@drawable/app_ic_action_back_black" />
 
     <TextView
-        android:id="@+id/app_tv_title"
+        android:id="@+id/app_tv_operationbar_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -27,7 +27,8 @@
         android:textColor="@color/base_black"
         android:textStyle="bold"
         android:textSize="@dimen/base_text_hlarge"
-        android:text="@string/app_selected_zero" />
+         />
+<!--    android:text="@string/app_selected_zero"-->
 
     <ImageButton
         android:id="@+id/app_ibtn_delete"

@@ -1,5 +1,7 @@
 package com.aaron.yespdf.common;
 
+import android.graphics.drawable.DrawableWrapper;
+
 import com.blankj.utilcode.util.SPStaticUtils;
 
 /**
@@ -10,12 +12,13 @@ public final class Settings {
     private static final String SP_LOCK_LANDSCAPE = "SP_LOCK_LANDSCAPE";
     private static final String SP_MAX_RECENT_COUNT = "SP_MAX_RECENT_COUNT";
     private static final String SP_SWIPE_HORIZONTAL = "SP_SWIPE_HORIZONTAL";
-    private static final String SP_NIGHT_MODE       = "SP_NIGHT_MODE";
-    private static final String SP_VOLUME_CONTROL   = "SP_VOLUME_CONTROL";
+    private static final String SP_NIGHT_MODE = "SP_NIGHT_MODE";
+    private static final String SP_VOLUME_CONTROL = "SP_VOLUME_CONTROL";
     private static final String SP_SHOW_STATUS_BAR = "SP_SHOW_STATUS_BAR";
     private static final String SP_SCROLL_LEVEL = "SP_SCROLL_LEVEL";
     private static final String SP_CLICK_FLIP_PAGE = "SP_CLICK_FLIP_PAGE";
     private static final String SP_KEEP_SCREEN_ON = "SP_KEEP_SCREEN_ON";
+    private static final String SP_DRAW_BOOKMARK = "SP_DRAW_BOOKMARK";
 
     private static boolean lockLandscape;
     private static String maxRecentCount;
@@ -31,8 +34,8 @@ public final class Settings {
         Settings.lockLandscape = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false);
         Settings.maxRecentCount = SPStaticUtils.getString(SP_MAX_RECENT_COUNT, "9");
         Settings.swipeHorizontal = SPStaticUtils.getBoolean(SP_SWIPE_HORIZONTAL, true);
-        Settings.nightMode       = SPStaticUtils.getBoolean(SP_NIGHT_MODE, false);
-        Settings.volumeControl   = SPStaticUtils.getBoolean(SP_VOLUME_CONTROL, true);
+        Settings.nightMode = SPStaticUtils.getBoolean(SP_NIGHT_MODE, false);
+        Settings.volumeControl = SPStaticUtils.getBoolean(SP_VOLUME_CONTROL, true);
         Settings.showStatusBar = SPStaticUtils.getBoolean(SP_SHOW_STATUS_BAR, false);
         Settings.scrollLevel = SPStaticUtils.getLong(SP_SCROLL_LEVEL, 5L);
         Settings.clickFlipPage = SPStaticUtils.getBoolean(SP_CLICK_FLIP_PAGE, true);
@@ -76,10 +79,12 @@ public final class Settings {
 
     public static void setClickFlipPage(boolean clickFlipPage) {
         Settings.clickFlipPage = clickFlipPage;
+        SPStaticUtils.put(SP_CLICK_FLIP_PAGE, clickFlipPage);
     }
 
     public static void setKeepScreenOn(boolean keepScreenOn) {
         Settings.keepScreenOn = keepScreenOn;
+        SPStaticUtils.put(SP_KEEP_SCREEN_ON, keepScreenOn);
     }
 
     public static boolean isLockLandscape() {
@@ -118,5 +123,6 @@ public final class Settings {
         return keepScreenOn;
     }
 
-    private Settings() {}
+    private Settings() {
+    }
 }

@@ -13,11 +13,13 @@
       <w>doubletap</w>
       <w>emptyview</w>
       <w>filepicker</w>
+      <w>fileprovider</w>
       <w>hmmss</w>
       <w>ibtn</w>
       <w>importeds</w>
       <w>infos</w>
       <w>numpicker</w>
+      <w>operationbar</w>
       <w>pageinfo</w>
       <w>pdfview</w>
       <w>qrcode</w>

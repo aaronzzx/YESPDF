@@ -38,7 +38,7 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(base);
-        tinker();
+//        tinker();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class App extends Application {
         DataManager.init();
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
-        bugly();
+//        bugly();
     }
 
     private void leakCanary() {
@@ -180,7 +180,7 @@ public class App extends Application {
 //            public void onDestroy(Context context, View view, UpgradeInfo upgradeInfo) {
 //            }
 //        };
-        Bugly.setIsDevelopmentDevice(this, BuildConfig.DEBUG); // 是否开发设备
+        Bugly.setIsDevelopmentDevice(this, false);
         Bugly.init(this, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
     }
 

@@ -39,7 +39,7 @@
         android:gravity="center"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        android:text="@string/app_import_count"
+        android:text="@string/app_import"
         android:textSize="@dimen/base_text_large"
         android:textStyle="bold"
         android:textColor="@color/base_white"

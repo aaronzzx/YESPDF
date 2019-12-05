@@ -94,7 +94,7 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 int count = c.count;
 
                 holder.tvTitle.setText(c.name);
-                holder.tvCount.setText(context.getString(R.string.app_total) + count + context.getString(R.string.app_count));
+                holder.tvCount.setText(context.getString(R.string.app_total, count));
                 setVisibility(holder, count);
                 if (count == 0) return;
                 setCover(holder.ivCover1, coverList.get(0));
