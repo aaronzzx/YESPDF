@@ -6,7 +6,7 @@ def bakPath = file("${buildDir}/bakApk/")
  * 此处填写每次构建生成的基准包目录
  */
 def baseApkDir = "app-1204-18-23-45"
-def baseTinkerId = "patch-1.0.9-test001"
+def baseTinkerId = "base-1.1.0"
 
 /**
  * 对于插件各参数的详细解析请参考

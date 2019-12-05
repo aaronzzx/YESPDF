@@ -21,15 +21,15 @@ android {
         applicationId "com.aaron.yespdf"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 10
-        versionName "1.0.9"
+        versionCode 11
+        versionName "1.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
         ndk {
             // 选择要添加的对应cpu类型的.so库。
             // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
-            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'/*, 'x86', 'x86_64'*/
         }
     }
 
