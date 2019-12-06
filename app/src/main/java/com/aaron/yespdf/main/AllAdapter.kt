@@ -33,19 +33,21 @@ class AllAdapter(
         if (viewHolder is CollectionHolder) {
             if (sourceList.isNotEmpty()) {
                 val cover = sourceList[position]
-                val coverList = cover.coverList
+                val coverList: List<String>? = cover.coverList
                 val count = cover.count
                 viewHolder.tvTitle.text = cover.name
                 viewHolder.tvCount.text = context.getString(R.string.app_total, count)
                 setVisibility(viewHolder, count)
-                if (count == 0) return
-                setCover(viewHolder.ivCover1, coverList[0])
-                if (count == 1) return
-                setCover(viewHolder.ivCover2, coverList[1])
-                if (count == 2) return
-                setCover(viewHolder.ivCover3, coverList[2])
-                if (count == 3) return
-                setCover(viewHolder.ivCover4, coverList[3])
+                coverList?.run {
+                    if (count == 0) return
+                    setCover(viewHolder.ivCover1, coverList[0])
+                    if (count == 1) return
+                    setCover(viewHolder.ivCover2, coverList[1])
+                    if (count == 2) return
+                    setCover(viewHolder.ivCover3, coverList[2])
+                    if (count == 3) return
+                    setCover(viewHolder.ivCover4, coverList[3])
+                }
             }
             handleCheckBox(viewHolder.cb, position)
         } else if (viewHolder is EmptyHolder) {
