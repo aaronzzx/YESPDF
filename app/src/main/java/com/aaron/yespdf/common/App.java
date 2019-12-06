@@ -121,7 +121,7 @@ public class App extends Application {
 //        Beta.upgradeCheckPeriod = 60 * 1000; // 升级检查周期设置
 //        Beta.initDelay = 1 * 1000; // 延迟初始化
 //        Beta.storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS); // 设置sd卡的Download为更新资源存储目录
-        Beta.storageDir = new File(PathUtils.getExternalAppDownloadPath()); // /storage/emulated/0/Android/data/package/files/Download
+//        Beta.storageDir = new File(PathUtils.getExternalAppDownloadPath()); // /storage/emulated/0/Android/data/package/files/Download
 //        Beta.upgradeDialogLayoutId = R.layout.upgrade_dialog; // 自定义升级弹窗
 //        Beta.enableNotification = true; // 关闭通知栏显示下载进度
 //        Beta.autoDownloadOnWifi = false; // 设置 WiFi 下自动下载
