@@ -84,8 +84,6 @@ class ViewAllAdapter(
         val holder = ViewHolder(itemView)
         holder.itemView.setOnClickListener {
             val pos = if (itemCount == fileList.size) holder.adapterPosition else holder.adapterPosition - 1
-            Log.e("ViewAllAdapter", "pos: $pos")
-            println("ViewAllAdapter, pos: $pos")
             val file = filterList[pos]
             if (file.isDirectory) {
                 callback.onDirTap(file.absolutePath)

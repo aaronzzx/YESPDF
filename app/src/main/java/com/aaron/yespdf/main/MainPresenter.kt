@@ -17,7 +17,7 @@ import kotlin.coroutines.CoroutineContext
 internal class MainPresenter(view: IMainView) : IMainPresenter(view) {
 
     override fun insertPDF(paths: List<String>?, type: Int?, groupName: String?) {
-        if (paths == null || type == null || groupName == null) {
+        if (paths == null || type == null) {
             return
         }
         (view as CoroutineScope).launch {
@@ -26,7 +26,7 @@ internal class MainPresenter(view: IMainView) : IMainPresenter(view) {
                 if (type == SelectActivity.TYPE_BASE_FOLDER) {
                     DBHelper.insert(paths)
                 } else { // SelectActivity.TYPE_TO_EXIST, SelectActivity.TYPE_CUSTOM
-                    DBHelper.insert(paths, groupName)
+                    DBHelper.insert(paths, groupName ?: "BASE_FOLDER")
                 }
             }
             DataManager.updateAll()
