@@ -5,10 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.annotation.LayoutRes
+import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
+import com.blankj.utilcode.util.LogUtils
 import com.chad.library.adapter.base.BaseItemDraggableAdapter
+import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.chad.library.adapter.base.listener.OnItemDragListener
+import kotlinx.android.synthetic.main.app_recycler_item_emptyview.view.*
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -27,16 +31,18 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
     var isSelectMode = false
         protected set
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): K {
-        setEmptyView(R.layout.app_recycler_item_emptyview, parent)
-        return super.onCreateViewHolder(parent, viewType)
+    override fun bindToRecyclerView(recyclerView: RecyclerView?) {
+        super.bindToRecyclerView(recyclerView)
+        setEmptyView(R.layout.app_recycler_item_emptyview)
     }
 
     override fun onBindViewHolder(holder: K, position: Int) {
         super.onBindViewHolder(holder, position)
-        (holder as? EmptyHolder)?.run {
-            itvEmpty.text = emptyText
-            itvEmpty.setIconTop(emptyIcon)
+        if (holder is BaseHolder) {
+            handleCheckBox(holder.checkBox, position)
+        } else {
+            emptyView.app_itv_placeholder.text = emptyText
+            emptyView.app_itv_placeholder.setIconTop(emptyIcon)
         }
     }
 
@@ -51,8 +57,8 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
     }
 
     override fun setOnItemClick(v: View, position: Int) {
+        super.setOnItemClick(v, position)
         if (getItemViewType(position) == 0) {
-            super.setOnItemClick(v, position)
             val cb = v.findViewById<CheckBox>(checkBoxId)
             val isChecked = !cb.isChecked
             cb.isChecked = isChecked

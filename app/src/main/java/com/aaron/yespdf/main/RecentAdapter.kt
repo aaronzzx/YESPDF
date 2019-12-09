@@ -44,7 +44,7 @@ internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<
                 viewHolder.ivCover.scaleType = ImageView.ScaleType.FIT_XY
                 viewHolder.ivCover.setImageResource(R.drawable.app_img_none_cover)
             }
-            handleCheckBox(viewHolder.cb, position)
+            handleCheckBox(viewHolder.checkBox, position)
         } else if (viewHolder is EmptyHolder) {
             viewHolder.itvEmpty.visibility = View.VISIBLE
             viewHolder.itvEmpty.setText(R.string.app_have_no_recent)
@@ -57,7 +57,7 @@ internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<
             bindHolder(viewHolder, position)
         } else {
             if (viewHolder is CoverHolder && position < itemCount) {
-                handleCheckBox(viewHolder.cb, position)
+                handleCheckBox(viewHolder.checkBox, position)
             }
         }
     }
@@ -77,11 +77,11 @@ internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<
 
     override fun onTap(viewHolder: RecyclerView.ViewHolder?, position: Int) {
         if (viewHolder is CoverHolder) {
-            if (viewHolder.cb.visibility == View.VISIBLE) {
+            if (viewHolder.checkBox.visibility == View.VISIBLE) {
                 val pdf = sourceList[position]
-                val isChecked = !viewHolder.cb.isChecked
-                viewHolder.cb.isChecked = isChecked
-                if (viewHolder.cb.isChecked) {
+                val isChecked = !viewHolder.checkBox.isChecked
+                viewHolder.checkBox.isChecked = isChecked
+                if (viewHolder.checkBox.isChecked) {
                     selectList.add(pdf)
                 } else {
                     selectList.remove(pdf)
@@ -104,7 +104,7 @@ internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<
 
     override fun checkCurrent(viewHolder: RecyclerView.ViewHolder?, position: Int) {
         if (viewHolder is CoverHolder) {
-            viewHolder.cb.isChecked = true
+            viewHolder.checkBox.isChecked = true
         }
     }
 

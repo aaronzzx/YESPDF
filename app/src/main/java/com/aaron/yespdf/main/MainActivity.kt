@@ -241,7 +241,7 @@ class MainActivity : CommonActivity(), IMainView {
 
     override fun onUpdate() {
         for (fragment in supportFragmentManager.fragments) {
-            (fragment as? AllFragment)?.run {
+            (fragment as? AllFragment2)?.run {
                 update()
                 return
             }

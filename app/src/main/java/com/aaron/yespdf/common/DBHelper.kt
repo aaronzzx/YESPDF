@@ -63,7 +63,9 @@ object DBHelper {
     }
 
     fun updatePDF(pdf: PDF?) {
-        pdf?.run { sDaoSession.update(this) }
+        pdf?.run {
+            sDaoSession.pdfDao.insertOrReplace(pdf)
+        }
     }
 
     fun updateCollection(name: String) {

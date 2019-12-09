@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.base.image.DefaultOption
 import com.aaron.base.image.ImageLoader
@@ -51,7 +50,7 @@ internal class CollectionAdapter(
                 viewHolder.ivCover.scaleType = ImageView.ScaleType.FIT_XY
                 viewHolder.ivCover.setImageResource(R.drawable.app_img_none_cover)
             }
-            handleCheckBox(viewHolder.cb, position)
+            handleCheckBox(viewHolder.checkBox, position)
         } else if (viewHolder is EmptyHolder) {
             viewHolder.itvEmpty.visibility = View.VISIBLE
             viewHolder.itvEmpty.setText(R.string.app_have_no_all)
@@ -64,7 +63,7 @@ internal class CollectionAdapter(
             bindHolder(viewHolder, position)
         } else {
             if (viewHolder is CoverHolder && position < itemCount) {
-                handleCheckBox(viewHolder.cb, position)
+                handleCheckBox(viewHolder.checkBox, position)
             }
         }
     }
@@ -75,11 +74,11 @@ internal class CollectionAdapter(
 
     override fun onTap(viewHolder: RecyclerView.ViewHolder?, position: Int) {
         if (viewHolder is CoverHolder) {
-            if (viewHolder.cb.visibility == View.VISIBLE) {
+            if (viewHolder.checkBox.visibility == View.VISIBLE) {
                 val pdf = sourceList[position]
-                val isChecked = !viewHolder.cb.isChecked
-                viewHolder.cb.isChecked = isChecked
-                if (viewHolder.cb.isChecked) {
+                val isChecked = !viewHolder.checkBox.isChecked
+                viewHolder.checkBox.isChecked = isChecked
+                if (viewHolder.checkBox.isChecked) {
                     selectList.add(pdf)
                 } else {
                     selectList.remove(pdf)
@@ -97,18 +96,13 @@ internal class CollectionAdapter(
                 DataManager.updatePDFs()
                 PreviewActivity.start(context, pdf)
                 EventBus.getDefault().post(recentPDFEvent)
-//                viewHolder.itemView.postDelayed({
-//                    if (pickCallback != null) {
-//                        (pickCallback as DialogFragment).dismiss()
-//                    }
-//                }, 400)
             }
         }
     }
 
     override fun checkCurrent(viewHolder: RecyclerView.ViewHolder?, position: Int) {
         if (viewHolder is CoverHolder) {
-            viewHolder.cb.isChecked = true
+            viewHolder.checkBox.isChecked = true
         }
     }
 }

@@ -58,8 +58,8 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else if (enableAddNew && viewType == TYPE_ADD_COLLECTION) {
             View add = inflater.inflate(CoverHolder.DEFAULT_LAYOUT, parent, false);
             CoverHolder holder = new CoverHolder(add);
-            holder.tvProgress.setVisibility(View.GONE);
-            holder.cb.setVisibility(View.GONE);
+            holder.getTvProgress().setVisibility(View.GONE);
+            holder.getCheckBox().setVisibility(View.GONE);
             holder.itemView.setOnClickListener(v -> callback.onAddNewGroup());
             return holder;
         }
@@ -80,12 +80,12 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         } else if (viewHolder instanceof CoverHolder) {
             CoverHolder holder = (CoverHolder) viewHolder;
-            holder.tvTitle.setText(R.string.app_add_new_group);
-            holder.ivCover.setScaleType(ImageView.ScaleType.FIT_XY);
-            holder.ivCover.setImageResource(R.drawable.app_img_add_group);
-            ViewGroup.LayoutParams lp = holder.ivCover.getLayoutParams();
+            holder.getTvTitle().setText(R.string.app_add_new_group);
+            holder.getIvCover().setScaleType(ImageView.ScaleType.FIT_XY);
+            holder.getIvCover().setImageResource(R.drawable.app_img_add_group);
+            ViewGroup.LayoutParams lp = holder.getIvCover().getLayoutParams();
             lp.height = ConvertUtils.dp2px(152);
-            holder.ivCover.requestLayout();
+            holder.getIvCover().requestLayout();
         } else {
             CollectionHolder holder = (CollectionHolder) viewHolder;
             if (!coverList.isEmpty()) {

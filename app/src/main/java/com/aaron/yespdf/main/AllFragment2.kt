@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,18 +15,16 @@ import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.Cover
 import com.aaron.yespdf.common.event.AllEvent
 import com.blankj.utilcode.util.LogUtils
-import com.blankj.utilcode.util.ThreadUtils
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback
 import com.chad.library.adapter.base.listener.OnItemDragListener
 import kotlinx.android.synthetic.main.app_fragment_all.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.ArrayList
+import java.util.*
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -37,6 +34,7 @@ class AllFragment2 : CommonFragment(), IOperation {
     private lateinit var adapter: AllAdapter2
     private val coverList = DataManager.getCoverList()
     private val selectList: MutableList<Cover> = ArrayList()
+    private var isNeedUpdateDB = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         EventBus.getDefault().register(this)
@@ -104,6 +102,9 @@ class AllFragment2 : CommonFragment(), IOperation {
     override fun cancelSelect() {
         adapter.exitSelectMode()
         selectList.clear()
+        if (isNeedUpdateDB) {
+            DataManager.updateCollection()
+        }
     }
 
     override fun deleteDescription(): String? {
@@ -143,13 +144,12 @@ class AllFragment2 : CommonFragment(), IOperation {
                 (activity as MainActivity).selectResult(size, size == coverList.size)
             } else {
                 val name = coverList[position].name
-                val df: DialogFragment = CollectionFragment.newInstance(name)
+                val df: DialogFragment = CollectionFragment2.newInstance(name)
                 df.show(fragmentManager!!, "")
             }
         }
         adapter.setOnItemDragListener(object : OnItemDragListener {
             private lateinit var checkBox: CheckBox
-            private lateinit var text: String
             private var fromPos: Int = 0
 
             override fun onItemDragMoving(
@@ -160,7 +160,6 @@ class AllFragment2 : CommonFragment(), IOperation {
             ) {}
 
             override fun onItemDragStart(viewHolder: RecyclerView.ViewHolder, position: Int) {
-                text = coverList[position].name
                 checkBox = viewHolder.itemView.findViewById(R.id.app_cb)
                 checkBox.visibility = View.GONE
                 fromPos = position
@@ -168,6 +167,7 @@ class AllFragment2 : CommonFragment(), IOperation {
 
             override fun onItemDragEnd(viewHolder: RecyclerView.ViewHolder, position: Int) {
                 if (!adapter.isSelectMode) {
+                    isNeedUpdateDB = false
                     (activity as MainActivity).startOperation()
                     selectList.add(coverList[position])
                     val size = selectList.size
@@ -177,14 +177,14 @@ class AllFragment2 : CommonFragment(), IOperation {
                 checkBox.visibility = View.VISIBLE
 
                 if (fromPos != position) {
-                    DBHelper.updateCollection(text)
+                    isNeedUpdateDB = true
                 }
             }
         })
         val dragHelper = ItemTouchHelper(ItemDragAndSwipeCallback(adapter))
         dragHelper.attachToRecyclerView(app_rv_all)
         adapter.enableDragItem(dragHelper)
-        app_rv_all.adapter = adapter
+        adapter.bindToRecyclerView(app_rv_all)
     }
 
     companion object {
