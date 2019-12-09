@@ -66,6 +66,11 @@ object DBHelper {
         pdf?.run { sDaoSession.update(this) }
     }
 
+    fun updateCollection(name: String) {
+        val collectionDao = sDaoSession.collectionDao
+        collectionDao?.insertOrReplace(Collection(name))
+    }
+
     @JvmStatic
     fun queryRecentPDF(): List<PDF> {
         val list = sDaoSession.loadAll<RecentPDF, Any>(RecentPDF::class.java)

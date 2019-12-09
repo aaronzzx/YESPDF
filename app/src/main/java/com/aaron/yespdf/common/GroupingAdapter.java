@@ -65,7 +65,7 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
         View view = inflater.inflate(CollectionHolder.DEFAULT_LAYOUT, parent, false);
         CollectionHolder holder = new CollectionHolder(view);
-        holder.itemView.setOnClickListener(v -> callback.onAddToGroup(holder.tvTitle.getText().toString()));
+        holder.itemView.setOnClickListener(v -> callback.onAddToGroup(holder.getTvTitle().getText().toString()));
         return holder;
     }
 
@@ -93,26 +93,26 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 List<String> coverList = c.coverList;
                 int count = c.count;
 
-                holder.tvTitle.setText(c.name);
-                holder.tvCount.setText(context.getString(R.string.app_total, count));
+                holder.getTvTitle().setText(c.name);
+                holder.getTvCount().setText(context.getString(R.string.app_total, count));
                 setVisibility(holder, count);
                 if (count == 0) return;
-                setCover(holder.ivCover1, coverList.get(0));
+                setCover(holder.getIvCover1(), coverList.get(0));
                 if (count == 1) return;
-                setCover(holder.ivCover2, coverList.get(1));
+                setCover(holder.getIvCover2(), coverList.get(1));
                 if (count == 2) return;
-                setCover(holder.ivCover3, coverList.get(2));
+                setCover(holder.getIvCover3(), coverList.get(2));
                 if (count == 3) return;
-                setCover(holder.ivCover4, coverList.get(3));
+                setCover(holder.getIvCover4(), coverList.get(3));
             }
         }
     }
 
     private void setVisibility(CollectionHolder holder, int count) {
-        holder.ivCover1.setVisibility(count >= 1 ? View.VISIBLE : View.INVISIBLE);
-        holder.ivCover2.setVisibility(count >= 2 ? View.VISIBLE : View.INVISIBLE);
-        holder.ivCover3.setVisibility(count >= 3 ? View.VISIBLE : View.INVISIBLE);
-        holder.ivCover4.setVisibility(count >= 4 ? View.VISIBLE : View.INVISIBLE);
+        holder.getIvCover1().setVisibility(count >= 1 ? View.VISIBLE : View.INVISIBLE);
+        holder.getIvCover2().setVisibility(count >= 2 ? View.VISIBLE : View.INVISIBLE);
+        holder.getIvCover3().setVisibility(count >= 3 ? View.VISIBLE : View.INVISIBLE);
+        holder.getIvCover4().setVisibility(count >= 4 ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void setCover(ImageView ivCover, String path) {
