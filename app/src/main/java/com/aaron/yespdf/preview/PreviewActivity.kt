@@ -124,12 +124,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     override fun onPause() {
         super.onPause()
-        if (pdf != null) {
+        pdf?.run {
             val progress = getPercent(curPage + 1, pageCount)
-            pdf?.curPage = curPage
-            pdf?.progress = progress
-            pdf?.bookmark = GsonUtils.toJson(bookmarkMap.values)
-            DBHelper.updatePDF(pdf!!)
+            this.curPage = this@PreviewActivity.curPage
+            this.progress = progress
+            bookmark = GsonUtils.toJson(bookmarkMap.values)
+            DBHelper.updatePDF(this)
             DataManager.updatePDFs()
             // 这里发出事件主要是更新界面阅读进度
             EventBus.getDefault().post(RecentPDFEvent(true))
