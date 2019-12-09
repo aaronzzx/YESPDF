@@ -102,9 +102,6 @@ class AllFragment2 : CommonFragment(), IOperation {
     override fun cancelSelect() {
         adapter.exitSelectMode()
         selectList.clear()
-        if (isNeedUpdateDB) {
-            DataManager.updateCollection()
-        }
     }
 
     override fun deleteDescription(): String? {
@@ -167,7 +164,6 @@ class AllFragment2 : CommonFragment(), IOperation {
 
             override fun onItemDragEnd(viewHolder: RecyclerView.ViewHolder, position: Int) {
                 if (!adapter.isSelectMode) {
-                    isNeedUpdateDB = false
                     (activity as MainActivity).startOperation()
                     selectList.add(coverList[position])
                     val size = selectList.size
@@ -176,9 +172,20 @@ class AllFragment2 : CommonFragment(), IOperation {
                 }
                 checkBox.visibility = View.VISIBLE
 
-                if (fromPos != position) {
-                    isNeedUpdateDB = true
+                val list = DataManager.getCollectionList()
+                var max = list.size - 1
+                for (cover in coverList) {
+                    val name = cover.name
+                    for (c in list) {
+                        if (name == c.name) {
+                            c.position = max--
+                            break
+                        }
+                    }
                 }
+
+                DBHelper.updateCollection()
+                DataManager.updateCollection()
             }
         })
         val dragHelper = ItemTouchHelper(ItemDragAndSwipeCallback(adapter))
