@@ -1,18 +1,17 @@
 package com.aaron.yespdf.common
 
-import android.util.SparseBooleanArray
 import android.view.View
-import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
-import com.blankj.utilcode.util.LogUtils
 import com.chad.library.adapter.base.BaseItemDraggableAdapter
-import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
-import com.chad.library.adapter.base.listener.OnItemDragListener
 import kotlinx.android.synthetic.main.app_recycler_item_emptyview.view.*
+import kotlin.collections.MutableList
+import kotlin.collections.MutableMap
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -26,7 +25,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
     protected abstract val emptyText: CharSequence
     protected abstract val emptyIcon: Int
 
-    protected val checkArray: SparseBooleanArray = SparseBooleanArray()
+    private val checkArray: MutableMap<T, Boolean> = mutableMapOf()
 
     var isSelectMode = false
         protected set
@@ -39,7 +38,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
     override fun onBindViewHolder(holder: K, position: Int) {
         super.onBindViewHolder(holder, position)
         if (holder is BaseHolder) {
-            handleCheckBox(holder.checkBox, position)
+            handleCheckBox(holder, holder.checkBox, position)
         } else {
             emptyView.app_itv_placeholder.text = emptyText
             emptyView.app_itv_placeholder.setIconTop(emptyIcon)
@@ -51,7 +50,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
             super.onBindViewHolder(holder, position, payloads)
         } else {
             (holder as? BaseHolder)?.run {
-                handleCheckBox(this.checkBox, position)
+                handleCheckBox(holder, this.checkBox, position)
             }
         }
     }
@@ -62,7 +61,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
             val cb = v.findViewById<CheckBox>(checkBoxId)
             val isChecked = !cb.isChecked
             cb.isChecked = isChecked
-            checkArray.put(position, isChecked)
+            checkArray[data[position]] = isChecked
         }
     }
 
@@ -70,7 +69,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
         val consume = super.setOnItemLongClick(v, position)
         if (getItemViewType(position) == 0) {
             isSelectMode = true
-            checkArray.put(position, true)
+            checkArray[data[position]] = true
             v.findViewById<CheckBox>(checkBoxId).isChecked = true
             notifyItemRangeChanged(0, itemCount, 0)
             return consume
@@ -81,7 +80,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
     fun selectAll(selectAll: Boolean) {
         if (selectAll) {
             for (index in 0 until itemCount) {
-                checkArray.put(index, selectAll)
+                checkArray[data[index]] = selectAll
             }
         } else {
             checkArray.clear()
@@ -92,7 +91,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
     fun enterSelectMode(v: View, position: Int) {
         if (getItemViewType(position) == 0) {
             isSelectMode = true
-            checkArray.put(position, true)
+            checkArray[data[position]] = true
             v.findViewById<CheckBox>(checkBoxId).isChecked = true
             notifyItemRangeChanged(0, itemCount, 0)
         }
@@ -104,15 +103,15 @@ abstract class BaseAdapter<T, K : BaseViewHolder>(
         notifyItemRangeChanged(0, itemCount, 0)
     }
 
-    fun isChecked(position: Int) = checkArray.get(position)
+    fun isChecked(position: Int): Boolean = checkArray[data[position]] ?: false
 
-    private fun handleCheckBox(cb: CheckBox, position: Int) {
+    protected open fun handleCheckBox(holder: K, cb: CheckBox, position: Int) {
         cb.visibility = if (isSelectMode) View.VISIBLE else View.GONE
         if (isSelectMode) {
             cb.alpha = 1.0f
             cb.scaleX = 0.8f
             cb.scaleY = 0.8f
-            cb.isChecked = checkArray[position]
+            cb.isChecked = checkArray[data[position]] ?: false
         }
     }
 }

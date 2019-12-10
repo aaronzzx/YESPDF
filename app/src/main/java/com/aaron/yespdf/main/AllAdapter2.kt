@@ -1,6 +1,7 @@
 package com.aaron.yespdf.main
 
 import android.view.View
+import android.widget.CheckBox
 import android.widget.ImageView
 import com.aaron.base.image.DefaultOption
 import com.aaron.base.image.ImageLoader

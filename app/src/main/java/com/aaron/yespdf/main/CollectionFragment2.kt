@@ -42,7 +42,7 @@ import java.util.ArrayList
 class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callback {
 
     private val deleteDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        val view = LayoutInflater.from(activity).inflate(R.layout.app_bottomdialog_delete, null)
+        val view = LayoutInflater.from(activity!!).inflate(R.layout.app_bottomdialog_delete, null)
         tvDeleteDescription = view.findViewById(R.id.app_tv_description)
         val btnCancel = view.findViewById<Button>(R.id.app_btn_cancel)
         val btnDelete = view.findViewById<Button>(R.id.app_btn_delete)
@@ -57,7 +57,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
         DialogManager.createGroupingDialog(activity!!, true, this)
     }
     private val addNewGroupDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        val temp = DialogManager.createInputDialog(activity!!) { tvTitle, etInput, btnLeft, btnRight ->
+        DialogManager.createInputDialog(activity!!) { tvTitle, etInput, btnLeft, btnRight ->
             tvTitle.setText(R.string.app_add_new_group)
             etInput.inputType = InputType.TYPE_CLASS_TEXT
             etInput.setHint(R.string.app_type_new_group_name)
@@ -65,10 +65,10 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
             btnLeft.setText(R.string.app_cancel)
             btnLeft.setOnClickListener { addNewGroupDialog.dismiss() }
             btnRight.setText(R.string.app_confirm)
-            btnRight.setOnClickListener { createNewGroup(this.etInput?.text.toString()) }
-        }
-        temp.setOnDismissListener { etInput?.setText("") }
-        temp
+            btnRight.setOnClickListener {
+                createNewGroup(this.etInput?.text.toString())
+            }
+        }.apply { setOnDismissListener { etInput?.setText("") } }
     }
 
     private lateinit var adapter: CollectionAdapter2
@@ -79,6 +79,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     private val selectPDFList: MutableList<PDF> = ArrayList()
     private val pdfList: MutableList<PDF> = ArrayList()
     private val savedCollections = DataManager.getCollectionList()
+    private var isNeedUpdateDb = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +113,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
 
     override fun onResume() {
         super.onResume()
+        isNeedUpdateDb = false
         // 监听返回键
         val view = view
         if (view != null) {
@@ -126,6 +128,15 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                 }
                 false
             })
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (isNeedUpdateDb) {
+            DBHelper.updatePDFs(pdfList)
+            DataManager.updatePDFs()
+            LiveDataBus.with<Any>(EVENT_UPDATE_ALL_FRAGMENT).value = null
         }
     }
 
@@ -202,9 +213,15 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                 return
             }
         }
-        selectPDFList.run { pdfList.removeAll(this) }
-        DataManager.updatePDFs()
+        pdfList.removeAll(selectPDFList)
+        var max = selectPDFList.size - 1
+        for (pdf in selectPDFList) {
+            pdf.position = max--
+        }
         DBHelper.insertNewCollection(name, selectPDFList)
+        DataManager.updatePDFs()
+        pdfList.removeAll(selectPDFList)
+
         cancelSelect()
         addNewGroupDialog.dismiss()
         notifyGroupUpdate()
@@ -218,19 +235,25 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
             cancelSelect()
             return
         }
-        selectPDFList.run { pdfList.removeAll(this) }
-        DBHelper.insertPDFsToCollection(dir, selectPDFList)
+        pdfList.removeAll(selectPDFList)
+        val targetList = DataManager.getPdfList(dir)
+        targetList.addAll(selectPDFList)
+        var max = targetList.size - 1
+        for (pdf in targetList) {
+            pdf.position = max--
+        }
+        DBHelper.insertPDFsToCollection(dir, targetList)
         DataManager.updatePDFs()
         cancelSelect()
         notifyGroupUpdate()
     }
 
     private fun notifyGroupUpdate() {
-        if (pdfList.isEmpty()) {
-            dismiss()
-        } else {
-            adapter.notifyDataSetChanged()
-        }
+//        if (pdfList.isEmpty()) {
+//        } else {
+//        }
+        dismiss()
+        adapter.notifyDataSetChanged()
         EventBus.getDefault().post(AllEvent(pdfList.isEmpty(), name))
     }
 
@@ -284,7 +307,6 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
         adapter.setOnItemDragListener(object : OnItemDragListener {
             private lateinit var checkBox: CheckBox
             private lateinit var pdf: PDF
-            private var fromPos: Int = 0
 
             override fun onItemDragMoving(
                     viewHolder: RecyclerView.ViewHolder,
@@ -297,7 +319,6 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                 pdf = pdfList[position]
                 checkBox = viewHolder.itemView.findViewById(R.id.app_cb)
                 checkBox.visibility = View.GONE
-                fromPos = position
             }
 
             override fun onItemDragEnd(viewHolder: RecyclerView.ViewHolder, position: Int) {
@@ -309,10 +330,11 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                 }
                 checkBox.visibility = View.VISIBLE
 
-                if (fromPos != position) {
-                    DBHelper.updatePDF(pdf)
-                    DataManager.updatePDFs()
+                var max = pdfList.size - 1
+                for (pdf in pdfList) {
+                    pdf.position = max--
                 }
+                isNeedUpdateDb = true
             }
         })
         val dragHelper = ItemTouchHelper(ItemDragAndSwipeCallback(adapter))
@@ -376,7 +398,9 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     }
 
     companion object {
+        const val EVENT_UPDATE_ALL_FRAGMENT = "EVENT_UPDATE_ALL_FRAGMENT"
         private const val BUNDLE_NAME = "BUNDLE_NAME"
+
         fun newInstance(name: String?): CollectionFragment2 {
             val fragment = CollectionFragment2()
             val args = Bundle()

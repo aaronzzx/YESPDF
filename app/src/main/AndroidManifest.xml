@@ -40,6 +40,8 @@
         <activity
             android:name=".filepicker.SelectActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".main.UpgradeActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

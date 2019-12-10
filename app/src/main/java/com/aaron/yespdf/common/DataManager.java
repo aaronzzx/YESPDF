@@ -5,6 +5,7 @@ import com.aaron.yespdf.common.bean.Cover;
 import com.aaron.yespdf.common.bean.PDF;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -119,6 +120,7 @@ public final class DataManager {
                 tempList.add(pdf);
             }
         }
+        Collections.sort(tempList, (o1, o2) -> o2.getPosition() - o1.getPosition());
         return DataManager.tempList;
     }
 

@@ -2,6 +2,8 @@ package com.aaron.yespdf.common;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.multidex.MultiDex;
@@ -52,15 +54,31 @@ public class App extends Application {
 
         leakCanary();
         DBHelper.init(this, AppConfig.DB_NAME);
+
         int dbVersion = SPStaticUtils.getInt(DB_VERSION);
-        if (dbVersion < DaoMaster.SCHEMA_VERSION) {
+        if (isFirstInstall() && dbVersion < DaoMaster.SCHEMA_VERSION) {
             DBHelper.INSTANCE.migrate();
             SPStaticUtils.put(DB_VERSION, DaoMaster.SCHEMA_VERSION);
         }
+
         DataManager.init();
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
 //        bugly();
+    }
+
+    private boolean isFirstInstall() {
+        PackageManager pm = getPackageManager();
+        PackageInfo pi = null;
+        try {
+            pi = pm.getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (pi == null) {
+            return false;
+        }
+        return pi.firstInstallTime == pi.lastUpdateTime;
     }
 
     private void leakCanary() {

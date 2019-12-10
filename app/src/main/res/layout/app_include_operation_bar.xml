@@ -3,13 +3,15 @@
     android:id="@+id/app_vg_operation"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
     android:visibility="gone"
     android:scaleX="1.1"
     android:scaleY="1.1"
     android:alpha="0"
     android:background="@color/base_white"
     android:paddingTop="30dp"
-    android:paddingBottom="8dp">
+    android:paddingBottom="8dp"
+    android:focusable="true">
 
     <ImageButton
         android:id="@+id/app_ibtn_cancel"

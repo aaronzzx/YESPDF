@@ -44,11 +44,20 @@ class AllFragment2 : CommonFragment(), IOperation {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        LiveDataBus.with<Any>(CollectionFragment2.EVENT_UPDATE_ALL_FRAGMENT)
+                .observe(this::getLifecycle) { adapter.notifyDataSetChanged() }
     }
 
     override fun onResume() {
         super.onResume()
+        isNeedUpdateDB = false
         (activity as MainActivity).injectOperation(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        DBHelper.updateCollection()
+        DataManager.updateCollection()
     }
 
     override fun onDestroyView() {
@@ -147,19 +156,18 @@ class AllFragment2 : CommonFragment(), IOperation {
         }
         adapter.setOnItemDragListener(object : OnItemDragListener {
             private lateinit var checkBox: CheckBox
-            private var fromPos: Int = 0
 
             override fun onItemDragMoving(
                     viewHolder: RecyclerView.ViewHolder,
                     fromPos: Int,
                     target: RecyclerView.ViewHolder,
                     toPos: Int
-            ) {}
+            ) {
+            }
 
             override fun onItemDragStart(viewHolder: RecyclerView.ViewHolder, position: Int) {
                 checkBox = viewHolder.itemView.findViewById(R.id.app_cb)
                 checkBox.visibility = View.GONE
-                fromPos = position
             }
 
             override fun onItemDragEnd(viewHolder: RecyclerView.ViewHolder, position: Int) {
@@ -183,9 +191,7 @@ class AllFragment2 : CommonFragment(), IOperation {
                         }
                     }
                 }
-
-                DBHelper.updateCollection()
-                DataManager.updateCollection()
+                isNeedUpdateDB = true
             }
         })
         val dragHelper = ItemTouchHelper(ItemDragAndSwipeCallback(adapter))

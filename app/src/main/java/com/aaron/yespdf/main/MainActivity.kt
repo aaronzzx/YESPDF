@@ -14,10 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import com.aaron.base.impl.OnClickListenerImpl
 import com.aaron.yespdf.R
 import com.aaron.yespdf.about.AboutActivity
-import com.aaron.yespdf.common.CommonActivity
-import com.aaron.yespdf.common.DataManager
-import com.aaron.yespdf.common.DialogManager
-import com.aaron.yespdf.common.UiManager
+import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.event.HotfixEvent
 import com.aaron.yespdf.common.event.ImportEvent
 import com.aaron.yespdf.filepicker.SelectActivity
