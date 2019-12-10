@@ -49,7 +49,7 @@ class AllAdapter(
                     setCover(viewHolder.ivCover4, coverList[3])
                 }
             }
-            handleCheckBox(viewHolder.cb, position)
+            handleCheckBox(viewHolder.checkBox, position)
         } else if (viewHolder is EmptyHolder) {
             viewHolder.itvEmpty.visibility = View.VISIBLE
             viewHolder.itvEmpty.setText(R.string.app_have_no_all)
@@ -62,7 +62,7 @@ class AllAdapter(
             bindHolder(viewHolder, position)
         } else {
             if (viewHolder is CollectionHolder && position < itemCount) {
-                handleCheckBox(viewHolder.cb, position)
+                handleCheckBox(viewHolder.checkBox, position)
             }
         }
     }
@@ -71,11 +71,11 @@ class AllAdapter(
 
     override fun onTap(viewHolder: RecyclerView.ViewHolder?, position: Int) {
         if (viewHolder is CollectionHolder) {
-            if (viewHolder.cb.visibility == View.VISIBLE) {
+            if (viewHolder.checkBox.visibility == View.VISIBLE) {
                 val cover = sourceList[position]
-                val isChecked = !viewHolder.cb.isChecked
-                viewHolder.cb.isChecked = isChecked
-                if (viewHolder.cb.isChecked) {
+                val isChecked = !viewHolder.checkBox.isChecked
+                viewHolder.checkBox.isChecked = isChecked
+                if (viewHolder.checkBox.isChecked) {
                     selectList.add(cover)
                 } else {
                     selectList.remove(cover)
@@ -92,7 +92,7 @@ class AllAdapter(
 
     override fun checkCurrent(viewHolder: RecyclerView.ViewHolder?, position: Int) {
         if (viewHolder is CollectionHolder) {
-            viewHolder.cb.isChecked = true
+            viewHolder.checkBox.isChecked = true
         }
     }
 

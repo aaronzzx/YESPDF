@@ -26,6 +26,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
+        public final static Property Position = new Property(2, int.class, "position", false, "POSITION");
     }
 
 
@@ -42,7 +43,8 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"COLLECTION\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "\"NAME\" TEXT UNIQUE );"); // 1: name
+                "\"NAME\" TEXT UNIQUE ," + // 1: name
+                "\"POSITION\" INTEGER NOT NULL );"); // 2: position
     }
 
     /** Drops the underlying database table. */
@@ -64,6 +66,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
         if (name != null) {
             stmt.bindString(2, name);
         }
+        stmt.bindLong(3, entity.getPosition());
     }
 
     @Override
@@ -79,6 +82,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
         if (name != null) {
             stmt.bindString(2, name);
         }
+        stmt.bindLong(3, entity.getPosition());
     }
 
     @Override
@@ -90,7 +94,8 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
     public Collection readEntity(Cursor cursor, int offset) {
         Collection entity = new Collection( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // name
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
+            cursor.getInt(offset + 2) // position
         );
         return entity;
     }
@@ -99,6 +104,7 @@ public class CollectionDao extends AbstractDao<Collection, Long> {
     public void readEntity(Cursor cursor, Collection entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setPosition(cursor.getInt(offset + 2));
      }
     
     @Override

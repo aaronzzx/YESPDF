@@ -7,13 +7,13 @@ import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.bean.RecentPDF
 import com.aaron.yespdf.common.event.ImportEvent
 import com.aaron.yespdf.common.greendao.*
-import com.aaron.yespdf.common.greendao.DaoMaster.DevOpenHelper
 import com.aaron.yespdf.common.utils.PdfUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.PathUtils
 import com.blankj.utilcode.util.StringUtils
 import org.greenrobot.eventbus.EventBus
 import java.util.*
+
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -24,10 +24,29 @@ object DBHelper {
 
     @JvmStatic
     fun init(context: Context, dbName: String) {
-        val helper = DevOpenHelper(context, dbName)
+//        val helper = DevOpenHelper(context, dbName)
+//        val db = helper.writableDatabase
+//        val daoMaster = DaoMaster(db)
+//        sDaoSession = daoMaster.newSession()
+
+        val helper = UpdateOpenHelper(context, dbName, null)
         val db = helper.writableDatabase
+        // 注意：该数据库连接属于 DaoMaster，所以多个 Session 指的是相同的数据库连接。
         val daoMaster = DaoMaster(db)
         sDaoSession = daoMaster.newSession()
+    }
+
+    fun migrate() {
+        val collections = queryAllCollection()
+        for (item in collections) {
+            item.position = collections.indexOf(item)
+            updateCollection(item)
+            val pdfs = queryPDF(item.name)
+            for (pdf in pdfs) {
+                pdf.position = pdfs.indexOf(pdf)
+                updatePDF(pdf)
+            }
+        }
     }
 
     fun updateDirName(oldDirName: String, newDirName: String): Boolean {
@@ -63,7 +82,22 @@ object DBHelper {
     }
 
     fun updatePDF(pdf: PDF?) {
-        pdf?.run { sDaoSession.update(this) }
+        pdf?.run {
+            sDaoSession.pdfDao.insertOrReplace(pdf)
+        }
+    }
+
+    private fun updateCollection(c: Collection) {
+        val collectionDao = sDaoSession.collectionDao
+        collectionDao?.insertOrReplace(c)
+    }
+
+    fun updateCollection() {
+        sDaoSession.collectionDao.updateInTx(DataManager.getCollectionList())
+    }
+
+    fun updatePDFs(pdfs: List<PDF>) {
+        sDaoSession.pdfDao.updateInTx(pdfs)
     }
 
     @JvmStatic
@@ -78,24 +112,25 @@ object DBHelper {
         return recentPDFList
     }
 
-    fun queryCollection(name: String?): Collection? {
-        val list = sDaoSession.queryRaw<Collection, Any>(Collection::class.java, "where name = ?", name)
-        return if (list.isEmpty()) {
-            null
-        } else list[0]
-    }
-
     @JvmStatic
     fun queryAllCollection(): List<Collection> {
-        return sDaoSession.loadAll<Collection, Any>(Collection::class.java)
+        val list = sDaoSession.loadAll<Collection, Any>(Collection::class.java)
+        list.sortWith(Comparator { c1, c2 ->
+            c2.position - c1.position
+        })
+        return list
     }
 
     @JvmStatic
     fun queryAllPDF(): List<PDF> {
-        return sDaoSession.loadAll<PDF, Any>(PDF::class.java)
+        val list = sDaoSession.loadAll<PDF, Any>(PDF::class.java)
+        list.sortWith(kotlin.Comparator { o1, o2 ->
+            o2.position - o1.position
+        })
+        return list
     }
 
-    fun queryPDF(dir: String?): List<PDF> {
+    private fun queryPDF(dir: String?): List<PDF> {
         return if (StringUtils.isEmpty(dir)) {
             ArrayList()
         } else sDaoSession.queryRaw<PDF, Any>(PDF::class.java, "where DIR = ?", dir)
@@ -106,12 +141,6 @@ object DBHelper {
                 .where(PDFDao.Properties.Dir.eq(dir), PDFDao.Properties.Name.eq(name))
                 .orderDesc(PDFDao.Properties.LatestRead)
         return qb.list()
-    }
-
-    fun insertPDFsToExist(pathList: List<String>, groupName: String) {
-        for (path in pathList) {
-            insertPDFs(groupName, path)
-        }
     }
 
     fun insertRecent(pdf: PDF) {
@@ -164,19 +193,26 @@ object DBHelper {
         val event = ImportEvent()
         event.curProgress = 0
         event.totalProgress = pathList.size
+        val tempPath = pathList[0]
+        val parentPath = tempPath.substring(0, tempPath.lastIndexOf("/"))
+        val dir = tempPath.substring(0, tempPath.lastIndexOf("/")).substring(parentPath.lastIndexOf("/") + 1)
+        var max = if (dir.isNotEmpty()) {
+            queryPDF(dir).size
+        } else 0
         for (path in pathList) {
             if (event.stop) return false
             event.name = getName(path).substring(1)
             event.curProgress++
             EventBus.getDefault().post(event)
-            // 去除了文件名称的父路径
-            val parentPath = path.substring(0, path.lastIndexOf("/"))
-            // 所属文件夹
-            val dir = parentPath.substring(parentPath.lastIndexOf("/") + 1)
+//            // 去除了文件名称的父路径
+//            val parentPath = path.substring(0, path.lastIndexOf("/"))
+//            // 所属文件夹
+//            dir = parentPath.substring(parentPath.lastIndexOf("/") + 1)
             // 插入 Collection 对象
-            val c = Collection(dir)
+            val collectionList = DataManager.getCollectionList()
+            val c = Collection(dir, collectionList.size)
             sDaoSession.insertOrReplace(c)
-            insertPDFs(dir, path)
+            insertPDFs(dir, path, max++)
         }
         return true
     }
@@ -184,23 +220,24 @@ object DBHelper {
     fun insert(pathList: List<String>?, groupName: String): Boolean {
         if (pathList == null || pathList.isEmpty()) return false
         // 插入 Collection 对象
-        val c = Collection(groupName)
+        val c = Collection(groupName, DataManager.getCollectionList().size)
         sDaoSession.insertOrReplace(c)
         val event = ImportEvent()
         event.curProgress = 0
         event.totalProgress = pathList.size
+        var max = queryPDF(groupName).size
         for (path in pathList) {
             if (event.stop) return false
             event.name = getName(path).substring(1)
             event.curProgress++
             EventBus.getDefault().post(event)
-            insertPDFs(groupName, path)
+            insertPDFs(groupName, path, max++)
         }
         return true
     }
 
     fun insertNewCollection(newDirName: String, pdfList: List<PDF>) {
-        val c = Collection(newDirName)
+        val c = Collection(newDirName, DataManager.getCollectionList().size)
         sDaoSession.insertOrReplace(c)
         transferPDFs(newDirName, pdfList)
     }
@@ -209,7 +246,7 @@ object DBHelper {
         transferPDFs(dirName, pdfList)
     }
 
-    private fun insertPDFs(groupName: String, filePath: String): Boolean {
+    private fun insertPDFs(groupName: String, filePath: String, position: Int): Boolean {
         val bookmarkPage = ""
         val curPage = 0
         val totalPage = PdfUtils.getPdfTotalPage(filePath)
@@ -231,6 +268,7 @@ object DBHelper {
         pdf.bookmark = bookmarkPage
         pdf.totalPage = totalPage
         pdf.latestRead = 0
+        pdf.position = position
         sDaoSession.insertOrReplace(pdf)
         return true
     }

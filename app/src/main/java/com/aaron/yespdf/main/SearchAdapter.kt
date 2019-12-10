@@ -95,7 +95,7 @@ internal class SearchAdapter(
                 viewHolder.ivCover.scaleType = ImageView.ScaleType.FIT_XY
                 viewHolder.ivCover.setImageResource(R.drawable.app_img_none_cover)
             }
-            handleCheckBox(viewHolder.cb, position)
+            handleCheckBox(viewHolder.checkBox, position)
         } else if (viewHolder is HeaderHolder) {
             val count = filterList.size
             viewHolder.tvCount.text = context.getString(R.string.app_total, count)

@@ -2,14 +2,18 @@ package com.aaron.yespdf.common;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.multidex.MultiDex;
 
 import com.aaron.yespdf.BuildConfig;
 import com.aaron.yespdf.common.event.HotfixEvent;
+import com.aaron.yespdf.common.greendao.DaoMaster;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PathUtils;
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
 import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.Bugly;
@@ -17,6 +21,7 @@ import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.interfaces.BetaPatchListener;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.greendao.DaoLog;
 
 import java.io.File;
 import java.util.Locale;
@@ -27,6 +32,7 @@ import java.util.Locale;
 public class App extends Application {
 
     private static final String TAG = App.class.getSimpleName();
+    private static final String DB_VERSION = "DB_VERSION";
 
     private static Context sContext;
 
@@ -48,10 +54,31 @@ public class App extends Application {
 
         leakCanary();
         DBHelper.init(this, AppConfig.DB_NAME);
+
+        int dbVersion = SPStaticUtils.getInt(DB_VERSION);
+        if (!isFirstInstall() && dbVersion < DaoMaster.SCHEMA_VERSION) {
+            DBHelper.INSTANCE.migrate();
+            SPStaticUtils.put(DB_VERSION, DaoMaster.SCHEMA_VERSION);
+        }
+
         DataManager.init();
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
         bugly();
+    }
+
+    private boolean isFirstInstall() {
+        PackageManager pm = getPackageManager();
+        PackageInfo pi = null;
+        try {
+            pi = pm.getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (pi == null) {
+            return false;
+        }
+        return pi.firstInstallTime == pi.lastUpdateTime;
     }
 
     private void leakCanary() {

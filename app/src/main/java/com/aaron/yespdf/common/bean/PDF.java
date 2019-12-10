@@ -24,6 +24,7 @@ public class PDF implements Parcelable {
     int totalPage;
     String bookmark;
     long latestRead;
+    int position;
 
     public PDF() {
 
@@ -40,8 +41,9 @@ public class PDF implements Parcelable {
                 ", progress='" + progress + '\'' +
                 ", curPage=" + curPage +
                 ", totalPage=" + totalPage +
-                ", bookmark=" + bookmark +
+                ", bookmark='" + bookmark + '\'' +
                 ", latestRead=" + latestRead +
+                ", position=" + position +
                 '}';
     }
 
@@ -125,6 +127,14 @@ public class PDF implements Parcelable {
         this.latestRead = latestRead;
     }
 
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -142,6 +152,7 @@ public class PDF implements Parcelable {
         dest.writeInt(this.totalPage);
         dest.writeString(this.bookmark);
         dest.writeLong(this.latestRead);
+        dest.writeInt(this.position);
     }
 
     protected PDF(Parcel in) {
@@ -155,11 +166,13 @@ public class PDF implements Parcelable {
         this.totalPage = in.readInt();
         this.bookmark = in.readString();
         this.latestRead = in.readLong();
+        this.position = in.readInt();
     }
 
-    @Generated(hash = 1041541261)
-    public PDF(Long id, String path, String dir, String name, String cover, String progress,
-            int curPage, int totalPage, String bookmark, long latestRead) {
+    @Generated(hash = 1452199055)
+    public PDF(Long id, String path, String dir, String name, String cover,
+            String progress, int curPage, int totalPage, String bookmark,
+            long latestRead, int position) {
         this.id = id;
         this.path = path;
         this.dir = dir;
@@ -170,9 +183,10 @@ public class PDF implements Parcelable {
         this.totalPage = totalPage;
         this.bookmark = bookmark;
         this.latestRead = latestRead;
+        this.position = position;
     }
 
-    public static final Parcelable.Creator<PDF> CREATOR = new Parcelable.Creator<PDF>() {
+    public static final Creator<PDF> CREATOR = new Creator<PDF>() {
         @Override
         public PDF createFromParcel(Parcel source) {
             return new PDF(source);

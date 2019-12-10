@@ -34,6 +34,7 @@ public class PDFDao extends AbstractDao<PDF, Long> {
         public final static Property TotalPage = new Property(7, int.class, "totalPage", false, "TOTAL_PAGE");
         public final static Property Bookmark = new Property(8, String.class, "bookmark", false, "BOOKMARK");
         public final static Property LatestRead = new Property(9, long.class, "latestRead", false, "LATEST_READ");
+        public final static Property Position = new Property(10, int.class, "position", false, "POSITION");
     }
 
 
@@ -58,7 +59,8 @@ public class PDFDao extends AbstractDao<PDF, Long> {
                 "\"CUR_PAGE\" INTEGER NOT NULL ," + // 6: curPage
                 "\"TOTAL_PAGE\" INTEGER NOT NULL ," + // 7: totalPage
                 "\"BOOKMARK\" TEXT," + // 8: bookmark
-                "\"LATEST_READ\" INTEGER NOT NULL );"); // 9: latestRead
+                "\"LATEST_READ\" INTEGER NOT NULL ," + // 9: latestRead
+                "\"POSITION\" INTEGER NOT NULL );"); // 10: position
     }
 
     /** Drops the underlying database table. */
@@ -108,6 +110,7 @@ public class PDFDao extends AbstractDao<PDF, Long> {
             stmt.bindString(9, bookmark);
         }
         stmt.bindLong(10, entity.getLatestRead());
+        stmt.bindLong(11, entity.getPosition());
     }
 
     @Override
@@ -151,6 +154,7 @@ public class PDFDao extends AbstractDao<PDF, Long> {
             stmt.bindString(9, bookmark);
         }
         stmt.bindLong(10, entity.getLatestRead());
+        stmt.bindLong(11, entity.getPosition());
     }
 
     @Override
@@ -170,7 +174,8 @@ public class PDFDao extends AbstractDao<PDF, Long> {
             cursor.getInt(offset + 6), // curPage
             cursor.getInt(offset + 7), // totalPage
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // bookmark
-            cursor.getLong(offset + 9) // latestRead
+            cursor.getLong(offset + 9), // latestRead
+            cursor.getInt(offset + 10) // position
         );
         return entity;
     }
@@ -187,6 +192,7 @@ public class PDFDao extends AbstractDao<PDF, Long> {
         entity.setTotalPage(cursor.getInt(offset + 7));
         entity.setBookmark(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
         entity.setLatestRead(cursor.getLong(offset + 9));
+        entity.setPosition(cursor.getInt(offset + 10));
      }
     
     @Override

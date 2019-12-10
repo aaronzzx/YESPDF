@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/base_white"
     android:clipChildren="false">
 
     <LinearLayout
@@ -63,6 +64,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/app_ll_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/app_ll"

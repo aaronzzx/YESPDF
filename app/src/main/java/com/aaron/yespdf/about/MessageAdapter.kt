@@ -8,17 +8,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.base.image.DefaultOption
 import com.aaron.base.image.ImageLoader
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.DialogManager
 import com.aaron.yespdf.common.UiManager
+import com.aaron.yespdf.common.utils.AboutUtils
 import com.blankj.utilcode.util.ImageUtils
 import kotlinx.android.synthetic.main.app_recycler_item_message.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MessageAdapter<T>(
         private val activity: Activity,
@@ -30,10 +32,14 @@ class MessageAdapter<T>(
             btnLeft.setOnClickListener { qrcodeDialog.show() }
             btnRight.setOnClickListener {
                 giftDialog.dismiss()
-                val bitmap = ImageUtils.drawable2Bitmap(activity.resources.getDrawable(R.drawable.app_img_qrcode))
-                AboutUtils.copyImageToDevice(activity, bitmap)
-                AboutUtils.goWeChatScan(activity)
-                UiManager.showShort(R.string.app_wechat_scan_notice)
+                (activity as CoroutineScope).launch {
+                    withContext(Dispatchers.IO) {
+                        val bitmap = ImageUtils.drawable2Bitmap(activity.resources.getDrawable(R.drawable.app_img_qrcode))
+                        AboutUtils.copyImageToDevice(activity, bitmap)
+                    }
+                    AboutUtils.goWeChatScan(activity)
+                    UiManager.showShort(R.string.app_wechat_scan_notice)
+                }
             }
         }
     }
