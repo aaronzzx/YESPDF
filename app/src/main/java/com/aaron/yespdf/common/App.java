@@ -56,7 +56,7 @@ public class App extends Application {
         DBHelper.init(this, AppConfig.DB_NAME);
 
         int dbVersion = SPStaticUtils.getInt(DB_VERSION);
-        if (isFirstInstall() && dbVersion < DaoMaster.SCHEMA_VERSION) {
+        if (!isFirstInstall() && dbVersion < DaoMaster.SCHEMA_VERSION) {
             DBHelper.INSTANCE.migrate();
             SPStaticUtils.put(DB_VERSION, DaoMaster.SCHEMA_VERSION);
         }
