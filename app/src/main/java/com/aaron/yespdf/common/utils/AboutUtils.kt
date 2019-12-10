@@ -1,4 +1,4 @@
-package com.aaron.yespdf.about
+package com.aaron.yespdf.common.utils
 
 import android.annotation.SuppressLint
 import android.content.ComponentName
@@ -16,7 +16,9 @@ import com.aaron.yespdf.common.UiManager
 import com.blankj.utilcode.util.PathUtils
 import com.blankj.utilcode.util.StringUtils
 import com.blankj.utilcode.util.ThreadUtils
-import com.blankj.utilcode.util.UriUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -56,29 +58,32 @@ internal object AboutUtils {
         }
     }
 
-    fun copyImageToDevice(context: Context, bitmap: Bitmap) {
-        ThreadUtils.getIoPool().submit {
-            val file = File(PathUtils.getExternalAppCachePath(), "yespdf-gift.jpg")
-            if (file.exists()) file.delete()
-            var fos: FileOutputStream? = null
+    fun copyImageToDevice(
+            context: Context,
+            bitmap: Bitmap,
+            savePath: String = "${PathUtils.getExternalAppCachePath()}/yespdf-gift.jpg"
+    ) {
+        val file = File(savePath)
+        file.mkdirs()
+        if (file.exists()) file.delete()
+        var fos: FileOutputStream? = null
+        try {
+            fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            fos.flush()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
             try {
-                fos = FileOutputStream(file)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-                fos.flush()
+                fos?.close()
             } catch (e: IOException) {
                 e.printStackTrace()
-            } finally {
-                try {
-                    fos?.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
             }
-            notifyMedia(context, file.absolutePath, AppConfig.AUTHORITY)
         }
+        notifyMedia(context, file.absolutePath, AppConfig.AUTHORITY)
     }
 
-    fun notifyMedia(context: Context, path: String, authority: String) {
+    private fun notifyMedia(context: Context, path: String, authority: String) {
         try {
             // 通知相册更新
             val file = File(path)

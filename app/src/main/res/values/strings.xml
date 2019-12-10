@@ -83,6 +83,9 @@
     <string name="app_keep_screen_on">屏幕常亮</string>
     <string name="app_max_recent_count">最近显示数量</string>
     <string name="app_lock_landscape">锁定横屏</string>
+    <string name="app_export_image">导出图片</string>
+    <string name="app_export_image_succeed">导出成功，图片存放在根目录/Pictures/YESPDF</string>
+    <string name="app_not_support_external_open">暂不支持外部资源</string>
 
     <string name="app_delete_completed">删除成功</string>
     <string name="app_have_no_storage_permission">导入文件需要存储权限噢 :)</string>

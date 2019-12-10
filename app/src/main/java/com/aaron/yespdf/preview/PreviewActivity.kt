@@ -26,6 +26,8 @@ import com.aaron.yespdf.R
 import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.event.RecentPDFEvent
+import com.aaron.yespdf.common.utils.AboutUtils
+import com.aaron.yespdf.common.utils.PdfUtils
 import com.aaron.yespdf.preview.PreviewActivity
 import com.aaron.yespdf.settings.SettingsActivity.Companion.start
 import com.blankj.utilcode.util.*
@@ -40,6 +42,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.app_activity_preview.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.text.NumberFormat
@@ -446,6 +451,19 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                 Settings.setLockLandscape(false)
                 ScreenUtils.setPortrait(this)
             }
+        }
+        app_tv_export_image.setOnClickListener {
+            closeMore()
+            if (pdf != null) {
+                launch {
+                    withContext(Dispatchers.IO) {
+                        val bmp = PdfUtils.pdfToBitmap(pdf!!.path, curPage)
+                        val path = "${PathUtils.getExternalPicturesPath()}/YESPDF/${pdf!!.name}/第${curPage+1}页.png"
+                        AboutUtils.copyImageToDevice(this@PreviewActivity, bmp, path)
+                    }
+                    UiManager.showShort(R.string.app_export_image_succeed)
+                }
+            } else UiManager.showShort(R.string.app_not_support_external_open)
         }
         app_tv_settings.setOnClickListener(object : OnClickListenerImpl() {
             override fun onViewClick(v: View, interval: Long) {
