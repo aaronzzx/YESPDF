@@ -2,7 +2,6 @@ package com.aaron.yespdf.filepicker
 
 import com.blankj.utilcode.util.StringUtils
 import java.io.File
-import java.util.*
 
 /**
  * @author Aaron aaronzzxup@gmail.com

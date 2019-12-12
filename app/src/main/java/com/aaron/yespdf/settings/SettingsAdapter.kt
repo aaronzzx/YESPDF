@@ -59,7 +59,7 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         }
         val itemView = inflater.inflate(R.layout.app_recycler_item_settings_seekbar, parent, false)
         val holder = SeekbarHolder(itemView)
-        holder.itemView.app_sb_scroll_level.max = 9
+        holder.itemView.app_sb_scroll_level.max = 49
         holder.itemView.app_sb_scroll_level.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
