@@ -29,7 +29,6 @@ class BookmarkFragment : CommonFragment(), IBkFragInterface {
         mBookmarks.addAll(collection)
         mBookmarks.sortWith(Comparator { bk1: Bookmark, bk2: Bookmark -> (bk2.time - bk1.time).toInt() })
         mAdapter?.notifyDataSetChanged()
-        LogUtils.e(mBookmarks)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

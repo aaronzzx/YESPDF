@@ -7,10 +7,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -458,7 +455,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                 launch {
                     withContext(Dispatchers.IO) {
                         val bmp = PdfUtils.pdfToBitmap(pdf!!.path, curPage)
-                        val path = "${PathUtils.getExternalPicturesPath()}/YESPDF/${pdf!!.name}/第${curPage+1}页.png"
+                        val path = "${PathUtils.getExternalPicturesPath()}/YESPDF/${pdf!!.name}/第${curPage + 1}页.png"
                         AboutUtils.copyImageToDevice(this@PreviewActivity, bmp, path)
                     }
                     UiManager.showShort(R.string.app_export_image_succeed)
@@ -584,7 +581,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             pdf != null -> {
                 val bkJson = pdf.bookmark // 获取书签 json
                 val bkList = GsonUtils.fromJson<List<Bookmark>>(bkJson, object : TypeToken<List<Bookmark?>?>() {}.type)
-                LogUtils.e(bkList)
                 if (bkList != null) {
                     for (bk in bkList) {
                         LogUtils.e(bk)

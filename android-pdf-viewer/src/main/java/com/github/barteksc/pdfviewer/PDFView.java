@@ -36,6 +36,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.RelativeLayout;
 
+import com.blankj.utilcode.util.ImageUtils;
+import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.PathUtils;
 import com.github.barteksc.pdfviewer.exception.PageRenderingException;
 import com.github.barteksc.pdfviewer.link.DefaultLinkHandler;
 import com.github.barteksc.pdfviewer.link.LinkHandler;
@@ -59,6 +62,7 @@ import com.github.barteksc.pdfviewer.source.DocumentSource;
 import com.github.barteksc.pdfviewer.source.FileSource;
 import com.github.barteksc.pdfviewer.source.InputStreamSource;
 import com.github.barteksc.pdfviewer.source.UriSource;
+import com.github.barteksc.pdfviewer.util.AboutUtils;
 import com.github.barteksc.pdfviewer.util.Constants;
 import com.github.barteksc.pdfviewer.util.FitPolicy;
 import com.github.barteksc.pdfviewer.util.MathUtils;
@@ -624,7 +628,6 @@ public class PDFView extends RelativeLayout {
         // Draws thumbnails
         for (PagePart part : cacheManager.getThumbnails()) {
             drawPart(canvas, part);
-
         }
 
         // Draws parts
@@ -683,6 +686,7 @@ public class PDFView extends RelativeLayout {
         float localTranslationX = 0;
         float localTranslationY = 0;
         SizeF size = pdfFile.getPageSize(part.getPage());
+//        size = new SizeF(size.getWidth(), size.getHeight());
 
         if (swipeVertical) {
             localTranslationY = pdfFile.getPageOffset(part.getPage(), zoom);

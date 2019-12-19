@@ -39,6 +39,17 @@ public class PagePart {
         this.cacheOrder = cacheOrder;
     }
 
+    @Override
+    public String toString() {
+        return "PagePart{" +
+                "page=" + page +
+                ", renderedBitmap=" + renderedBitmap +
+                ", pageRelativeBounds=" + pageRelativeBounds +
+                ", thumbnail=" + thumbnail +
+                ", cacheOrder=" + cacheOrder +
+                '}';
+    }
+
     public int getCacheOrder() {
         return cacheOrder;
     }
