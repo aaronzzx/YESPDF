@@ -2,18 +2,17 @@ package com.aaron.yespdf.filepicker
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.EmptyHolder
 import com.aaron.yespdf.common.HeaderHolder
 import com.blankj.utilcode.util.ConvertUtils
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.StringUtils
 import com.blankj.utilcode.util.TimeUtils
 import kotlinx.android.synthetic.main.app_recycler_item_filepicker.view.*
@@ -215,6 +214,7 @@ class ViewAllAdapter(
     private fun fileCount(): Int {
         var count = 0
         for (file in filterList) {
+            if (file == null) continue
             if (file.isFile && importedList?.contains(file.absolutePath) == false) {
                 count++
             }

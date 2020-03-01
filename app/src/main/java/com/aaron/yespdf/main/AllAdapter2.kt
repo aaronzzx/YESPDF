@@ -1,7 +1,6 @@
 package com.aaron.yespdf.main
 
 import android.view.View
-import android.widget.CheckBox
 import android.widget.ImageView
 import com.aaron.base.image.DefaultOption
 import com.aaron.base.image.ImageLoader
@@ -28,6 +27,7 @@ class AllAdapter2(
             helper.tvTitle.text = name
             helper.tvCount.text = mContext.getString(R.string.app_total, count)
             setVisibility(helper, count)
+            if (coverList == null) return
             if (count == 0) return
             setCover(helper.ivCover1, coverList[0])
             if (count == 1) return

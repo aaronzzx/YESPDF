@@ -29,7 +29,7 @@ class AutoScanFragment : CommonFragment() {
         super.onResume()
         (activity as SelectActivity).ibtnSelectAll.visibility = View.GONE
         (activity as SelectActivity).ibtnSearch.visibility = View.GONE
-        (activity as SelectActivity).closeSearchView()
+        view?.post { (activity as SelectActivity).closeSearchView() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
