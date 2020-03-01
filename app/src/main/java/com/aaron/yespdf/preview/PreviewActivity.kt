@@ -7,11 +7,13 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.*
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -70,11 +72,13 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     private val bookmarkMap: MutableMap<Long, Bookmark> = HashMap()
     private val pageList: MutableList<Long> = ArrayList()
 
+    private var isScrollLevelTouchFinish = true
     private var previousPage = 0 // 记录 redo/undo的页码
     private var nextPage = 0
     private var canvas: Canvas? = null // AndroidPDFView 的画布
     private var paint: Paint? = null // 画书签的画笔
     private var pageWidth = 0F
+    private val sbScrollLevel: SeekBar by lazy { findViewById<SeekBar>(R.id.app_sb_scroll_level) }
     private val alertDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
         DialogManager.createAlertDialog(this) { tvTitle, tvContent, btn ->
             tvTitle.setText(R.string.app_oop_error)
@@ -147,7 +151,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         // 阅读方式回原位
         app_ll_read_method.translationY = ScreenUtils.getScreenHeight().toFloat()
         app_ll_more.translationY = ScreenUtils.getScreenHeight().toFloat()
-        if (autoDisp?.isDisposed == false) autoDisp?.dispose()
+        if (autoDisp?.isDisposed == false) {
+            autoDisp?.dispose()
+            sbScrollLevel.visibility = View.GONE
+        }
     }
 
     override fun onDestroy() {
@@ -393,24 +400,44 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             if (it.isSelected) {
                 hideBar()
                 enterFullScreen()
-                autoDisp = Observable.interval(Settings.getScrollLevel(), TimeUnit.MILLISECONDS)
-                        .doOnDispose {
-                            app_tv_auto_scroll.isSelected = false
-                            isPause = false
-                        }
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .`as`(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this@PreviewActivity)))
-                        .subscribe {
-                            if (!app_pdfview.isRecycled && !isPause) {
-                                app_pdfview.moveRelativeTo(0f, OFFSET_Y)
-                                app_pdfview.loadPageByOffset()
-                            }
-                        }
+                sbScrollLevel.progress = Settings.getScrollLevel().toInt() - 1
+                sbScrollLevel.visibility = View.VISIBLE
+                autoDisp = startAutoScroll()
             } else {
-                if (autoDisp?.isDisposed == false) autoDisp?.dispose()
+                if (autoDisp?.isDisposed == false) {
+                    autoDisp?.dispose()
+                }
+                sbScrollLevel.visibility = View.GONE
             }
         }
+        sbScrollLevel.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                isScrollLevelTouchFinish = false
+                sbScrollLevel.alpha = 1.0f
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                isScrollLevelTouchFinish = true
+                sbScrollLevel.animate()
+                        .alpha(0.4f)
+                        .setDuration(200L)
+                        .setUpdateListener {
+                            if (!isScrollLevelTouchFinish) {
+                                sbScrollLevel.animate().cancel()
+                                sbScrollLevel.alpha = 1.0f
+                            }
+                        }
+                        .start()
+                Settings.setScrollLevel((sbScrollLevel.progress + 1).toLong())
+                autoDisp?.dispose()
+                app_tv_auto_scroll.isSelected = true
+                autoDisp = startAutoScroll()
+            }
+        })
         app_tv_bookmark.setOnClickListener {
             it.isSelected = !it.isSelected
             val curPage = app_pdfview.currentPage
@@ -501,6 +528,26 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                 initPdf(uri, pdf)
             }
         }
+    }
+
+    private fun startAutoScroll(): Disposable {
+        return Observable.interval(Settings.getScrollLevel(), TimeUnit.MILLISECONDS)
+                .doOnDispose {
+                    app_tv_auto_scroll.isSelected = false
+                    isPause = false
+                }
+                .doOnSubscribe {
+                    app_tv_auto_scroll.isSelected = true
+                }
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .`as`(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this@PreviewActivity)))
+                .subscribe {
+                    if (!app_pdfview.isRecycled && !isPause) {
+                        app_pdfview.moveRelativeTo(0f, OFFSET_Y)
+                        app_pdfview.loadPageByOffset()
+                    }
+                }
     }
 
     private fun openReadMethod() {

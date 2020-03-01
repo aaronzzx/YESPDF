@@ -1,7 +1,5 @@
 package com.aaron.yespdf.common;
 
-import android.graphics.drawable.DrawableWrapper;
-
 import com.blankj.utilcode.util.SPStaticUtils;
 
 /**
@@ -37,7 +35,7 @@ public final class Settings {
         Settings.nightMode = SPStaticUtils.getBoolean(SP_NIGHT_MODE, false);
         Settings.volumeControl = SPStaticUtils.getBoolean(SP_VOLUME_CONTROL, true);
         Settings.showStatusBar = SPStaticUtils.getBoolean(SP_SHOW_STATUS_BAR, false);
-        Settings.scrollLevel = SPStaticUtils.getLong(SP_SCROLL_LEVEL, 5L);
+        Settings.scrollLevel = SPStaticUtils.getLong(SP_SCROLL_LEVEL, 8L);
         Settings.clickFlipPage = SPStaticUtils.getBoolean(SP_CLICK_FLIP_PAGE, true);
         Settings.keepScreenOn = SPStaticUtils.getBoolean(SP_KEEP_SCREEN_ON, false);
     }

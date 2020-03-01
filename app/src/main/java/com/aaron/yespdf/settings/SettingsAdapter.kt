@@ -4,14 +4,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.*
+import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.Switch
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.App
 import com.aaron.yespdf.common.Settings
-import com.aaron.yespdf.common.UiManager
 import com.aaron.yespdf.common.event.MaxRecentEvent
 import com.blankj.utilcode.util.ConvertUtils
 import kotlinx.android.synthetic.main.app_recycler_item_settings_recent_count.view.*
@@ -59,13 +60,13 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         }
         val itemView = inflater.inflate(R.layout.app_recycler_item_settings_seekbar, parent, false)
         val holder = SeekbarHolder(itemView)
-        holder.itemView.app_sb_scroll_level.max = 49
+        holder.itemView.app_sb_scroll_level.max = 14
         holder.itemView.app_sb_scroll_level.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 val level = seekBar.progress + 1
-                UiManager.showShort(context.getString(R.string.app_cur_level, level))
+//                UiManager.showShort(context.getString(R.string.app_cur_level, level))
                 Settings.setScrollLevel(level.toLong())
             }
         })

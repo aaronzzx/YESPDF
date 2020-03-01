@@ -22,6 +22,24 @@
         android:layout_height="match_parent"
         android:background="@color/base_transparent"/>
 
+    <!-- 滚动速度实时调节 -->
+    <SeekBar
+        android:id="@+id/app_sb_scroll_level"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:maxHeight="3dp"
+        android:layout_marginBottom="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:thumb="@drawable/app_sel_seekbar"
+        android:progressDrawable="@drawable/app_seekbar_bg"
+        android:visibility="gone"
+        android:alpha="0.4"
+        android:max="14"
+        tools:visibility="visible" />
+
     <!-- 底部操作栏 -->
     <LinearLayout
         android:id="@+id/app_ll_bottombar"
