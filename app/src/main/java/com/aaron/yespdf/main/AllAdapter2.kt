@@ -27,7 +27,6 @@ class AllAdapter2(
             helper.tvTitle.text = name
             helper.tvCount.text = mContext.getString(R.string.app_total, count)
             setVisibility(helper, count)
-            if (coverList == null) return
             if (count == 0) return
             setCover(helper.ivCover1, coverList[0])
             if (count == 1) return
@@ -46,7 +45,7 @@ class AllAdapter2(
         holder.ivCover4.visibility = if (count >= 4) View.VISIBLE else View.INVISIBLE
     }
 
-    private fun setCover(ivCover: ImageView, path: String) {
+    private fun setCover(ivCover: ImageView, path: String?) {
         if (!StringUtils.isEmpty(path)) {
             ImageLoader.load(mContext, DefaultOption.Builder(path).into(ivCover))
         } else {
