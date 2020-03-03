@@ -22,8 +22,11 @@ class ViewAllPresenter(view: IViewAllView) : IViewAllPresenter(view) {
     }
 
     override fun goBack() {
-        val prePath = curPath?.substring(0, curPath?.lastIndexOf("/") ?: 0)
-        listFile(prePath)
+        if (curPath != null && curPath?.length != 0) {
+            val endIndex = curPath?.lastIndexOf("/") ?: 0
+            val prePath = curPath?.substring(0, endIndex)
+            listFile(prePath)
+        }
     }
 
     override fun listStorage() {
