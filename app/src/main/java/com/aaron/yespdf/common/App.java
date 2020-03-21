@@ -12,7 +12,6 @@ import com.aaron.yespdf.BuildConfig;
 import com.aaron.yespdf.common.event.HotfixEvent;
 import com.aaron.yespdf.common.greendao.DaoMaster;
 import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.SPStaticUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
 import com.squareup.leakcanary.LeakCanary;
@@ -21,9 +20,7 @@ import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.interfaces.BetaPatchListener;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.greendao.DaoLog;
 
-import java.io.File;
 import java.util.Locale;
 
 /**
@@ -44,7 +41,7 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(base);
-        tinker();
+//        tinker();
     }
 
     @Override
@@ -64,7 +61,7 @@ public class App extends Application {
         DataManager.init();
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
-        bugly();
+//        bugly();
     }
 
     private boolean isFirstInstall() {
