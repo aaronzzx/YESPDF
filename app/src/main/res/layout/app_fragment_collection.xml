@@ -15,8 +15,9 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_centerInParent="true"
+        android:layout_height="match_parent"
+        android:layout_marginTop="96dp"
+        android:layout_marginBottom="56dp"
         android:clipToPadding="false">
 
         <LinearLayout
@@ -56,7 +57,7 @@
             android:id="@+id/app_rv_collection"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="16dp"
             android:padding="8dp"
             android:background="#F7F7F7"
             android:clipToPadding="false"
