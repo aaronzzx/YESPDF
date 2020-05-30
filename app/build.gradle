@@ -21,8 +21,8 @@ android {
         applicationId "com.aaron.yespdf"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 16
-        versionName "1.1.5"
+        versionCode 17
+        versionName "2.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -109,7 +109,7 @@ dependencies {
     implementation 'com.github.bmelnychuk:atv:1.2.9'
     implementation 'com.tencent.bugly:crashreport_upgrade:1.4.0'
     implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
-    implementation 'com.tencent.tinker:tinker-android-lib:1.9.9'
+//    implementation 'com.tencent.tinker:tinker-android-lib:1.9.9'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
     implementation "androidx.core:core-ktx:+"
