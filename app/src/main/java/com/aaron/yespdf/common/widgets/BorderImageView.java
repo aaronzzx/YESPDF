@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 
 import com.aaron.yespdf.R;
-import com.aaron.yespdf.common.App;
 import com.blankj.utilcode.util.ConvertUtils;
 
 /**
@@ -38,6 +37,7 @@ public class BorderImageView extends ImageView {
     public BorderImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
+        setScaleType(ScaleType.FIT_XY);
         mPaint = new Paint();
         mPaint.setColor(mBorderColor);
         mPaint.setStyle(Paint.Style.STROKE);

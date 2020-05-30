@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/YES PDF!.iml" filepath="$PROJECT_DIR$/YES PDF!.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android-pdf-viewer/android-pdf-viewer.iml" filepath="$PROJECT_DIR$/android-pdf-viewer/android-pdf-viewer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/YES PDF!.iml" filepath="$PROJECT_DIR$/YES PDF!.iml" group="YES PDF!" />
+      <module fileurl="file://$PROJECT_DIR$/android-pdf-viewer/android-pdf-viewer.iml" filepath="$PROJECT_DIR$/android-pdf-viewer/android-pdf-viewer.iml" group="YES PDF!/android-pdf-viewer" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="YES PDF!/app" />
       <module fileurl="file://$PROJECT_DIR$/bugly/bugly.iml" filepath="$PROJECT_DIR$/bugly/bugly.iml" />
     </modules>
   </component>

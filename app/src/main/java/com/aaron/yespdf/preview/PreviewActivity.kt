@@ -19,6 +19,7 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.MutableLiveData
 import com.aaron.base.impl.OnClickListenerImpl
 import com.aaron.base.impl.TextWatcherImpl
 import com.aaron.yespdf.R
@@ -27,7 +28,6 @@ import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.event.RecentPDFEvent
 import com.aaron.yespdf.common.utils.AboutUtils
 import com.aaron.yespdf.common.utils.PdfUtils
-import com.aaron.yespdf.preview.PreviewActivity
 import com.aaron.yespdf.settings.SettingsActivity.Companion.start
 import com.blankj.utilcode.util.*
 import com.github.barteksc.pdfviewer.PDFView.Configurator
@@ -56,12 +56,19 @@ import kotlin.math.roundToInt
  */
 class PreviewActivity : CommonActivity(), IActivityInterface {
 
+    private val nightModeBtn: View by lazy { findViewById<View>(R.id.app_night_btn) }
+    private val isNightMode: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
+        observe(this@PreviewActivity::getLifecycle) {
+            Settings.setNightMode(it)
+            initPdf(uri, pdf)
+        }
+    }
+
     private var pdf: PDF? = null // 本应用打开
     private var uri: Uri? = null // 一般是外部应用打开
     private var curPage = 0
     private var pageCount = 0
     private var password: String? = null
-    private var isNightMode = Settings.isNightMode()
     private var isVolumeControl = Settings.isVolumeControl()
     private var contentFragInterface: IContentFragInterface? = null
     private var bkFragInterface: IBkFragInterface? = null
@@ -240,10 +247,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SETTINGS) {
             isVolumeControl = Settings.isVolumeControl()
-            if (isNightMode != Settings.isNightMode()) {
+            /*if (isNightMode != Settings.isNightMode()) {
                 isNightMode = Settings.isNightMode()
                 initPdf(uri, pdf)
-            }
+            }*/
         }
     }
 
@@ -258,7 +265,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     @SuppressLint("SwitchIntDef")
     private fun initView(savedInstanceState: Bundle?) {
-        if (isNightMode) {
+        if (isNightMode.value == true) {
             app_pdfview_bg.background = ColorDrawable(Color.BLACK)
         }
         supportActionBar?.run {
@@ -271,6 +278,19 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             lp.width = ViewGroup.LayoutParams.MATCH_PARENT
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT
             app_pdfview_bg.layoutParams = lp
+        }
+        isNightMode.value = Settings.isNightMode()
+        nightModeBtn.isSelected = isNightMode.value == true
+        nightModeBtn.background = if (nightModeBtn.isSelected) {
+            resources.getDrawable(R.drawable.app_shape_circle_white_alpha)
+        } else resources.getDrawable(R.drawable.app_shape_circle_black_alpha)
+        nightModeBtn.setOnClickListener {
+            it ?: return@setOnClickListener
+            it.isSelected = !it.isSelected
+            nightModeBtn.background = if (it.isSelected) {
+                resources.getDrawable(R.drawable.app_shape_circle_white_alpha)
+            } else resources.getDrawable(R.drawable.app_shape_circle_black_alpha)
+            isNightMode.value = it.isSelected
         }
         // 移动到屏幕下方
         app_ll_read_method.translationY = ScreenUtils.getScreenHeight().toFloat()
@@ -650,7 +670,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         paint = Paint()
         configurator.disableLongpress()
                 .swipeHorizontal(Settings.isSwipeHorizontal())
-                .nightMode(isNightMode)
+                .nightMode(isNightMode.value == true)
                 .pageFling(Settings.isSwipeHorizontal())
                 .pageSnap(Settings.isSwipeHorizontal())
                 .enableDoubletap(false)
@@ -704,7 +724,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                     val keySet: Set<Long> = contentMap.keys
                     pageList.addAll(keySet)
                     pageList.sort()
-                    if (!Settings.isNightMode()) {
+                    if (isNightMode.value != true) {
                         app_pdfview_bg.background = ColorDrawable(Color.WHITE)
                         if (Settings.isSwipeHorizontal()) {
                             val page = (app_pdfview.pageCount / 2.toFloat()).roundToInt()
@@ -877,6 +897,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                         app_tv_pageinfo.visibility = View.VISIBLE
                     }
                 }).start()
+        nightModeBtn.animate().setDuration(250).alpha(1f)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        nightModeBtn.visibility = View.VISIBLE
+                    }
+                }).start()
     }
 
     private fun hideBar() {
@@ -905,6 +931,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                         if (app_ll_undoredobar != null) app_ll_undoredobar.visibility = View.GONE
                     }
                 }).start()
+        nightModeBtn.animate().setDuration(250).alpha(0f)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        nightModeBtn.visibility = View.GONE
+                    }
+                }).start()
         if (app_ibtn_quickbar_action != null) app_ibtn_quickbar_action.isSelected = false // 初始化为 Undo 状态
     }
 
@@ -929,6 +961,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
+
     }
 
     private fun exitFullScreen() {
