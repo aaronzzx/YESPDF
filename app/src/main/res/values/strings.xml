@@ -32,11 +32,11 @@
     <string name="app_delete_local_files">删除本地文件</string>
     <string name="app_delete">删除</string>
     <string name="app_wechat_pay">微信付款</string>
-    <string name="app_gift_description">YES PDF! 没有收费版本，也不会添加广告，如果您觉得用着还不错，欢迎捐赠！\n\n如果出现跳转未保存图片的情况，请点击“打开二维码”\n\n付款时认准「aaronzzx」</string>
+    <string name="app_gift_description">如果您觉得用着还不错，欢迎捐赠！\n\n如果出现跳转未保存图片的情况，请点击“打开二维码”\n\n付款时认准「aaronzzx」</string>
     <string name="app_open_qrcode">打开二维码</string>
     <string name="app_open_wechat_scanner">跳转微信扫一扫</string>
     <string name="app_screenshot">截图进入微信选择图片扫码或使用另一部手机扫码</string>
-    <string name="app_wechat_scan_notice">打开右上角菜单，从微信相册中选取收款码</string>
+    <string name="app_wechat_scan_notice">从微信相册中选取收款码</string>
     <string name="app_not_support_empty_string">不支持空字符</string>
     <string name="app_regrouping">重新分组</string>
     <string name="app_group">分组</string>
