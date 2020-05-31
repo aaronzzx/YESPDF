@@ -129,7 +129,7 @@ class RecentFragment : CommonFragment(), IOperation, IPickCallback<PDF> {
         (activity as MainActivity).selectResult(list.size, selectAll)
     }
 
-    override fun delete() {
+    override fun delete(deleteLocal: Boolean) {
         if (selectPDFList.isNotEmpty()) {
             ThreadUtils.executeByIo<List<String>>(object : SimpleTask<List<String>>() {
                 override fun doInBackground(): List<String> {
@@ -157,6 +157,8 @@ class RecentFragment : CommonFragment(), IOperation, IPickCallback<PDF> {
     override fun deleteDescription(): String? {
         return getString(R.string.app_whether_delete_recent, selectPDFList.size)
     }
+
+    override fun localDeleteVisibility(): Int = View.GONE
 
     private fun initView() {
         initData()

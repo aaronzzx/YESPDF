@@ -29,6 +29,7 @@
     <string name="app_whether_delete_recent">本次操作将会删除 %d 个最近阅读记录（不清除阅读进度），是否继续？</string>
     <string name="app_whether_delete_all">本次操作将会删除 %d 本书籍（包含阅读进度与书签等，不影响源文件），是否继续？</string>
     <string name="app_whether_delete_collection">本次操作将会删除 %d 个集合（包含集合内所有书籍信息等，不影响源文件），是否继续？</string>
+    <string name="app_delete_local_files">删除本地文件</string>
     <string name="app_delete">删除</string>
     <string name="app_wechat_pay">微信付款</string>
     <string name="app_gift_description">YES PDF! 没有收费版本，也不会添加广告，如果您觉得用着还不错，欢迎捐赠！\n\n如果出现跳转未保存图片的情况，请点击“打开二维码”\n\n付款时认准「aaronzzx」</string>

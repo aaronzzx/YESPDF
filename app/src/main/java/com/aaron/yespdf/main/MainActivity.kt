@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Process
 import android.view.*
+import android.widget.CheckBox
 import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -14,7 +15,10 @@ import androidx.appcompat.widget.Toolbar
 import com.aaron.base.impl.OnClickListenerImpl
 import com.aaron.yespdf.R
 import com.aaron.yespdf.about.AboutActivity
-import com.aaron.yespdf.common.*
+import com.aaron.yespdf.common.CommonActivity
+import com.aaron.yespdf.common.DataManager
+import com.aaron.yespdf.common.DialogManager
+import com.aaron.yespdf.common.UiManager
 import com.aaron.yespdf.common.event.HotfixEvent
 import com.aaron.yespdf.common.event.ImportEvent
 import com.aaron.yespdf.filepicker.SelectActivity
@@ -100,12 +104,20 @@ class MainActivity : CommonActivity(), IMainView {
         }
     }
     private val deleteDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createDeleteDialog(this) { tv, btnLeft, btnRight ->
+        DialogManager.createDeleteDialog(this) { tv, deleteLocal, btnLeft, btnRight ->
             tvDeleteDescription = tv
+            this.deleteLocal = deleteLocal
+            val cb = deleteLocal.findViewById<CheckBox>(R.id.app_cb)
+            deleteLocal.setOnClickListener {
+                it.isSelected = !it.isSelected
+                cb.isChecked = it.isSelected
+            }
             btnLeft.setOnClickListener { deleteDialog.dismiss() }
             btnRight.setOnClickListener {
                 deleteDialog.dismiss()
-                operation?.delete()
+                operation?.delete(deleteLocal.isSelected)
+                deleteLocal.isSelected = false
+                cb.isChecked = false
             }
         }
     }
@@ -125,6 +137,7 @@ class MainActivity : CommonActivity(), IMainView {
 
     private var operation: IOperation? = null
     private var tvDeleteDescription: TextView? = null
+    private var deleteLocal: View? = null
     private var tvDialogTitle: TextView? = null
     private var pbDialogProgress: ProgressBar? = null
     private var tvDialogProgressInfo: TextView? = null
@@ -250,6 +263,7 @@ class MainActivity : CommonActivity(), IMainView {
         app_ibtn_delete.setOnClickListener {
             deleteDialog.show()
             tvDeleteDescription?.text = operation?.deleteDescription()
+            deleteLocal?.visibility = operation?.localDeleteVisibility() ?: View.GONE
         }
         app_ibtn_select_all.setOnClickListener { operation?.selectAll(!it.isSelected) }
 

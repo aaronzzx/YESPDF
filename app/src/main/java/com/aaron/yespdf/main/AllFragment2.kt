@@ -14,7 +14,6 @@ import com.aaron.yespdf.R
 import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.Cover
 import com.aaron.yespdf.common.event.AllEvent
-import com.blankj.utilcode.util.LogUtils
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback
 import com.chad.library.adapter.base.listener.OnItemDragListener
 import kotlinx.android.synthetic.main.app_fragment_all.*
@@ -24,6 +23,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.File
 import java.util.*
 
 /**
@@ -67,7 +67,6 @@ class AllFragment2 : CommonFragment(), IOperation {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onPdfDeleteEvent(event: PdfDeleteEvent) {
-        LogUtils.e(event)
         if (event.isEmpty) {
             DBHelper.deleteCollection(event.dir)
         }
@@ -82,10 +81,14 @@ class AllFragment2 : CommonFragment(), IOperation {
         update()
     }
 
-    override fun delete() {
+    override fun delete(deleteLocal: Boolean) {
         if (selectList.isNotEmpty()) {
             launch {
                 val dirList = withContext(Dispatchers.IO) {
+                    if (deleteLocal) {
+                        val pdfList = DataManager.getPdfList(selectList[0].name)
+                        pdfList.forEach { File(it.path).delete() }
+                    }
                     val list = DBHelper.deleteCollection(selectList)
                     DataManager.updateAll()
                     list
@@ -97,6 +100,8 @@ class AllFragment2 : CommonFragment(), IOperation {
             }
         }
     }
+
+    override fun localDeleteVisibility(): Int = View.VISIBLE
 
     override fun selectAll(selectAll: Boolean) {
         adapter.selectAll(selectAll)
