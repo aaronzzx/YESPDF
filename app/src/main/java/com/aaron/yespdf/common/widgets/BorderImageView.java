@@ -4,26 +4,25 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.App;
 import com.blankj.utilcode.util.ConvertUtils;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
  */
-@SuppressLint("AppCompatCustomView")
-public class BorderImageView extends ImageView {
+public class BorderImageView extends AppCompatImageView {
 
-    private static final int BORDER_COLOR = Color.parseColor("#66000000");
-    private static final float BORDER_RADIUS = ConvertUtils.dp2px(1);
+    private static final int BORDER_COLOR = App.getContext().getResources().getColor(R.color.base_black_hint);
+    private static final float BORDER_RADIUS = ConvertUtils.dp2px(1f);
 
     private int mBorderColor;
     private float mBorderRadius;
@@ -40,6 +39,7 @@ public class BorderImageView extends ImageView {
         setScaleType(ScaleType.FIT_XY);
         mPaint = new Paint();
         mPaint.setColor(mBorderColor);
+        mPaint.setStrokeWidth(ConvertUtils.dp2px(0.5f));
         mPaint.setStyle(Paint.Style.STROKE);
     }
 
@@ -66,6 +66,14 @@ public class BorderImageView extends ImageView {
     public void clearBorder() {
         drawBorder = false;
         invalidate();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int measuredWidth = getMeasuredWidth();
+        int measuredHeight = (int) (measuredWidth * 1.4f);
+        setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
     @SuppressLint("DrawAllocation")
