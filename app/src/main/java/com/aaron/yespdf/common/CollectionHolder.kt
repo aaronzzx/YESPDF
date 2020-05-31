@@ -3,7 +3,6 @@ package com.aaron.yespdf.common
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.widgets.BorderImageView
 
@@ -21,6 +20,7 @@ class CollectionHolder(itemView: View) : BaseHolder(itemView) {
 
     companion object {
         const val DEFAULT_LAYOUT = R.layout.app_recycler_item_collection
+        const val DEFAULT_LAYOUT_HORIZONTAL = R.layout.app_recycler_item_collection_horizontal
     }
 
     init {

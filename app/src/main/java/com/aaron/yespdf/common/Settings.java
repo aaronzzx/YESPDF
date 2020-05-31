@@ -16,6 +16,7 @@ public final class Settings {
     private static final String SP_SCROLL_LEVEL = "SP_SCROLL_LEVEL";
     private static final String SP_CLICK_FLIP_PAGE = "SP_CLICK_FLIP_PAGE";
     private static final String SP_KEEP_SCREEN_ON = "SP_KEEP_SCREEN_ON";
+    private static final String SP_LAYOUT = "SP_LAYOUT";
     private static final String SP_DRAW_BOOKMARK = "SP_DRAW_BOOKMARK";
 
     private static boolean lockLandscape;
@@ -27,6 +28,7 @@ public final class Settings {
     private static long scrollLevel;
     private static boolean clickFlipPage;
     private static boolean keepScreenOn;
+    private static boolean layout;
 
     static void querySettings() {
         Settings.lockLandscape = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false);
@@ -38,6 +40,7 @@ public final class Settings {
         Settings.scrollLevel = SPStaticUtils.getLong(SP_SCROLL_LEVEL, 8L);
         Settings.clickFlipPage = SPStaticUtils.getBoolean(SP_CLICK_FLIP_PAGE, true);
         Settings.keepScreenOn = SPStaticUtils.getBoolean(SP_KEEP_SCREEN_ON, false);
+        Settings.layout = SPStaticUtils.getBoolean(SP_LAYOUT, false);
     }
 
     public static void setLockLandscape(boolean lockLandscape) {
@@ -85,6 +88,11 @@ public final class Settings {
         SPStaticUtils.put(SP_KEEP_SCREEN_ON, keepScreenOn);
     }
 
+    public static void setHorizontalLayout(boolean horizontal) {
+        Settings.layout = horizontal;
+        SPStaticUtils.put(SP_LAYOUT, horizontal);
+    }
+
     public static boolean isLockLandscape() {
         return lockLandscape;
     }
@@ -119,6 +127,10 @@ public final class Settings {
 
     public static boolean isKeepScreenOn() {
         return keepScreenOn;
+    }
+
+    public static boolean isHorizontalLayout() {
+        return layout;
     }
 
     private Settings() {

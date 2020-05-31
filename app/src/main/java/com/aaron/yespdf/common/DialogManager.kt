@@ -104,7 +104,13 @@ object DialogManager {
         val rv: RecyclerView = view.findViewById(R.id.app_rv_group)
         rv.addItemDecoration(XGridDecoration())
         rv.addItemDecoration(YGridDecoration())
-        val lm = GridLayoutManager(context, 3)
+        val lm = GridLayoutManager(context, 3).apply {
+            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (Settings.isHorizontalLayout()) 3 else 1
+                }
+            }
+        }
         rv.layoutManager = lm
         val list = DataManager.getCoverList()
         val adapter: RecyclerView.Adapter<*> = GroupingAdapter(lm, list, callback, enableAddNew)

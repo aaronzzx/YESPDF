@@ -8,6 +8,7 @@ import com.aaron.yespdf.R
 import com.aaron.yespdf.common.App
 import com.aaron.yespdf.common.BaseAdapter
 import com.aaron.yespdf.common.CollectionHolder
+import com.aaron.yespdf.common.Settings
 import com.aaron.yespdf.common.bean.Cover
 import com.blankj.utilcode.util.StringUtils
 
@@ -16,7 +17,11 @@ import com.blankj.utilcode.util.StringUtils
  */
 class AllAdapter2(
         data: MutableList<Cover>
-) : BaseAdapter<Cover, CollectionHolder>(CollectionHolder.DEFAULT_LAYOUT, data) {
+) : BaseAdapter<Cover, CollectionHolder>(
+        if (Settings.isHorizontalLayout()) CollectionHolder.DEFAULT_LAYOUT_HORIZONTAL
+        else CollectionHolder.DEFAULT_LAYOUT,
+        data
+) {
 
     override val checkBoxId: Int = R.id.app_cb
     override val emptyText: CharSequence = App.getContext().getString(R.string.app_have_no_all)

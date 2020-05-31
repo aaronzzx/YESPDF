@@ -7,11 +7,11 @@
 
     <com.aaron.yespdf.common.widgets.BorderImageView
         android:id="@+id/app_iv_cover"
-        android:layout_width="match_parent"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:background="@color/base_white"
         tools:background="@color/app_color_accent"
-        tools:layout_height="144dp" />
+        tools:layout_height="90dp" />
 
     <CheckBox
         android:id="@+id/app_cb"
@@ -31,9 +31,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/app_iv_cover"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center"
+        android:layout_toEndOf="@id/app_iv_cover"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
         android:orientation="vertical">
 
         <TextView
@@ -44,14 +44,15 @@
             android:ellipsize="end"
             android:textColor="@color/base_black"
             android:textStyle="bold"
-            android:textSize="@dimen/base_text_small"
-            tools:text="大话设计模式"/>
+            android:textSize="@dimen/base_text_large"
+            tools:text="大话设计模式" />
 
         <TextView
             android:id="@+id/app_tv_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
+            android:layout_marginTop="4dp"
+            android:textSize="@dimen/base_text_small"
             tools:text="已读 23.5%"
             tools:ignore="SmallSp" />
 

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aaron.base.image.DefaultOption;
@@ -30,7 +31,7 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private Context context;
 
-    private GridLayoutManager layoutManager;
+    private LinearLayoutManager layoutManager;
     private List<Cover> coverList;
     private Callback callback;
     private boolean enableAddNew = true;
@@ -40,7 +41,7 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.callback = callback;
     }
 
-    public GroupingAdapter(GridLayoutManager lm, List<Cover> coverList, Callback callback, boolean enableAddNew) {
+    public GroupingAdapter(LinearLayoutManager lm, List<Cover> coverList, Callback callback, boolean enableAddNew) {
         layoutManager = lm;
         this.coverList = coverList;
         this.callback = callback;
@@ -56,14 +57,16 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
             return new EmptyHolder(itemView);
         } else if (enableAddNew && viewType == TYPE_ADD_COLLECTION) {
-            View add = inflater.inflate(CoverHolder.DEFAULT_LAYOUT, parent, false);
+            int layout = Settings.isHorizontalLayout() ? CoverHolder.DEFAULT_LAYOUT_HORIZONTAL : CoverHolder.DEFAULT_LAYOUT;
+            View add = inflater.inflate(layout, parent, false);
             CoverHolder holder = new CoverHolder(add);
             holder.getTvProgress().setVisibility(View.GONE);
             holder.getCheckBox().setVisibility(View.GONE);
             holder.itemView.setOnClickListener(v -> callback.onAddNewGroup());
             return holder;
         }
-        View view = inflater.inflate(CollectionHolder.DEFAULT_LAYOUT, parent, false);
+        int layout = Settings.isHorizontalLayout() ? CollectionHolder.DEFAULT_LAYOUT_HORIZONTAL : CollectionHolder.DEFAULT_LAYOUT;
+        View view = inflater.inflate(layout, parent, false);
         CollectionHolder holder = new CollectionHolder(view);
         holder.itemView.setOnClickListener(v -> callback.onAddToGroup(holder.getTvTitle().getText().toString()));
         return holder;
@@ -126,8 +129,9 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        if (coverList.isEmpty()) {
-            layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+        if (layoutManager instanceof GridLayoutManager && coverList.isEmpty()) {
+            GridLayoutManager lm = (GridLayoutManager) layoutManager;
+            lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
                     if (coverList.isEmpty()) {

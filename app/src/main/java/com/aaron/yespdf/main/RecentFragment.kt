@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.PDF
@@ -31,6 +32,10 @@ class RecentFragment : CommonFragment(), IOperation, IPickCallback<PDF> {
     private val recentPDFList: MutableList<PDF> = ArrayList()
     private val selectPDFList: MutableList<PDF> = ArrayList()
 
+    private var isHorizontalLayout = false
+    private var xItemDecoration: RecyclerView.ItemDecoration? = null
+    private var yItemDecoration: RecyclerView.ItemDecoration? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         EventBus.getDefault().register(this)
         return inflater.inflate(R.layout.app_fragment_recent, container, false)
@@ -38,7 +43,17 @@ class RecentFragment : CommonFragment(), IOperation, IPickCallback<PDF> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isHorizontalLayout = Settings.isHorizontalLayout()
+        initData()
         initView()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isHorizontalLayout != Settings.isHorizontalLayout()) {
+            isHorizontalLayout = Settings.isHorizontalLayout()
+            initView()
+        }
     }
 
     override fun onResume() {
@@ -161,15 +176,21 @@ class RecentFragment : CommonFragment(), IOperation, IPickCallback<PDF> {
     override fun localDeleteVisibility(): Int = View.GONE
 
     private fun initView() {
-        initData()
-        app_rv_recent.addItemDecoration(XGridDecoration())
-        app_rv_recent.addItemDecoration(YGridDecoration())
-        val lm = GridLayoutManager(activity, 3)
-        lm.spanSizeLookup = object : SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (recentPDFList.isEmpty()) {
-                    3
-                } else 1
+        if (xItemDecoration != null) {
+            app_rv_recent.removeItemDecoration(xItemDecoration!!)
+        }
+        if (yItemDecoration != null) {
+            app_rv_recent.removeItemDecoration(yItemDecoration!!)
+        }
+        xItemDecoration = XGridDecoration()
+        yItemDecoration = YGridDecoration()
+        app_rv_recent.addItemDecoration(xItemDecoration!!)
+        app_rv_recent.addItemDecoration(yItemDecoration!!)
+        val lm = GridLayoutManager(activity, 3).apply {
+            spanSizeLookup = object : SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (recentPDFList.isEmpty() || isHorizontalLayout) 3 else 1
+                }
             }
         }
         app_rv_recent.layoutManager = lm

@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.base.impl.TextWatcherImpl
 import com.aaron.yespdf.R
@@ -92,6 +93,9 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     private val pdfList: MutableList<PDF> = ArrayList()
     private val savedCollections = DataManager.getCollectionList()
     private var isNeedUpdateDb = false
+    private var isHorizontalLayout = false
+    private var xItemDecoration: RecyclerView.ItemDecoration? = null
+    private var yItemDecoration: RecyclerView.ItemDecoration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +116,10 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                 this.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             }
         }
+        if (isHorizontalLayout != Settings.isHorizontalLayout()) {
+            isHorizontalLayout = Settings.isHorizontalLayout()
+            initView()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -122,6 +130,12 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val args = arguments
+        if (args != null) {
+            name = args.getString(BUNDLE_NAME)
+            app_et_name.setText(name)
+            pdfList.addAll(DataManager.getPdfList(name))
+        }
         initView()
     }
 
@@ -279,21 +293,26 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     }
 
     private fun initView() {
-        val args = arguments
-        if (args != null) {
-            name = args.getString(BUNDLE_NAME)
-            app_et_name.setText(name)
-            pdfList.addAll(DataManager.getPdfList(name))
-        }
         setListener()
-        app_rv_collection.addItemDecoration(XGridDecoration())
-        app_rv_collection.addItemDecoration(YGridDecoration())
-        val lm = GridLayoutManager(activity, 3)
-        lm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (pdfList.isEmpty()) {
-                    3
-                } else 1
+        if (xItemDecoration != null) {
+            app_rv_collection.removeItemDecoration(xItemDecoration!!)
+        }
+        if (yItemDecoration != null) {
+            app_rv_collection.removeItemDecoration(yItemDecoration!!)
+        }
+        xItemDecoration = XGridDecoration()
+        yItemDecoration = YGridDecoration()
+        app_rv_collection.addItemDecoration(xItemDecoration!!)
+        app_rv_collection.addItemDecoration(yItemDecoration!!)
+        val lm = if (isHorizontalLayout) {
+            LinearLayoutManager(activity)
+        } else {
+            GridLayoutManager(activity, 3).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return if (pdfList.isEmpty()) 3 else 1
+                    }
+                }
             }
         }
         app_rv_collection.layoutManager = lm
