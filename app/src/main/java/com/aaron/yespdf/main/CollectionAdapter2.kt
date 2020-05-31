@@ -7,6 +7,7 @@ import com.aaron.yespdf.R
 import com.aaron.yespdf.common.App
 import com.aaron.yespdf.common.BaseAdapter
 import com.aaron.yespdf.common.CoverHolder
+import com.aaron.yespdf.common.Settings
 import com.aaron.yespdf.common.bean.PDF
 import com.blankj.utilcode.util.StringUtils
 
@@ -15,7 +16,11 @@ import com.blankj.utilcode.util.StringUtils
  */
 class CollectionAdapter2(
         data: MutableList<PDF>
-) : BaseAdapter<PDF, CoverHolder>(CoverHolder.DEFAULT_LAYOUT, data) {
+) : BaseAdapter<PDF, CoverHolder>(
+        if (Settings.isHorizontalLayout()) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
+        else CoverHolder.DEFAULT_LAYOUT,
+        data
+) {
 
     override val checkBoxId: Int = R.id.app_cb
     override val emptyText: CharSequence = App.getContext().getString(R.string.app_have_no_all)

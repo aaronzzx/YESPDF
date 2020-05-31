@@ -38,7 +38,6 @@ class MessageAdapter<T>(
                         AboutUtils.copyImageToDevice(activity, bitmap)
                     }
                     AboutUtils.goWeChatScan(activity)
-                    UiManager.showShort(R.string.app_wechat_scan_notice)
                 }
             }
         }

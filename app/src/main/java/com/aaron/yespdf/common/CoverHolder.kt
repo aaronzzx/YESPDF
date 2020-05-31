@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
 
 /**
@@ -18,6 +17,7 @@ class CoverHolder(itemView: View) : BaseHolder(itemView) {
 
     companion object {
         const val DEFAULT_LAYOUT = R.layout.app_recycler_item_cover
+        const val DEFAULT_LAYOUT_HORIZONTAL = R.layout.app_recycler_item_cover_horizontal
     }
 
     init {

@@ -75,11 +75,11 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 
     private fun tapOptions(switcher: Switch, pos: Int) {
         when (pos) {
-//            POS_COLOR_REVERSE -> Settings.setNightMode(switcher.isChecked)
             POS_VOLUME_CONTROL -> Settings.setVolumeControl(switcher.isChecked)
             POS_CLICK_FLIP_PAGE -> Settings.setClickFlipPage(switcher.isChecked)
             POS_SHOW_STATUS_BAR -> Settings.setShowStatusBar(switcher.isChecked)
             POS_KEEP_SCREEN_ON -> Settings.setKeepScreenOn(switcher.isChecked)
+            POS_LAYOUT -> Settings.setHorizontalLayout(switcher.isChecked)
         }
     }
 
@@ -87,10 +87,6 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         when (viewHolder) {
             is SwitchHolder -> {
                 when (position) {
-                    /*POS_COLOR_REVERSE -> {
-                        viewHolder.itemView.app_tv_title.setText(R.string.app_color_reverse)
-                        viewHolder.itemView.app_switch.isChecked = Settings.isNightMode()
-                    }*/
                     POS_VOLUME_CONTROL -> {
                         viewHolder.itemView.app_tv_title.setText(R.string.app_volume_control)
                         viewHolder.itemView.app_switch.isChecked = Settings.isVolumeControl()
@@ -106,6 +102,10 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                     POS_KEEP_SCREEN_ON -> {
                         viewHolder.itemView.app_tv_title.setText(R.string.app_keep_screen_on)
                         viewHolder.itemView.app_switch.isChecked = Settings.isKeepScreenOn()
+                    }
+                    POS_LAYOUT -> {
+                        viewHolder.itemView.app_tv_title.setText(R.string.app_horizontal_layout)
+                        viewHolder.itemView.app_switch.isChecked = Settings.isHorizontalLayout()
                     }
                 }
             }
@@ -159,19 +159,19 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     }
 
     companion object {
-        private const val ITEM_COUNT = 6
+        private const val ITEM_COUNT = 7
 
         private const val TYPE_SWITCH = 0
         private const val TYPE_SEEKBAR = 1
         private const val TYPE_NUM_PICKER = 2
 
-        //        private const val POS_COLOR_REVERSE = 0
         private const val POS_VOLUME_CONTROL = 0
         private const val POS_CLICK_FLIP_PAGE = 1
         private const val POS_SHOW_STATUS_BAR = 2
         private const val POS_KEEP_SCREEN_ON = 3
-        private const val POS_NUM_PICKER = 4
-        private const val POS_SCROLL_LEVEL = 5
+        private const val POS_LAYOUT = 4
+        private const val POS_NUM_PICKER = 5
+        private const val POS_SCROLL_LEVEL = 6
     }
 
     init {

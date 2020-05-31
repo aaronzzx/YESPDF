@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.base.impl.TextWatcherImpl
 import com.aaron.yespdf.R
@@ -24,17 +25,20 @@ import com.aaron.yespdf.common.event.AllEvent
 import com.aaron.yespdf.common.event.RecentPDFEvent
 import com.aaron.yespdf.common.utils.DialogUtils
 import com.aaron.yespdf.preview.PreviewActivity
-import com.blankj.utilcode.util.*
+import com.blankj.utilcode.util.KeyboardUtils
+import com.blankj.utilcode.util.StringUtils
+import com.blankj.utilcode.util.ThreadUtils
+import com.blankj.utilcode.util.TimeUtils
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback
 import com.chad.library.adapter.base.listener.OnItemDragListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.app_fragment_all.*
 import kotlinx.android.synthetic.main.app_fragment_collection.*
 import kotlinx.android.synthetic.main.app_include_operation_bar.*
 import org.greenrobot.eventbus.EventBus
+import java.io.File
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.ArrayList
+import java.util.*
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -44,12 +48,20 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     private val deleteDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
         val view = LayoutInflater.from(activity!!).inflate(R.layout.app_bottomdialog_delete, null)
         tvDeleteDescription = view.findViewById(R.id.app_tv_description)
+        deleteLocal = view.findViewById(R.id.app_delete_local)
         val btnCancel = view.findViewById<Button>(R.id.app_btn_cancel)
         val btnDelete = view.findViewById<Button>(R.id.app_btn_delete)
+        val cb = deleteLocal?.findViewById<CheckBox>(R.id.app_cb)
+        deleteLocal?.setOnClickListener {
+            it.isSelected = !it.isSelected
+            cb?.isChecked = it.isSelected
+        }
         btnCancel.setOnClickListener { deleteDialog.dismiss() }
         btnDelete.setOnClickListener {
             deleteDialog.dismiss()
-            delete()
+            delete(deleteLocal?.isSelected ?: false)
+            deleteLocal?.isSelected = false
+            cb?.isChecked = false
         }
         DialogUtils.createBottomSheetDialog(activity, view)
     }
@@ -73,6 +85,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
 
     private lateinit var adapter: CollectionAdapter2
     private var tvDeleteDescription: TextView? = null
+    private var deleteLocal: View? = null
     private var etInput: EditText? = null
     private var name: String? = null
     private var newDirName: String? = null
@@ -80,6 +93,9 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     private val pdfList: MutableList<PDF> = ArrayList()
     private val savedCollections = DataManager.getCollectionList()
     private var isNeedUpdateDb = false
+    private var isHorizontalLayout = false
+    private var xItemDecoration: RecyclerView.ItemDecoration? = null
+    private var yItemDecoration: RecyclerView.ItemDecoration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,14 +116,26 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                 this.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             }
         }
+        if (isHorizontalLayout != Settings.isHorizontalLayout()) {
+            isHorizontalLayout = Settings.isHorizontalLayout()
+            initView()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.app_fragment_collection, container, false)
     }
 
+    override fun localDeleteVisibility(): Int = View.VISIBLE
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val args = arguments
+        if (args != null) {
+            name = args.getString(BUNDLE_NAME)
+            app_et_name.setText(name)
+            pdfList.addAll(DataManager.getPdfList(name))
+        }
         initView()
     }
 
@@ -156,9 +184,12 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
         app_tv_operationbar_title.text = getString(R.string.app_selected_count, selectPDFList.size)
     }
 
-    override fun delete() {
+    override fun delete(deleteLocal: Boolean) {
         ThreadUtils.executeByIo<List<String>>(object : ThreadUtils.SimpleTask<List<String>>() {
             override fun doInBackground(): List<String>? {
+                if (deleteLocal) {
+                    selectPDFList.forEach { File(it.path).delete() }
+                }
                 selectPDFList.run { pdfList.removeAll(this) }
                 if (pdfList.isEmpty()) DBHelper.deleteCollection(name)
                 return DBHelper.deletePDF(selectPDFList)
@@ -262,21 +293,26 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     }
 
     private fun initView() {
-        val args = arguments
-        if (args != null) {
-            name = args.getString(BUNDLE_NAME)
-            app_et_name.setText(name)
-            pdfList.addAll(DataManager.getPdfList(name))
-        }
         setListener()
-        app_rv_collection.addItemDecoration(XGridDecoration())
-        app_rv_collection.addItemDecoration(YGridDecoration())
-        val lm = GridLayoutManager(activity, 3)
-        lm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (pdfList.isEmpty()) {
-                    3
-                } else 1
+        if (xItemDecoration != null) {
+            app_rv_collection.removeItemDecoration(xItemDecoration!!)
+        }
+        if (yItemDecoration != null) {
+            app_rv_collection.removeItemDecoration(yItemDecoration!!)
+        }
+        xItemDecoration = XGridDecoration()
+        yItemDecoration = YGridDecoration()
+        app_rv_collection.addItemDecoration(xItemDecoration!!)
+        app_rv_collection.addItemDecoration(yItemDecoration!!)
+        val lm = if (isHorizontalLayout) {
+            LinearLayoutManager(activity)
+        } else {
+            GridLayoutManager(activity, 3).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return if (pdfList.isEmpty()) 3 else 1
+                    }
+                }
             }
         }
         app_rv_collection.layoutManager = lm
@@ -365,6 +401,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
         app_ibtn_delete.setOnClickListener {
             deleteDialog.show()
             tvDeleteDescription?.text = getString(R.string.app_whether_delete_all, selectPDFList.size)
+            deleteLocal?.visibility = localDeleteVisibility()
         }
         app_ibtn_select_all.setOnClickListener { selectAll(!it.isSelected) }
         app_et_name.onFocusChangeListener = View.OnFocusChangeListener { _: View?, hasFocus: Boolean ->

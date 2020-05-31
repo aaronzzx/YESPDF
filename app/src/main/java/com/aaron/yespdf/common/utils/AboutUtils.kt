@@ -15,10 +15,6 @@ import com.aaron.yespdf.common.AppConfig
 import com.aaron.yespdf.common.UiManager
 import com.blankj.utilcode.util.PathUtils
 import com.blankj.utilcode.util.StringUtils
-import com.blankj.utilcode.util.ThreadUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -52,6 +48,7 @@ internal object AboutUtils {
             intent.flags = 335544320
             intent.action = "android.intent.action.VIEW"
             context.startActivity(intent)
+            UiManager.showShort(R.string.app_wechat_scan_notice)
         } catch (e: Exception) {
             e.printStackTrace()
             UiManager.showShort(R.string.app_have_no_install_wechat)

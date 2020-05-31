@@ -9,12 +9,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.Cover
 import com.aaron.yespdf.common.event.AllEvent
-import com.blankj.utilcode.util.LogUtils
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback
 import com.chad.library.adapter.base.listener.OnItemDragListener
 import kotlinx.android.synthetic.main.app_fragment_all.*
@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.File
 import java.util.*
 
 /**
@@ -35,6 +36,9 @@ class AllFragment2 : CommonFragment(), IOperation {
     private val coverList = DataManager.getCoverList()
     private val selectList: MutableList<Cover> = ArrayList()
     private var isNeedUpdateDB = false
+    private var isHorizontalLayout = false
+    private var xItemDecoration: RecyclerView.ItemDecoration? = null
+    private var yItemDecoration: RecyclerView.ItemDecoration? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         EventBus.getDefault().register(this)
@@ -43,9 +47,18 @@ class AllFragment2 : CommonFragment(), IOperation {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isHorizontalLayout = Settings.isHorizontalLayout()
         initView()
         LiveDataBus.with<Any>(CollectionFragment2.EVENT_UPDATE_ALL_FRAGMENT)
                 .observe(this::getLifecycle) { adapter.notifyDataSetChanged() }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isHorizontalLayout != Settings.isHorizontalLayout()) {
+            isHorizontalLayout = Settings.isHorizontalLayout()
+            initView()
+        }
     }
 
     override fun onResume() {
@@ -67,7 +80,6 @@ class AllFragment2 : CommonFragment(), IOperation {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onPdfDeleteEvent(event: PdfDeleteEvent) {
-        LogUtils.e(event)
         if (event.isEmpty) {
             DBHelper.deleteCollection(event.dir)
         }
@@ -82,10 +94,14 @@ class AllFragment2 : CommonFragment(), IOperation {
         update()
     }
 
-    override fun delete() {
+    override fun delete(deleteLocal: Boolean) {
         if (selectList.isNotEmpty()) {
             launch {
                 val dirList = withContext(Dispatchers.IO) {
+                    if (deleteLocal) {
+                        val pdfList = DataManager.getPdfList(selectList[0].name)
+                        pdfList.forEach { File(it.path).delete() }
+                    }
                     val list = DBHelper.deleteCollection(selectList)
                     DataManager.updateAll()
                     list
@@ -97,6 +113,8 @@ class AllFragment2 : CommonFragment(), IOperation {
             }
         }
     }
+
+    override fun localDeleteVisibility(): Int = View.VISIBLE
 
     override fun selectAll(selectAll: Boolean) {
         adapter.selectAll(selectAll)
@@ -125,14 +143,25 @@ class AllFragment2 : CommonFragment(), IOperation {
     }
 
     private fun initView() {
-        app_rv_all.addItemDecoration(XGridDecoration())
-        app_rv_all.addItemDecoration(YGridDecoration())
-        val lm = GridLayoutManager(activity, 3)
-        lm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (coverList.isEmpty()) {
-                    3
-                } else 1
+        if (xItemDecoration != null) {
+            app_rv_all.removeItemDecoration(xItemDecoration!!)
+        }
+        if (yItemDecoration != null) {
+            app_rv_all.removeItemDecoration(yItemDecoration!!)
+        }
+        xItemDecoration = XGridDecoration()
+        yItemDecoration = YGridDecoration()
+        app_rv_all.addItemDecoration(xItemDecoration!!)
+        app_rv_all.addItemDecoration(yItemDecoration!!)
+        val lm = if (isHorizontalLayout) {
+            LinearLayoutManager(activity)
+        } else {
+            GridLayoutManager(activity, 3).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return if (coverList.isEmpty()) 3 else 1
+                    }
+                }
             }
         }
         app_rv_all.layoutManager = lm

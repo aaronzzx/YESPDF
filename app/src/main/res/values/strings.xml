@@ -29,13 +29,14 @@
     <string name="app_whether_delete_recent">本次操作将会删除 %d 个最近阅读记录（不清除阅读进度），是否继续？</string>
     <string name="app_whether_delete_all">本次操作将会删除 %d 本书籍（包含阅读进度与书签等，不影响源文件），是否继续？</string>
     <string name="app_whether_delete_collection">本次操作将会删除 %d 个集合（包含集合内所有书籍信息等，不影响源文件），是否继续？</string>
+    <string name="app_delete_local_files">删除本地文件</string>
     <string name="app_delete">删除</string>
     <string name="app_wechat_pay">微信付款</string>
-    <string name="app_gift_description">YES PDF! 没有收费版本，也不会添加广告，如果您觉得用着还不错，欢迎捐赠！\n\n如果出现跳转未保存图片的情况，请点击“打开二维码”\n\n付款时认准「aaronzzx」</string>
+    <string name="app_gift_description">如果您觉得用着还不错，欢迎捐赠！\n\n如果出现跳转未保存图片的情况，请点击“打开二维码”\n\n付款时认准「aaronzzx」</string>
     <string name="app_open_qrcode">打开二维码</string>
     <string name="app_open_wechat_scanner">跳转微信扫一扫</string>
     <string name="app_screenshot">截图进入微信选择图片扫码或使用另一部手机扫码</string>
-    <string name="app_wechat_scan_notice">打开右上角菜单，从微信相册中选取收款码</string>
+    <string name="app_wechat_scan_notice">从微信相册中选取收款码</string>
     <string name="app_not_support_empty_string">不支持空字符</string>
     <string name="app_regrouping">重新分组</string>
     <string name="app_group">分组</string>
@@ -81,6 +82,7 @@
     <string name="app_show_status_bar">显示状态栏</string>
     <string name="app_click_flip_page">点击翻页</string>
     <string name="app_keep_screen_on">屏幕常亮</string>
+    <string name="app_horizontal_layout">水平布局</string>
     <string name="app_max_recent_count">最近显示数量</string>
     <string name="app_lock_landscape">锁定横屏</string>
     <string name="app_export_image">导出图片</string>

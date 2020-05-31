@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -66,13 +67,14 @@ object DialogManager {
         return dialog
     }
 
-    fun createDeleteDialog(context: Context, callback: (TextView, Button, Button) -> Unit): BottomSheetDialog {
+    fun createDeleteDialog(context: Context, callback: (TextView, View, Button, Button) -> Unit): BottomSheetDialog {
         val view = LayoutInflater.from(context.applicationContext)
                 .inflate(R.layout.app_bottomdialog_delete, null)
         val tvDeleteDescription = view.findViewById<TextView>(R.id.app_tv_description)
+        val localDelete = view.findViewById<View>(R.id.app_delete_local)
         val btnCancel = view.findViewById<Button>(R.id.app_btn_cancel)
         val btnDelete = view.findViewById<Button>(R.id.app_btn_delete)
-        callback(tvDeleteDescription, btnCancel, btnDelete)
+        callback(tvDeleteDescription, localDelete, btnCancel, btnDelete)
         return DialogUtils.createBottomSheetDialog(context, view)
     }
 
@@ -102,7 +104,13 @@ object DialogManager {
         val rv: RecyclerView = view.findViewById(R.id.app_rv_group)
         rv.addItemDecoration(XGridDecoration())
         rv.addItemDecoration(YGridDecoration())
-        val lm = GridLayoutManager(context, 3)
+        val lm = GridLayoutManager(context, 3).apply {
+            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (Settings.isHorizontalLayout()) 3 else 1
+                }
+            }
+        }
         rv.layoutManager = lm
         val list = DataManager.getCoverList()
         val adapter: RecyclerView.Adapter<*> = GroupingAdapter(lm, list, callback, enableAddNew)
