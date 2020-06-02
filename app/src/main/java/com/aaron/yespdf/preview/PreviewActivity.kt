@@ -64,6 +64,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         }
     }
 
+    private var init = true
     private var pdf: PDF? = null // 本应用打开
     private var uri: Uri? = null // 一般是外部应用打开
     private var curPage = 0
@@ -710,7 +711,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                     pageCount = app_pdfview.pageCount
                     app_sb_progress.max = pageCount - 1
                     val list = app_pdfview.tableOfContents
-                    findContent(list)
+                    if (init) {
+                        findContent(list)
+                    }
                     val fragmentList = supportFragmentManager.fragments
                     for (f in fragmentList) {
                         if (f is IContentFragInterface) {
@@ -719,7 +722,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                             bkFragInterface = f
                         }
                     }
-                    contentFragInterface?.update(list)
+                    if (init) {
+                        contentFragInterface?.update(list)
+                    }
                     bkFragInterface?.update(bookmarkMap.values)
                     val keySet: Set<Long> = contentMap.keys
                     pageList.addAll(keySet)
@@ -742,6 +747,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                     } else {
                         app_pdfview_bg.background = ColorDrawable(Color.BLACK)
                     }
+                    init = false
                 }
                 .onTap { event: MotionEvent ->
                     if (autoDisp?.isDisposed == false) {
