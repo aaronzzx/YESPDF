@@ -144,6 +144,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             this.curPage = this@PreviewActivity.curPage
             this.progress = progress
             bookmark = GsonUtils.toJson(bookmarkMap.values)
+            this.scaleFactor = this@PreviewActivity.scaleFactor
             DBHelper.updatePDF(this)
             DataManager.updatePDFs()
             // 这里发出事件主要是更新界面阅读进度
@@ -267,12 +268,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     @SuppressLint("SwitchIntDef")
     private fun initView(savedInstanceState: Bundle?) {
-        app_pdfview.apply {
-            scaleX = scaleFactor
-            scaleY = scaleFactor
-        }
-        app_sb_scale.progress = ((scaleFactor - 1) * 100).toInt()
-
         if (isNightMode.value == true) {
             app_pdfview_bg.background = ColorDrawable(Color.BLACK)
         }
@@ -330,9 +325,19 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         tab1?.setCustomView(R.layout.app_tab_content)
         tab2?.setCustomView(R.layout.app_tab_bookmark)
         getData(savedInstanceState)
+        initScaleFactor()
         setListener()
         initPdf(uri, pdf)
         enterFullScreen()
+    }
+
+    private fun initScaleFactor() {
+        scaleFactor = pdf?.scaleFactor ?: 1.0f
+        app_pdfview.apply {
+            scaleX = scaleFactor
+            scaleY = scaleFactor
+        }
+        app_sb_scale.progress = ((scaleFactor - 1) * 100).toInt()
     }
 
     private fun getData(savedInstanceState: Bundle?) {

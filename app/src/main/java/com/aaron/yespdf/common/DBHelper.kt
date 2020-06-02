@@ -44,6 +44,7 @@ object DBHelper {
             val pdfs = queryPDF(item.name)
             for (pdf in pdfs) {
                 pdf.position = pdfs.indexOf(pdf)
+                pdf.scaleFactor = 1.0f
                 updatePDF(pdf)
             }
         }
