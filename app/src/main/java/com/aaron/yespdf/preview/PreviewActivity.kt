@@ -535,6 +535,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                     scaleX = scaleFactor
                     scaleY = scaleFactor
                 }
+                app_pdfview.invalidate()
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -858,7 +859,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     private fun drawBookmark(canvas: Canvas?, pageWidth: Float) {
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.app_img_bookmark)
-        val left = pageWidth - ConvertUtils.dp2px(36f)
+        val curPageWidth = pageWidth * scaleFactor
+        val margin = (curPageWidth - pageWidth) / 3f
+        val left = pageWidth - ConvertUtils.dp2px(36f) - margin
         canvas?.drawBitmap(bitmap, left, 0f, paint)
     }
 
