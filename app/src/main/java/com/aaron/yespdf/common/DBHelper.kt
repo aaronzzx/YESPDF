@@ -270,6 +270,7 @@ object DBHelper {
         pdf.totalPage = totalPage
         pdf.latestRead = 0
         pdf.position = position
+        pdf.scaleFactor = 1.0f
         sDaoSession.insertOrReplace(pdf)
         return true
     }

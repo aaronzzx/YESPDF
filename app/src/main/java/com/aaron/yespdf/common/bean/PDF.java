@@ -25,7 +25,7 @@ public class PDF implements Parcelable {
     String bookmark;
     long latestRead;
     int position;
-    float scaleFactor = 1.0f;
+    float scaleFactor;
 
     public PDF() {
 
