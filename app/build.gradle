@@ -21,8 +21,8 @@ android {
         applicationId "com.aaron.yespdf"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 20
-        versionName "2.1.1"
+        versionCode 21
+        versionName "2.1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -80,7 +80,7 @@ android {
 }
 
 greendao {
-    schemaVersion 2 // 数据库版本号
+    schemaVersion 3 // 数据库版本号
     daoPackage 'com.aaron.yespdf.common.greendao' // 设置 DaoMaster、DaoSession、Dao包名
     targetGenDir 'src/main/java' // 设置DaoMaster、DaoSession、Dao目录
     // targetGenDirTest：设置生成单元测试目录

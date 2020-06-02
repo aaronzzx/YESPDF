@@ -86,6 +86,7 @@
     <string name="app_max_recent_count">最近显示数量</string>
     <string name="app_lock_landscape">锁定横屏</string>
     <string name="app_export_image">导出图片</string>
+    <string name="app_clip">等比放大</string>
     <string name="app_export_image_succeed">导出成功，图片存放在根目录/Pictures/YESPDF</string>
     <string name="app_not_support_external_open">暂不支持外部资源</string>
 

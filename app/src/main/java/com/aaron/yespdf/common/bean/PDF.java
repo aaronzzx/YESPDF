@@ -4,9 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Unique;
-import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -25,26 +25,10 @@ public class PDF implements Parcelable {
     String bookmark;
     long latestRead;
     int position;
+    float scaleFactor;
 
     public PDF() {
 
-    }
-
-    @Override
-    public String toString() {
-        return "PDF{" +
-                "id=" + id +
-                ", path='" + path + '\'' +
-                ", dir='" + dir + '\'' +
-                ", name='" + name + '\'' +
-                ", cover='" + cover + '\'' +
-                ", progress='" + progress + '\'' +
-                ", curPage=" + curPage +
-                ", totalPage=" + totalPage +
-                ", bookmark='" + bookmark + '\'' +
-                ", latestRead=" + latestRead +
-                ", position=" + position +
-                '}';
     }
 
     public Long getId() {
@@ -135,6 +119,14 @@ public class PDF implements Parcelable {
         this.position = position;
     }
 
+    public float getScaleFactor() {
+        return scaleFactor;
+    }
+
+    public void setScaleFactor(float scaleFactor) {
+        this.scaleFactor = scaleFactor;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -153,6 +145,7 @@ public class PDF implements Parcelable {
         dest.writeString(this.bookmark);
         dest.writeLong(this.latestRead);
         dest.writeInt(this.position);
+        dest.writeFloat(this.scaleFactor);
     }
 
     protected PDF(Parcel in) {
@@ -167,12 +160,13 @@ public class PDF implements Parcelable {
         this.bookmark = in.readString();
         this.latestRead = in.readLong();
         this.position = in.readInt();
+        this.scaleFactor = in.readFloat();
     }
 
-    @Generated(hash = 1452199055)
+    @Generated(hash = 68430817)
     public PDF(Long id, String path, String dir, String name, String cover,
-            String progress, int curPage, int totalPage, String bookmark,
-            long latestRead, int position) {
+               String progress, int curPage, int totalPage, String bookmark,
+               long latestRead, int position, float scaleFactor) {
         this.id = id;
         this.path = path;
         this.dir = dir;
@@ -184,6 +178,7 @@ public class PDF implements Parcelable {
         this.bookmark = bookmark;
         this.latestRead = latestRead;
         this.position = position;
+        this.scaleFactor = scaleFactor;
     }
 
     public static final Creator<PDF> CREATOR = new Creator<PDF>() {

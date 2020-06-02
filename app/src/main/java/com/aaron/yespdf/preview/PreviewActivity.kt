@@ -49,6 +49,7 @@ import java.io.File
 import java.text.NumberFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -80,6 +81,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     private val bookmarkMap: MutableMap<Long, Bookmark> = HashMap()
     private val pageList: MutableList<Long> = ArrayList()
 
+    private var scaleFactor = 1.0f
     private var isScrollLevelTouchFinish = true
     private var previousPage = 0 // 记录 redo/undo的页码
     private var nextPage = 0
@@ -143,6 +145,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             this.curPage = this@PreviewActivity.curPage
             this.progress = progress
             bookmark = GsonUtils.toJson(bookmarkMap.values)
+            this.scaleFactor = this@PreviewActivity.scaleFactor
             DBHelper.updatePDF(this)
             DataManager.updatePDFs()
             // 这里发出事件主要是更新界面阅读进度
@@ -266,6 +269,13 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     @SuppressLint("SwitchIntDef")
     private fun initView(savedInstanceState: Bundle?) {
+        app_ll_content.post {
+            app_ll_content.layoutParams.apply {
+                val screenWidth = min(ScreenUtils.getScreenHeight(), ScreenUtils.getScreenWidth())
+                width = (screenWidth * 0.85f).toInt()
+                app_ll_content.requestLayout()
+            }
+        }
         if (isNightMode.value == true) {
             app_pdfview_bg.background = ColorDrawable(Color.BLACK)
         }
@@ -323,9 +333,19 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         tab1?.setCustomView(R.layout.app_tab_content)
         tab2?.setCustomView(R.layout.app_tab_bookmark)
         getData(savedInstanceState)
+        initScaleFactor()
         setListener()
         initPdf(uri, pdf)
         enterFullScreen()
+    }
+
+    private fun initScaleFactor() {
+        scaleFactor = pdf?.scaleFactor ?: 1.0f
+        app_pdfview.apply {
+            scaleX = scaleFactor
+            scaleY = scaleFactor
+        }
+        app_sb_scale.progress = ((scaleFactor - 1) * 100).toInt()
     }
 
     private fun getData(savedInstanceState: Bundle?) {
@@ -510,6 +530,29 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                 }
             } else UiManager.showShort(R.string.app_not_support_external_open)
         }
+        app_tv_clip.setOnClickListener(object : OnClickListenerImpl() {
+            override fun onViewClick(v: View?, interval: Long) {
+                closeMore()
+                app_sb_scale.visibility = View.VISIBLE
+            }
+        })
+        app_sb_scale.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                scaleFactor = 1 + progress / 100f
+                app_pdfview.apply {
+                    scaleX = scaleFactor
+                    scaleY = scaleFactor
+                }
+                app_pdfview.invalidate()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                app_sb_scale.visibility = View.GONE
+            }
+        })
         app_tv_settings.setOnClickListener(object : OnClickListenerImpl() {
             override fun onViewClick(v: View, interval: Long) {
                 hideBar()
@@ -801,8 +844,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                             hideBar()
                             enterFullScreen()
                         } else {
-                            exitFullScreen()
-                            showBar()
+                            if (app_sb_scale.visibility == View.VISIBLE) {
+                                app_sb_scale.visibility = View.GONE
+                            } else {
+                                exitFullScreen()
+                                showBar()
+                            }
                         }
                     }
                     true
@@ -820,7 +867,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     private fun drawBookmark(canvas: Canvas?, pageWidth: Float) {
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.app_img_bookmark)
-        val left = pageWidth - ConvertUtils.dp2px(36f)
+        val curPageWidth = pageWidth * scaleFactor
+        val margin = (curPageWidth - pageWidth) / 3f
+        val left = pageWidth - ConvertUtils.dp2px(36f) - margin
         canvas?.drawBitmap(bitmap, left, 0f, paint)
     }
 

@@ -44,6 +44,7 @@ object DBHelper {
             val pdfs = queryPDF(item.name)
             for (pdf in pdfs) {
                 pdf.position = pdfs.indexOf(pdf)
+                pdf.scaleFactor = 1.0f
                 updatePDF(pdf)
             }
         }
@@ -269,6 +270,7 @@ object DBHelper {
         pdf.totalPage = totalPage
         pdf.latestRead = 0
         pdf.position = position
+        pdf.scaleFactor = 1.0f
         sDaoSession.insertOrReplace(pdf)
         return true
     }
