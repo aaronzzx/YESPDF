@@ -49,6 +49,7 @@ import java.io.File
 import java.text.NumberFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -268,6 +269,13 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     @SuppressLint("SwitchIntDef")
     private fun initView(savedInstanceState: Bundle?) {
+        app_ll_content.post {
+            app_ll_content.layoutParams.apply {
+                val screenWidth = min(ScreenUtils.getScreenHeight(), ScreenUtils.getScreenWidth())
+                width = (screenWidth * 0.85f).toInt()
+                app_ll_content.requestLayout()
+            }
+        }
         if (isNightMode.value == true) {
             app_pdfview_bg.background = ColorDrawable(Color.BLACK)
         }
