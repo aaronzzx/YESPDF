@@ -80,6 +80,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     private val bookmarkMap: MutableMap<Long, Bookmark> = HashMap()
     private val pageList: MutableList<Long> = ArrayList()
 
+    private var scaleFactor = 1.0f
     private var isScrollLevelTouchFinish = true
     private var previousPage = 0 // 记录 redo/undo的页码
     private var nextPage = 0
@@ -266,6 +267,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     @SuppressLint("SwitchIntDef")
     private fun initView(savedInstanceState: Bundle?) {
+        app_pdfview.apply {
+            scaleX = scaleFactor
+            scaleY = scaleFactor
+        }
+        app_sb_scale.progress = ((scaleFactor - 1) * 100).toInt()
+
         if (isNightMode.value == true) {
             app_pdfview_bg.background = ColorDrawable(Color.BLACK)
         }
@@ -510,6 +517,28 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                 }
             } else UiManager.showShort(R.string.app_not_support_external_open)
         }
+        app_tv_clip.setOnClickListener(object : OnClickListenerImpl() {
+            override fun onViewClick(v: View?, interval: Long) {
+                closeMore()
+                app_sb_scale.visibility = View.VISIBLE
+            }
+        })
+        app_sb_scale.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                scaleFactor = 1 + progress / 100f
+                app_pdfview.apply {
+                    scaleX = scaleFactor
+                    scaleY = scaleFactor
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                app_sb_scale.visibility = View.GONE
+            }
+        })
         app_tv_settings.setOnClickListener(object : OnClickListenerImpl() {
             override fun onViewClick(v: View, interval: Long) {
                 hideBar()
@@ -801,8 +830,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                             hideBar()
                             enterFullScreen()
                         } else {
-                            exitFullScreen()
-                            showBar()
+                            if (app_sb_scale.visibility == View.VISIBLE) {
+                                app_sb_scale.visibility = View.GONE
+                            } else {
+                                exitFullScreen()
+                                showBar()
+                            }
                         }
                     }
                     true

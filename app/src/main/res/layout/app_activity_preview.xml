@@ -40,6 +40,31 @@
         android:max="14"
         tools:visibility="visible" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/app_bg_scale_bar">
+
+        <SeekBar
+            android:id="@+id/app_sb_scale"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:maxHeight="3dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:max="50"
+            android:thumb="@drawable/app_sel_seekbar"
+            android:progressDrawable="@drawable/app_seekbar_bg"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
     <!-- 底部操作栏 -->
     <LinearLayout
         android:id="@+id/app_ll_bottombar"
@@ -402,6 +427,21 @@
             android:textColor="@color/base_white"
             android:drawablePadding="16dp"
             android:drawableStart="@drawable/app_ic_image_white_24dp" />
+
+        <TextView
+            android:id="@+id/app_tv_clip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:text="@string/app_clip"
+            android:textColor="@color/base_white"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/app_ic_crop_white_24dp" />
 
         <TextView
             android:id="@+id/app_tv_settings"
