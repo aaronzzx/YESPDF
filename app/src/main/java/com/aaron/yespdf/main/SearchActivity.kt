@@ -5,21 +5,16 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.Unbinder
 import com.aaron.base.impl.TextWatcherImpl
 import com.aaron.yespdf.R
-import com.aaron.yespdf.R2
 import com.aaron.yespdf.common.CommonActivity
 import com.aaron.yespdf.common.DataManager
+import com.aaron.yespdf.common.Settings
 import com.aaron.yespdf.common.XGridDecoration
 import com.aaron.yespdf.common.event.RecentPDFEvent
 import com.blankj.utilcode.util.ConvertUtils
@@ -101,7 +96,9 @@ class SearchActivity : CommonActivity() {
         val lm = GridLayoutManager(this, 3)
         lm.spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (adapter?.isEmpty == true || position == 0) {
+                return if (adapter?.isEmpty == true
+                        || position == 0
+                        || Settings.isHorizontalLayout()) {
                     3
                 } else 1
             }
