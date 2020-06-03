@@ -141,10 +141,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     override fun onPause() {
         super.onPause()
         pdf?.run {
-            val progress = getPercent(curPage + 1, pageCount)
             this.curPage = this@PreviewActivity.curPage
-            this.progress = progress
-            bookmark = GsonUtils.toJson(bookmarkMap.values)
+            this.progress = getPercent(curPage + 1, pageCount)
+            this.bookmark = GsonUtils.toJson(bookmarkMap.values)
             this.scaleFactor = this@PreviewActivity.scaleFactor
             DBHelper.updatePDF(this)
             DataManager.updatePDFs()
@@ -198,7 +197,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         // 设置精确到小数点后2位
         numberFormat.maximumFractionDigits = 1
         //计算x年x月的成功率
-        val result = numberFormat.format(percent.toFloat() / total.toFloat() * 100.toDouble())
+        val result = numberFormat.format(percent.toFloat() / total.toFloat() * 100f)
         return "$result%"
     }
 
