@@ -106,4 +106,13 @@
         <!--        <item name="android:windowTranslucentNavigation">true</item>-->
     </style>
 
+    <style name="AppScaleView" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">28dp</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:textSize">8dp</item>
+        <item name="android:textColor">@color/base_white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/app_shape_bg_scale_view_black</item>
+    </style>
+
 </resources>

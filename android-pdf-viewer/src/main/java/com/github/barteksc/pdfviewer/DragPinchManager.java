@@ -290,6 +290,7 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
 
     @Override
     public boolean onScaleBegin(ScaleGestureDetector detector) {
+        pdfView.getCurZoom().setValue(-1f);
         scaling = true;
         return true;
     }
