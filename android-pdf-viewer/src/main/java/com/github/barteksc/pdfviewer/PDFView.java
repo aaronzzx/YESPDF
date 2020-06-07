@@ -36,9 +36,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.RelativeLayout;
 
-import com.blankj.utilcode.util.ImageUtils;
-import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.PathUtils;
+import androidx.lifecycle.MutableLiveData;
+
 import com.github.barteksc.pdfviewer.exception.PageRenderingException;
 import com.github.barteksc.pdfviewer.link.DefaultLinkHandler;
 import com.github.barteksc.pdfviewer.link.LinkHandler;
@@ -62,7 +61,6 @@ import com.github.barteksc.pdfviewer.source.DocumentSource;
 import com.github.barteksc.pdfviewer.source.FileSource;
 import com.github.barteksc.pdfviewer.source.InputStreamSource;
 import com.github.barteksc.pdfviewer.source.UriSource;
-import com.github.barteksc.pdfviewer.util.AboutUtils;
 import com.github.barteksc.pdfviewer.util.Constants;
 import com.github.barteksc.pdfviewer.util.FitPolicy;
 import com.github.barteksc.pdfviewer.util.MathUtils;
@@ -103,7 +101,7 @@ public class PDFView extends RelativeLayout {
 
     public static final float DEFAULT_MAX_SCALE = 3.0f;
     public static final float DEFAULT_MID_SCALE = 1.75f;
-    public static final float DEFAULT_MIN_SCALE = 1.0f;
+    public static final float DEFAULT_MIN_SCALE = 0.25f;
 
     private float minZoom = DEFAULT_MIN_SCALE;
     private float midZoom = DEFAULT_MID_SCALE;
@@ -150,6 +148,8 @@ public class PDFView extends RelativeLayout {
 
     /** The zoom level, always >= 1 */
     private float zoom = 1f;
+
+    private MutableLiveData<Float> curZoom = new MutableLiveData<>();
 
     /** True if the PDFView has been recycled */
     private boolean recycled = true;
@@ -1116,6 +1116,10 @@ public class PDFView extends RelativeLayout {
         return zoom;
     }
 
+    public MutableLiveData<Float> getCurZoom() {
+        return curZoom;
+    }
+
     public boolean isZooming() {
         return zoom != minZoom;
     }
@@ -1137,6 +1141,7 @@ public class PDFView extends RelativeLayout {
     }
 
     public void zoomWithAnimation(float scale) {
+
         animationManager.startZoomAnimation(getWidth() / 2, getHeight() / 2, zoom, scale);
     }
 

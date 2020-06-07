@@ -22,6 +22,55 @@
         android:layout_height="match_parent"
         android:background="@color/base_transparent"/>
 
+    <!-- 缩放等级 -->
+    <LinearLayout
+        android:id="@+id/app_scale_level"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        android:alpha="0.0"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/app_scale_0_25"
+            android:text="0.25x"
+            style="@style/AppScaleView" />
+
+        <TextView
+            android:id="@+id/app_scale_0_50"
+            android:layout_marginTop="12dp"
+            android:text="0.50x"
+            style="@style/AppScaleView" />
+
+        <TextView
+            android:id="@+id/app_scale_0_75"
+            android:layout_marginTop="12dp"
+            android:text="0.75x"
+            style="@style/AppScaleView" />
+
+        <TextView
+            android:id="@+id/app_scale_1_00"
+            android:layout_marginTop="12dp"
+            android:text="1.00x"
+            style="@style/AppScaleView" />
+
+        <TextView
+            android:id="@+id/app_scale_2_00"
+            android:layout_marginTop="12dp"
+            android:text="2.00x"
+            style="@style/AppScaleView" />
+
+        <TextView
+            android:id="@+id/app_scale_3_00"
+            android:layout_marginTop="12dp"
+            android:text="3.00x"
+            style="@style/AppScaleView" />
+
+    </LinearLayout>
+
     <!-- 滚动速度实时调节 -->
     <SeekBar
         android:id="@+id/app_sb_scroll_level"
@@ -199,8 +248,8 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:padding="12dp"
-        android:layout_marginEnd="16dp"
-        android:layout_alignParentEnd="true"
+        android:layout_marginRight="16dp"
+        android:layout_alignParentRight="true"
         android:layout_above="@id/app_ll_bottombar"
         android:visibility="gone"
         android:src="@drawable/app_sel_night_mode"
