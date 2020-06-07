@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -71,6 +70,21 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     private val isNightMode: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
         observe(this@PreviewActivity::getLifecycle) {
             Settings.setNightMode(it)
+
+            if (it) {
+                app_pdfview_bg.setImageResource(R.drawable.app_ic_placeholder_white)
+                app_pdfview_bg.setBackgroundColor(Color.BLACK)
+            } else {
+                app_pdfview_bg.setImageResource(R.drawable.app_ic_placeholder_black)
+                app_pdfview_bg.setBackgroundColor(Color.WHITE)
+            }
+            scaleViewParentAnim(0.0f, object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    scaleLevel.visibility = View.GONE
+                    scales.forEach { scaleView -> scaleView.translationX = 0f }
+                }
+            })
+
             initPdf(uri, pdf)
 
             val textColor = if (it) R.color.base_black else R.color.base_white
@@ -342,9 +356,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 width = (screenWidth * 0.85f).toInt()
                 app_ll_content.requestLayout()
             }
-        }
-        if (isNightMode.value == true) {
-            app_pdfview_bg.background = ColorDrawable(Color.BLACK)
         }
         supportActionBar?.run {
             setDisplayShowTitleEnabled(true)
@@ -880,7 +891,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 .onLoad {
                     initContentAndBookmark()
                     initAboutPage()
-                    initUI()
+                    initBgSize()
                     init = false
                 }
                 .onTap { event: MotionEvent ->
@@ -892,9 +903,8 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 .load()
     }
 
-    private fun initUI() {
+    private fun initBgSize() {
         if (isNightMode.value != true) {
-            app_pdfview_bg.background = ColorDrawable(Color.WHITE)
             if (Settings.isSwipeHorizontal()) {
                 val page = (app_pdfview.pageCount / 2.toFloat()).roundToInt()
                 val sizeF = app_pdfview.getPageSize(page)
@@ -908,8 +918,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 lp.height = ScreenUtils.getScreenHeight()
                 app_pdfview_bg.layoutParams = lp
             }
-        } else {
-            app_pdfview_bg.background = ColorDrawable(Color.BLACK)
         }
     }
 

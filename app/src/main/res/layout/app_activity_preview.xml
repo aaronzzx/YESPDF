@@ -9,11 +9,13 @@
     tools:context=".preview.PreviewActivity">
 
     <!-- PDFView 的背景 -->
-    <View
+    <ImageView
         android:id="@+id/app_pdfview_bg"
         android:layout_width="match_parent"
         android:layout_height="540dp"
         android:layout_centerInParent="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/app_ic_placeholder_black"
         android:background="@color/base_white"/>
 
     <com.github.barteksc.pdfviewer.PDFView
