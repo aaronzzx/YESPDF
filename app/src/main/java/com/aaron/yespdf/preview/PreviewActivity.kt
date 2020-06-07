@@ -57,6 +57,7 @@ import kotlin.math.roundToInt
  */
 class PreviewActivity : CommonActivity(), IActivityInterface {
 
+    //region Field
     private val nightModeBtn: View by lazy { findViewById<View>(R.id.app_night_btn) }
     private val isNightMode: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
         observe(this@PreviewActivity::getLifecycle) {
@@ -86,7 +87,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     private var previousPage = 0 // 记录 redo/undo的页码
     private var nextPage = 0
     private var canvas: Canvas? = null // AndroidPDFView 的画布
-    private var paint: Paint? = null // 画书签的画笔
+    private var paint: Paint = Paint() // 画书签的画笔
     private var pageWidth = 0F
     private val sbScrollLevel: SeekBar by lazy { findViewById<SeekBar>(R.id.app_sb_scroll_level) }
     private val alertDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
@@ -114,64 +115,38 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             }
         }
     }
+    //endregion
 
-    override fun layoutId(): Int {
-        return R.layout.app_activity_preview
-    }
-
-    override fun createToolbar(): Toolbar? {
-        return findViewById(R.id.app_toolbar)
-    }
-
+    //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initView(savedInstanceState)
     }
 
     override fun onRestart() {
-        LogUtils.e("onRestart")
         super.onRestart()
-        // 解决锁定横屏时从后台回到前台时头两次点击无效
-        val screenHeight = ScreenUtils.getScreenHeight()
-        app_ll_read_method.translationY = screenHeight.toFloat()
-        app_ll_more.translationY = screenHeight.toFloat()
-        enterFullScreen() // 重新回到界面时主动进入全屏
+        fixBackToForegroundClick()
+        enterFullScreen()
     }
 
     override fun onPause() {
         super.onPause()
-        pdf?.run {
-            this.curPage = this@PreviewActivity.curPage
-            this.progress = getPercent(curPage + 1, pageCount)
-            this.bookmark = GsonUtils.toJson(bookmarkMap.values)
-            this.scaleFactor = this@PreviewActivity.scaleFactor
-            DBHelper.updatePDF(this)
-            DataManager.updatePDFs()
-            // 这里发出事件主要是更新界面阅读进度
-            EventBus.getDefault().post(RecentPDFEvent(true))
-        }
+        updateDBAndMainUI()
     }
 
     override fun onStop() {
         super.onStop()
         hideBar()
-        // 书签页回原位
-        app_ll_content.translationX = -app_ll_content.measuredWidth.toFloat()
-        app_screen_cover.alpha = 0f // 隐藏界面遮罩
-        // 阅读方式回原位
-        app_ll_read_method.translationY = ScreenUtils.getScreenHeight().toFloat()
-        app_ll_more.translationY = ScreenUtils.getScreenHeight().toFloat()
-        if (autoDisp?.isDisposed == false) {
-            autoDisp?.dispose()
-            sbScrollLevel.visibility = View.GONE
-        }
+        resetUIAndCancelAutoScroll()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         app_pdfview.recycle()
     }
+    //endregion
 
+    //region Override from system activity
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
@@ -189,18 +164,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         outState.putString(BUNDLE_PASSWORD, password)
     }
 
-    /**
-     * 获取阅读进度的百分比
-     */
-    private fun getPercent(percent: Int, total: Int): String { // 创建一个数值格式化对象
-        val numberFormat = NumberFormat.getInstance()
-        // 设置精确到小数点后2位
-        numberFormat.maximumFractionDigits = 1
-        //计算x年x月的成功率
-        val result = numberFormat.format(percent.toFloat() / total.toFloat() * 100f)
-        return "$result%"
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
@@ -208,7 +171,8 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
 
     override fun onBackPressed() {
         when {
-            app_ll_content.translationX == 0f -> { // 等于 0 表示正处于打开状态，需要隐藏
+            app_ll_content.translationX == 0f -> {
+                // 等于 0 表示正处于打开状态，需要隐藏
                 closeContent(null)
             }
             app_ll_read_method.translationY != ScreenUtils.getScreenHeight().toFloat() -> {
@@ -250,13 +214,21 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SETTINGS) {
             isVolumeControl = Settings.isVolumeControl()
-            /*if (isNightMode != Settings.isNightMode()) {
-                isNightMode = Settings.isNightMode()
-                initPdf(uri, pdf)
-            }*/
         }
     }
+    //endregion
 
+    //region Implement from CommonActivity
+    override fun layoutId(): Int {
+        return R.layout.app_activity_preview
+    }
+
+    override fun createToolbar(): Toolbar? {
+        return findViewById(R.id.app_toolbar)
+    }
+    //endregion
+
+    //region Implement from IActivityInterface
     override fun onJumpTo(page: Int) {
         app_pdfview_bg.visibility = View.VISIBLE
         closeContent(object : AnimatorListenerAdapter() {
@@ -265,7 +237,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
             }
         })
     }
+    //endregion
 
+    //region Private function
     @SuppressLint("SwitchIntDef")
     private fun initView(savedInstanceState: Bundle?) {
         app_ll_content.post {
@@ -336,6 +310,53 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         setListener()
         initPdf(uri, pdf)
         enterFullScreen()
+    }
+
+    /**
+     * 解决锁定横屏时从后台回到前台时头两次点击无效
+     */
+    private fun fixBackToForegroundClick() {
+        val screenHeight = ScreenUtils.getScreenHeight()
+        app_ll_read_method.translationY = screenHeight.toFloat()
+        app_ll_more.translationY = screenHeight.toFloat()
+    }
+
+    private fun updateDBAndMainUI() {
+        pdf?.run {
+            this.curPage = this@PreviewActivity.curPage
+            this.progress = getPercent(curPage + 1, pageCount)
+            this.bookmark = GsonUtils.toJson(bookmarkMap.values)
+            this.scaleFactor = this@PreviewActivity.scaleFactor
+            DBHelper.updatePDF(this)
+            DataManager.updatePDFs()
+            // 这里发出事件主要是更新界面阅读进度
+            EventBus.getDefault().post(RecentPDFEvent(true))
+        }
+    }
+
+    private fun resetUIAndCancelAutoScroll() {
+        // 书签页回原位
+        app_ll_content.translationX = -app_ll_content.measuredWidth.toFloat()
+        app_screen_cover.alpha = 0f // 隐藏界面遮罩
+        // 阅读方式回原位
+        app_ll_read_method.translationY = ScreenUtils.getScreenHeight().toFloat()
+        app_ll_more.translationY = ScreenUtils.getScreenHeight().toFloat()
+        if (autoDisp?.isDisposed == false) {
+            autoDisp?.dispose()
+            sbScrollLevel.visibility = View.GONE
+        }
+    }
+
+    /**
+     * 获取阅读进度的百分比
+     */
+    private fun getPercent(percent: Int, total: Int): String { // 创建一个数值格式化对象
+        val numberFormat = NumberFormat.getInstance()
+        // 设置精确到小数点后2位
+        numberFormat.maximumFractionDigits = 1
+        //计算x年x月的成功率
+        val result = numberFormat.format(percent.toFloat() / total.toFloat() * 100f)
+        return "$result%"
     }
 
     private fun initScaleFactor() {
@@ -709,29 +730,22 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                 return
             }
         }
-        if (password != null) configurator = configurator.password(password)
-        paint = Paint()
+        if (password != null) {
+            configurator = configurator.password(password)
+        }
         configurator.disableLongpress()
                 .swipeHorizontal(Settings.isSwipeHorizontal())
                 .nightMode(isNightMode.value == true)
                 .pageFling(Settings.isSwipeHorizontal())
                 .pageSnap(Settings.isSwipeHorizontal())
                 .enableDoubletap(false)
-                .fitEachPage(true) //                .spacing(ConvertUtils.dp2px(4))
+                .fitEachPage(true) // .spacing(ConvertUtils.dp2px(4))
                 .onError { throwable: Throwable ->
                     LogUtils.e(throwable.message)
-                    if (throwable is PdfPasswordException) {
-                        if (!StringUtils.isEmpty(password)) {
-                            UiManager.showCenterShort(R.string.app_password_error)
-                        }
-                        showInputDialog()
-                    } else {
-                        showAlertDialog()
-                    }
+                    showError(throwable)
                 }
                 .onPageError { page: Int, throwable: Throwable ->
                     LogUtils.e(throwable.message)
-//                    UiManager.showShort(getString(R.string.app_cur_page) + page + getString(R.string.app_parse_error))
                     UiManager.showShort(getString(R.string.app_cur_page_parse_error, page))
                 }
                 .onDrawAll { canvas: Canvas?, pageWidth: Float, _: Float, displayedPage: Int ->
@@ -743,117 +757,160 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                 }
                 .onPageChange { page: Int, _: Int ->
                     curPage = page
+                    val pageInfo = "${page + 1} / ${this.pageCount}"
                     app_tv_bookmark.isSelected = bookmarkMap.containsKey(page.toLong()) // 如果是书签则标红
                     app_quickbar_title.text = getTitle(page)
-                    app_tv_pageinfo2.text = (page + 1).toString() + " / " + this.pageCount
-                    app_tv_pageinfo.text = (page + 1).toString() + " / " + this.pageCount
+                    app_tv_pageinfo2.text = pageInfo
+                    app_tv_pageinfo.text = pageInfo
                     app_sb_progress.progress = page
                 }
                 .onLoad {
-                    pageCount = app_pdfview.pageCount
-                    app_sb_progress.max = pageCount - 1
-                    val list = app_pdfview.tableOfContents
-                    if (init) {
-                        findContent(list)
-                    }
-                    val fragmentList = supportFragmentManager.fragments
-                    for (f in fragmentList) {
-                        if (f is IContentFragInterface) {
-                            contentFragInterface = f
-                        } else if (f is IBkFragInterface) {
-                            bkFragInterface = f
-                        }
-                    }
-                    if (init) {
-                        contentFragInterface?.update(list)
-                    }
-                    bkFragInterface?.update(bookmarkMap.values)
-                    val keySet: Set<Long> = contentMap.keys
-                    pageList.addAll(keySet)
-                    pageList.sort()
-                    if (isNightMode.value != true) {
-                        app_pdfview_bg.background = ColorDrawable(Color.WHITE)
-                        if (Settings.isSwipeHorizontal()) {
-                            val page = (app_pdfview.pageCount / 2.toFloat()).roundToInt()
-                            val sizeF = app_pdfview.getPageSize(page)
-                            val lp = app_pdfview_bg.layoutParams
-                            lp.width = sizeF.width.toInt()
-                            lp.height = sizeF.height.toInt()
-                            app_pdfview_bg.layoutParams = lp
-                        } else {
-                            val lp = app_pdfview_bg.layoutParams
-                            lp.width = ScreenUtils.getScreenWidth()
-                            lp.height = ScreenUtils.getScreenHeight()
-                            app_pdfview_bg.layoutParams = lp
-                        }
-                    } else {
-                        app_pdfview_bg.background = ColorDrawable(Color.BLACK)
-                    }
+                    initContentAndBookmark()
+                    initAboutPage()
+                    initUI()
                     init = false
                 }
                 .onTap { event: MotionEvent ->
-                    if (autoDisp?.isDisposed == false) {
-                        isPause = if (toolbar?.alpha == 1.0f) {
-                            hideBar()
-                            enterFullScreen()
-                            false
-                        } else {
-                            !isPause
-                        }
-                        return@onTap true
-                    }
-                    if (app_ll_read_method.translationY != ScreenUtils.getScreenHeight().toFloat()) {
-                        closeReadMethod()
-                        return@onTap true
-                    }
-                    if (app_ll_more.translationY != ScreenUtils.getScreenHeight().toFloat()) {
-                        closeMore()
-                        return@onTap true
-                    }
-                    val x = event.rawX
-                    val previous: Float
-                    val next: Float
-                    if (Settings.isClickFlipPage()) {
-                        previous = ScreenUtils.getScreenWidth() * 0.3f
-                        next = ScreenUtils.getScreenWidth() * 0.7f
-                    } else {
-                        previous = 0f
-                        next = ScreenUtils.getScreenWidth().toFloat()
-                    }
-                    if (ScreenUtils.isPortrait() && x <= previous) {
-                        if (toolbar?.alpha == 1.0f) {
-                            hideBar()
-                            enterFullScreen()
-                        } else {
-                            var currentPage = app_pdfview.currentPage
-                            app_pdfview.jumpTo(--currentPage, true)
-                        }
-                    } else if (ScreenUtils.isPortrait() && x >= next) {
-                        if (toolbar?.alpha == 1.0f) {
-                            hideBar()
-                            enterFullScreen()
-                        } else {
-                            var currentPage = app_pdfview.currentPage
-                            app_pdfview.jumpTo(++currentPage, true)
-                        }
-                    } else {
-                        val visible = (toolbar?.alpha == 1.0f
-                                && app_ll_bottombar.alpha == 1.0f)
-                        if (visible) {
-                            hideBar()
-                            enterFullScreen()
-                        } else {
-                            if (app_sb_scale.visibility == View.VISIBLE) {
-                                app_sb_scale.visibility = View.GONE
-                            } else {
-                                exitFullScreen()
-                                showBar()
-                            }
-                        }
-                    }
-                    true
+                    if (judgeAutoScrollPause()) return@onTap true
+                    if (judgeCloseReadMethod()) return@onTap true
+                    if (judgeCloseMode()) return@onTap true
+                    judgeFlipPage(event)
                 }
                 .load()
+    }
+
+    private fun initUI() {
+        if (isNightMode.value != true) {
+            app_pdfview_bg.background = ColorDrawable(Color.WHITE)
+            if (Settings.isSwipeHorizontal()) {
+                val page = (app_pdfview.pageCount / 2.toFloat()).roundToInt()
+                val sizeF = app_pdfview.getPageSize(page)
+                val lp = app_pdfview_bg.layoutParams
+                lp.width = sizeF.width.toInt()
+                lp.height = sizeF.height.toInt()
+                app_pdfview_bg.layoutParams = lp
+            } else {
+                val lp = app_pdfview_bg.layoutParams
+                lp.width = ScreenUtils.getScreenWidth()
+                lp.height = ScreenUtils.getScreenHeight()
+                app_pdfview_bg.layoutParams = lp
+            }
+        } else {
+            app_pdfview_bg.background = ColorDrawable(Color.BLACK)
+        }
+    }
+
+    private fun initAboutPage() {
+        pageCount = app_pdfview.pageCount
+        app_sb_progress.max = pageCount - 1
+        val keySet: Set<Long> = contentMap.keys
+        pageList.addAll(keySet)
+        pageList.sort()
+    }
+
+    private fun initContentAndBookmark() {
+        val list = app_pdfview.tableOfContents
+        if (init) {
+            findContent(list)
+        }
+        val fragmentList = supportFragmentManager.fragments
+        for (f in fragmentList) {
+            if (f is IContentFragInterface) {
+                contentFragInterface = f
+            } else if (f is IBkFragInterface) {
+                bkFragInterface = f
+            }
+        }
+        if (init) {
+            contentFragInterface?.update(list)
+        }
+        bkFragInterface?.update(bookmarkMap.values)
+    }
+
+    private fun showError(throwable: Throwable) {
+        if (throwable is PdfPasswordException) {
+            if (!StringUtils.isEmpty(password)) {
+                UiManager.showCenterShort(R.string.app_password_error)
+            }
+            showInputDialog()
+        } else {
+            showAlertDialog()
+        }
+    }
+
+    private fun judgeFlipPage(event: MotionEvent): Boolean {
+        val x = event.rawX
+        val previous: Float
+        val next: Float
+        if (Settings.isClickFlipPage()) {
+            previous = ScreenUtils.getScreenWidth() * 0.3f
+            next = ScreenUtils.getScreenWidth() * 0.7f
+        } else {
+            previous = 0f
+            next = ScreenUtils.getScreenWidth().toFloat()
+        }
+        if (ScreenUtils.isPortrait() && x <= previous) {
+            if (toolbar?.alpha == 1.0f) {
+                hideBar()
+                enterFullScreen()
+            } else {
+                var currentPage = app_pdfview.currentPage
+                app_pdfview.jumpTo(--currentPage, true)
+            }
+        } else if (ScreenUtils.isPortrait() && x >= next) {
+            if (toolbar?.alpha == 1.0f) {
+                hideBar()
+                enterFullScreen()
+            } else {
+                var currentPage = app_pdfview.currentPage
+                app_pdfview.jumpTo(++currentPage, true)
+            }
+        } else {
+            val visible = (toolbar?.alpha == 1.0f
+                    && app_ll_bottombar.alpha == 1.0f)
+            if (visible) {
+                hideBar()
+                enterFullScreen()
+            } else {
+                if (app_sb_scale.visibility == View.VISIBLE) {
+                    app_sb_scale.visibility = View.GONE
+                } else {
+                    exitFullScreen()
+                    showBar()
+                }
+            }
+        }
+        return true
+    }
+
+    private fun judgeCloseMode(): Boolean {
+        if (app_ll_more.translationY != ScreenUtils.getScreenHeight().toFloat()) {
+            closeMore()
+            return true
+        }
+        return false
+    }
+
+    private fun judgeCloseReadMethod(): Boolean {
+        if (app_ll_read_method.translationY != ScreenUtils.getScreenHeight().toFloat()) {
+            closeReadMethod()
+            return true
+        }
+        return false
+    }
+
+    private fun judgeAutoScrollPause(): Boolean {
+        if (autoDisp?.isDisposed == false) {
+            isPause = if (toolbar?.alpha == 1.0f) {
+                hideBar()
+                enterFullScreen()
+                false
+            } else {
+                !isPause
+            }
+            return true
+        }
+        return false
     }
 
     private fun showInputDialog() {
@@ -912,18 +969,18 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     }
 
     private fun getTitle(page: Int): String? {
-        var page = page
+        var tempPage = page
         if (contentMap.isEmpty()) return getString(R.string.app_have_no_content)
         var title: String?
-        val bk = contentMap[page.toLong()]
+        val bk = contentMap[tempPage.toLong()]
         title = bk?.title
         if (StringUtils.isEmpty(title)) {
-            if (page < pageList[0]) {
+            if (tempPage < pageList[0]) {
                 title = contentMap[pageList[0]]?.title
             } else {
-                var index = pageList.indexOf(page.toLong())
+                var index = pageList.indexOf(tempPage.toLong())
                 while (index == -1) {
-                    index = pageList.indexOf(page--.toLong())
+                    index = pageList.indexOf(tempPage--.toLong())
                 }
                 title = contentMap[pageList[index]]?.title
             }
@@ -1030,6 +1087,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         }
         toolbar?.post { UiManager.setNavigationBarColor(this, resources.getColor(R.color.base_black)) }
     }
+    //endregion
 
     companion object {
         private const val EXTRA_PDF = "EXTRA_PDF"
