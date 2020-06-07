@@ -771,9 +771,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
                     init = false
                 }
                 .onTap { event: MotionEvent ->
-                    if (judgeAutoScrollPause()) return@onTap true
+                    if (judgeCloseMore()) return@onTap true
                     if (judgeCloseReadMethod()) return@onTap true
-                    if (judgeCloseMode()) return@onTap true
+                    if (judgeAutoScrollPause()) return@onTap true
                     judgeFlipPage(event)
                 }
                 .load()
@@ -883,7 +883,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
         return true
     }
 
-    private fun judgeCloseMode(): Boolean {
+    private fun judgeCloseMore(): Boolean {
         if (app_ll_more.translationY != ScreenUtils.getScreenHeight().toFloat()) {
             closeMore()
             return true
@@ -969,6 +969,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface {
     }
 
     private fun getTitle(page: Int): String? {
+        if (pageList.isEmpty()) {
+            return null
+        }
         var tempPage = page
         if (contentMap.isEmpty()) return getString(R.string.app_have_no_content)
         var title: String?
