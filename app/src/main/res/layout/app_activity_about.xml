@@ -42,7 +42,7 @@
                     android:layout_marginBottom="10dp"
                     android:gravity="center"
                     android:text="@string/app_name_en"
-                    android:textStyle="bold|italic"
+                    android:textStyle="bold"
                     android:textColor="@color/app_color_accent"
                     android:textSize="@dimen/base_text_xxxxhlarge" />
 
