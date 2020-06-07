@@ -113,7 +113,14 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
     private val updateDB: MutableLiveData<Int> = MutableLiveData<Int>().apply {
         observe(this@PreviewActivity::getLifecycle) {
-            updateDB()
+            pdf?.run {
+                this.curPage = this@PreviewActivity.curPage
+                this.progress = getPercent(curPage + 1, pageCount)
+                this.bookmark = GsonUtils.toJson(bookmarkMap.values)
+                this.scaleFactor = this@PreviewActivity.scaleFactor
+                DBHelper.updatePDF(this)
+                DataManager.updatePDFs()
+            }
         }
     }
 
@@ -212,6 +219,8 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
     override fun onPause() {
         super.onPause()
+
+        updateDB.value = 0
         // 这里发出事件主要是更新界面阅读进度
         EventBus.getDefault().post(RecentPDFEvent(true))
     }
@@ -430,17 +439,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 .alpha(alpha)
                 .setListener(listener)
                 .start()
-    }
-
-    private fun updateDB() {
-        pdf?.run {
-            this.curPage = this@PreviewActivity.curPage
-            this.progress = getPercent(curPage + 1, pageCount)
-            this.bookmark = GsonUtils.toJson(bookmarkMap.values)
-            this.scaleFactor = this@PreviewActivity.scaleFactor
-            DBHelper.updatePDF(this)
-            DataManager.updatePDFs()
-        }
     }
 
     private fun resetUIAndCancelAutoScroll() {
