@@ -111,6 +111,11 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             scaleViewParentAnim(pair.first, pair.second)
         }
     }
+    private val updateDB: MutableLiveData<Int> = MutableLiveData<Int>().apply {
+        observe(this@PreviewActivity::getLifecycle) {
+            updateDB()
+        }
+    }
 
     private var init = true
     private var pdf: PDF? = null // 本应用打开
@@ -207,7 +212,8 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
     override fun onPause() {
         super.onPause()
-        updateDBAndMainUI()
+        // 这里发出事件主要是更新界面阅读进度
+        EventBus.getDefault().post(RecentPDFEvent(true))
     }
 
     override fun onStop() {
@@ -426,7 +432,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 .start()
     }
 
-    private fun updateDBAndMainUI() {
+    private fun updateDB() {
         pdf?.run {
             this.curPage = this@PreviewActivity.curPage
             this.progress = getPercent(curPage + 1, pageCount)
@@ -434,8 +440,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             this.scaleFactor = this@PreviewActivity.scaleFactor
             DBHelper.updatePDF(this)
             DataManager.updatePDFs()
-            // 这里发出事件主要是更新界面阅读进度
-            EventBus.getDefault().post(RecentPDFEvent(true))
         }
     }
 
@@ -589,6 +593,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
             bkFragInterface?.update(bookmarkMap.values)
             app_pdfview.invalidate()
+            updateDB.value = 0
         }
         app_tv_bookmark.setOnLongClickListener {
             val tab = app_tab_layout.getTabAt(1)
