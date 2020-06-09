@@ -27,6 +27,7 @@ import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.event.RecentPDFEvent
 import com.aaron.yespdf.common.utils.AboutUtils
+import com.aaron.yespdf.common.utils.NotchUtils
 import com.aaron.yespdf.common.utils.PdfUtils
 import com.aaron.yespdf.settings.SettingsActivity.Companion.start
 import com.blankj.utilcode.util.*
@@ -58,8 +59,9 @@ import kotlin.math.roundToInt
 class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListener {
 
     //region Field
+    private val rootView: ViewGroup by lazy { findViewById<ViewGroup>(R.id.app_rl_root) }
     private lateinit var scales: List<TextView>
-    private val scaleLevel: View by lazy { findViewById<View>(R.id.app_scale_level) }
+    private val scaleLevel: ViewGroup by lazy { findViewById<ViewGroup>(R.id.app_scale_level) }
     private val scale025: TextView by lazy { findViewById<TextView>(R.id.app_scale_0_25) }
     private val scale050: TextView by lazy { findViewById<TextView>(R.id.app_scale_0_50) }
     private val scale075: TextView by lazy { findViewById<TextView>(R.id.app_scale_0_75) }
@@ -78,7 +80,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 app_pdfview_bg.setImageResource(R.drawable.app_ic_placeholder_black)
                 app_pdfview_bg.setBackgroundColor(Color.WHITE)
             }
-            scaleViewParentAnim(0.0f, object : AnimatorListenerAdapter() {
+            scaleViewParentAnim(0.0f, 0L, object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     scaleLevel.visibility = View.GONE
                     scales.forEach { scaleView -> scaleView.translationX = 0f }
@@ -108,7 +110,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                     }
                 } else null)
             }
-            scaleViewParentAnim(pair.first, pair.second)
+            scaleViewParentAnim(pair.first, 0L, pair.second)
         }
     }
     private val updateDB: MutableLiveData<Int> = MutableLiveData<Int>().apply {
@@ -179,6 +181,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initView(savedInstanceState)
+        adaptNotch()
 
         scales = listOf(scale025, scale050, scale075, scale100, scale200, scale300)
         app_pdfview.curZoom.observe(this::getLifecycle) { scale ->
@@ -190,7 +193,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 return@observe
             }
             if (scaleLevel.visibility != View.VISIBLE) {
-                scaleViewParentAnim(1.0f, object : AnimatorListenerAdapter() {
+                scaleViewParentAnim(1.0f, 0L, object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
                         scaleLevel.visibility = View.VISIBLE
                     }
@@ -203,7 +206,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 0.25f -> scale025
                 0.50f -> scale050
                 0.75f -> scale075
-                1.00f -> scale100
                 2.00f -> scale200
                 3.00f -> scale300
                 else -> null
@@ -214,6 +216,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onRestart() {
         super.onRestart()
         fixBackToForegroundClick()
+    }
+
+    override fun onStart() {
+        super.onStart()
         enterFullScreen()
     }
 
@@ -347,7 +353,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         app_pdfview.zoomWithAnimation(scale)
         app_pdfview.curZoom.value = scale
         if (scale == 1.00f) {
-            scaleViewParentAnim(0.0f, object : AnimatorListenerAdapter() {
+            scaleViewParentAnim(0.0f, SCALE_VIEW_ITEM_ANIM_DURATION, object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     scaleLevel.visibility = View.GONE
                     scale100.translationX = 0f
@@ -360,10 +366,13 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     //region Private function
     @SuppressLint("SwitchIntDef")
     private fun initView(savedInstanceState: Bundle?) {
-        if (Settings.isLockLandscape() && BarUtils.isSupportNavBar()) {
-            nightModeBtn.translationX = -ConvertUtils.dp2px(48f).toFloat()
-        } else {
-            nightModeBtn.translationX = 0f
+        app_ll_undoredobar.apply {
+            layoutParams = layoutParams.apply {
+                width = if (ScreenUtils.isLandscape()) {
+                    ConvertUtils.dp2px(300f)
+                } else (ScreenUtils.getScreenWidth() * 0.7f).toInt()
+            }
+            requestLayout()
         }
         app_ll_content.post {
             app_ll_content.layoutParams.apply {
@@ -421,7 +430,23 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         initScaleFactor()
         initListener()
         initPdf(uri, pdf)
-        enterFullScreen()
+    }
+
+    private fun adaptNotch() {
+        LiveDataBus.with<NotchUtils.SafeInset>(NotchUtils.NOTCH_DISPATCH).observe(this::getLifecycle) {
+            val (left, _, _, _) = it
+            toolbar?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
+            app_tv_pageinfo?.apply {
+                layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
+                requestLayout()
+            }
+            scaleLevel.apply { setPadding(left, paddingTop, paddingRight, paddingBottom) }
+            app_ll_bottombar.apply { setPadding(left, paddingTop, paddingRight, paddingBottom) }
+            app_ll_undoredobar.apply {
+                layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
+                requestLayout()
+            }
+        }
     }
 
     /**
@@ -433,8 +458,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         app_ll_more.translationY = screenHeight.toFloat()
     }
 
-    private fun scaleViewParentAnim(alpha: Float, listener: Animator.AnimatorListener?) {
+    private fun scaleViewParentAnim(alpha: Float, startDelayed: Long = 0L, listener: Animator.AnimatorListener? = null) {
         scaleLevel.animate()
+                .setStartDelay(startDelayed)
                 .setDuration(ANIM_DURATION)
                 .alpha(alpha)
                 .setListener(listener)
@@ -1183,6 +1209,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
 
     private fun enterFullScreen() {
+        UiManager.setTransparentNavigationBar(window)
         if (Settings.isShowStatusBar()) {
             UiManager.setTranslucentStatusBar(this)
             app_ll_content.setPadding(0, ConvertUtils.dp2px(25f), 0, 0)
@@ -1203,20 +1230,23 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
-
     }
 
     private fun exitFullScreen() {
         if (Settings.isShowStatusBar()) {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         } else {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
-        toolbar?.post { UiManager.setNavigationBarColor(this, resources.getColor(R.color.base_black)) }
+//        toolbar?.post { UiManager.setNavigationBarColor(this, resources.getColor(R.color.base_black)) }
     }
     //endregion
 

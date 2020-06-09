@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     tools:context=".preview.PreviewActivity">
 
     <!-- PDFView 的背景 -->
@@ -27,14 +29,17 @@
     <!-- 缩放等级 -->
     <LinearLayout
         android:id="@+id/app_scale_level"
-        android:layout_width="40dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
         android:orientation="vertical"
         android:alpha="0.0"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/app_scale_0_25"
@@ -122,7 +127,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:fitsSystemWindows="true"
+        android:background="@color/app_preview_bar_bg"
         android:visibility="gone"
         android:alpha="0.0"
         android:orientation="vertical">
@@ -130,7 +135,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/app_preview_bar_bg"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:paddingTop="12dp"
@@ -177,7 +181,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/app_preview_bar_bg"
             android:paddingTop="12dp"
             android:paddingBottom="24dp">
 
@@ -251,6 +254,7 @@
         android:layout_height="48dp"
         android:padding="12dp"
         android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
         android:layout_alignParentRight="true"
         android:layout_above="@id/app_ll_bottombar"
         android:visibility="gone"
@@ -264,8 +268,10 @@
         android:layout_alignParentTop="true"
         android:background="@color/app_preview_bar_bg"
         app:titleTextColor="@color/base_white"
+        app:contentInsetRight="16dp"
         style="@style/AppToolbarStyle"
         android:alpha="0.0"
+        android:visibility="gone"
         tools:title="大话设计模式" >
 
         <CheckBox
@@ -300,13 +306,13 @@
     <!-- 撤销跳转栏 -->
     <LinearLayout
         android:id="@+id/app_ll_undoredobar"
-        android:layout_width="300dp"
+        android:layout_width="200dp"
         android:layout_height="54dp"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="16dp"
         android:layout_above="@id/app_ll_bottombar"
         android:alpha="0.0"
         android:visibility="gone"
-        android:fitsSystemWindows="true"
         android:background="@drawable/app_shape_round_rect">
 
         <LinearLayout

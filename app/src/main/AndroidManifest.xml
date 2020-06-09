@@ -12,8 +12,12 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:replace="name,icon,label,theme,android:allowBackup">
-        <activity android:name=".main.SearchActivity"/>
-        <activity android:name=".filepicker.ScanActivity" />
+        <activity
+            android:name=".main.SearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".filepicker.ScanActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".main.MainActivity"
             android:screenOrientation="portrait"
@@ -24,7 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".preview.PreviewActivity">
+        <activity
+            android:name=".preview.PreviewActivity"
+            android:screenOrientation="portrait">
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -33,14 +39,15 @@
                 <data android:mimeType="application/pdf" />
             </intent-filter>
         </activity>
-        <activity android:name=".settings.SettingsActivity" />
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".about.AboutActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".filepicker.SelectActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".main.UpgradeActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
