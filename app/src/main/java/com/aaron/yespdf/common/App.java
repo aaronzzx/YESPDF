@@ -4,24 +4,16 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
 import androidx.multidex.MultiDex;
 
 import com.aaron.yespdf.BuildConfig;
-import com.aaron.yespdf.common.event.HotfixEvent;
 import com.aaron.yespdf.common.greendao.DaoMaster;
-import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.SPStaticUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
 import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
-import com.tencent.bugly.beta.interfaces.BetaPatchListener;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.Locale;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -61,7 +53,7 @@ public class App extends Application {
         DataManager.init();
         Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
-//        bugly();
+        bugly();
     }
 
     private boolean isFirstInstall() {
@@ -89,7 +81,7 @@ public class App extends Application {
 
     private void bugly() {
         // Tinker
-        Beta.enableHotfix = true; // 设置是否开启热更新能力，默认为true
+        /*Beta.enableHotfix = true; // 设置是否开启热更新能力，默认为true
         Beta.canAutoDownloadPatch = true; // 设置是否自动下载补丁
         Beta.canNotifyUserRestart = false; // 设置是否提示用户重启
         Beta.canAutoPatch = true; // 设置是否自动合成补丁
@@ -137,7 +129,7 @@ public class App extends Application {
                 Log.e(TAG, "补丁回滚");
                 Beta.cleanTinkerPatch(true);
             }
-        };
+        };*/
 
         // Bugly
 //        Beta.autoInit = true; // 自动初始化开关
@@ -204,7 +196,7 @@ public class App extends Application {
 //            public void onDestroy(Context context, View view, UpgradeInfo upgradeInfo) {
 //            }
 //        };
-        Bugly.setIsDevelopmentDevice(this, BuildConfig.DEBUG); // 是否开发设备
+//        Bugly.setIsDevelopmentDevice(this, BuildConfig.DEBUG); // 是否开发设备
         Bugly.init(this, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
     }
 
