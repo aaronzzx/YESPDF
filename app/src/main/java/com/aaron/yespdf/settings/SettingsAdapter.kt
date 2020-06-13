@@ -50,7 +50,7 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                 override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
                     val maxRecentCount = maxRecentCounts[position]
                     holder.itemView.app_tv_count.text = maxRecentCount
-                    Settings.setMaxRecentCount(maxRecentCount)
+                    Settings.maxRecentCount = maxRecentCount
                     EventBus.getDefault().post(maxRecentEvent)
                 }
 
@@ -67,7 +67,7 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 val level = seekBar.progress + 1
 //                UiManager.showShort(context.getString(R.string.app_cur_level, level))
-                Settings.setScrollLevel(level.toLong())
+                Settings.scrollLevel = level.toLong()
             }
         })
         return holder
@@ -75,11 +75,11 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 
     private fun tapOptions(switcher: Switch, pos: Int) {
         when (pos) {
-            POS_VOLUME_CONTROL -> Settings.setVolumeControl(switcher.isChecked)
-            POS_CLICK_FLIP_PAGE -> Settings.setClickFlipPage(switcher.isChecked)
-            POS_SHOW_STATUS_BAR -> Settings.setShowStatusBar(switcher.isChecked)
-            POS_KEEP_SCREEN_ON -> Settings.setKeepScreenOn(switcher.isChecked)
-            POS_LAYOUT -> Settings.setHorizontalLayout(switcher.isChecked)
+            POS_VOLUME_CONTROL -> Settings.volumeControl = switcher.isChecked
+            POS_CLICK_FLIP_PAGE -> Settings.clickFlipPage = switcher.isChecked
+            POS_SHOW_STATUS_BAR -> Settings.showStatusBar = switcher.isChecked
+            POS_KEEP_SCREEN_ON -> Settings.keepScreenOn = switcher.isChecked
+            POS_LAYOUT -> Settings.linearLayout = switcher.isChecked
         }
     }
 
@@ -89,34 +89,34 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                 when (position) {
                     POS_VOLUME_CONTROL -> {
                         viewHolder.itemView.app_tv_title.setText(R.string.app_volume_control)
-                        viewHolder.itemView.app_switch.isChecked = Settings.isVolumeControl()
+                        viewHolder.itemView.app_switch.isChecked = Settings.volumeControl
                     }
                     POS_CLICK_FLIP_PAGE -> {
                         viewHolder.itemView.app_tv_title.setText(R.string.app_click_flip_page)
-                        viewHolder.itemView.app_switch.isChecked = Settings.isClickFlipPage()
+                        viewHolder.itemView.app_switch.isChecked = Settings.clickFlipPage
                     }
                     POS_SHOW_STATUS_BAR -> {
                         viewHolder.itemView.app_tv_title.setText(R.string.app_show_status_bar)
-                        viewHolder.itemView.app_switch.isChecked = Settings.isShowStatusBar()
+                        viewHolder.itemView.app_switch.isChecked = Settings.showStatusBar
                     }
                     POS_KEEP_SCREEN_ON -> {
                         viewHolder.itemView.app_tv_title.setText(R.string.app_keep_screen_on)
-                        viewHolder.itemView.app_switch.isChecked = Settings.isKeepScreenOn()
+                        viewHolder.itemView.app_switch.isChecked = Settings.keepScreenOn
                     }
                     POS_LAYOUT -> {
                         viewHolder.itemView.app_tv_title.setText(R.string.app_linear_layout)
-                        viewHolder.itemView.app_switch.isChecked = Settings.isLinearLayout()
+                        viewHolder.itemView.app_switch.isChecked = Settings.linearLayout
                     }
                 }
             }
             is SeekbarHolder -> {
                 viewHolder.itemView.app_tv_title.setText(R.string.app_scroll_velocity)
-                viewHolder.itemView.app_sb_scroll_level.progress = Settings.getScrollLevel().toInt() - 1
+                viewHolder.itemView.app_sb_scroll_level.progress = Settings.scrollLevel.toInt() - 1
             }
             is MaxRecentHolder -> {
                 viewHolder.itemView.app_tv_title.setText(R.string.app_max_recent_count)
-                viewHolder.itemView.app_tv_count.text = Settings.getMaxRecentCount()
-                viewHolder.itemView.app_spinner.setSelection(maxRecentCounts.indexOf(Settings.getMaxRecentCount()))
+                viewHolder.itemView.app_tv_count.text = Settings.maxRecentCount
+                viewHolder.itemView.app_spinner.setSelection(maxRecentCounts.indexOf(Settings.maxRecentCount))
             }
         }
     }

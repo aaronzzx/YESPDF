@@ -18,7 +18,7 @@ import com.blankj.utilcode.util.StringUtils
 class AllAdapter2(
         data: MutableList<Cover>
 ) : BaseAdapter<Cover, CollectionHolder>(
-        if (Settings.isLinearLayout()) CollectionHolder.DEFAULT_LAYOUT_HORIZONTAL
+        if (Settings.linearLayout) CollectionHolder.DEFAULT_LAYOUT_HORIZONTAL
         else CollectionHolder.DEFAULT_LAYOUT,
         data
 ) {

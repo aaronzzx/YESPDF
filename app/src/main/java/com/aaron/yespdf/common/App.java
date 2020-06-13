@@ -51,7 +51,6 @@ public class App extends Application {
         }
 
         DataManager.init();
-        Settings.querySettings();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
         bugly();
     }

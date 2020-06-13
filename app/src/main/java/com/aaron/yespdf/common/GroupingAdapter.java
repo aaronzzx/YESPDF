@@ -57,7 +57,7 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             View itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false);
             return new EmptyHolder(itemView);
         } else if (enableAddNew && viewType == TYPE_ADD_COLLECTION) {
-            int layout = Settings.isLinearLayout() ? CoverHolder.DEFAULT_LAYOUT_HORIZONTAL : CoverHolder.DEFAULT_LAYOUT;
+            int layout = Settings.INSTANCE.getLinearLayout() ? CoverHolder.DEFAULT_LAYOUT_HORIZONTAL : CoverHolder.DEFAULT_LAYOUT;
             View add = inflater.inflate(layout, parent, false);
             CoverHolder holder = new CoverHolder(add);
             holder.getTvProgress().setVisibility(View.GONE);
@@ -65,7 +65,7 @@ public class GroupingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.itemView.setOnClickListener(v -> callback.onAddNewGroup());
             return holder;
         }
-        int layout = Settings.isLinearLayout() ? CollectionHolder.DEFAULT_LAYOUT_HORIZONTAL : CollectionHolder.DEFAULT_LAYOUT;
+        int layout = Settings.INSTANCE.getLinearLayout() ? CollectionHolder.DEFAULT_LAYOUT_HORIZONTAL : CollectionHolder.DEFAULT_LAYOUT;
         View view = inflater.inflate(layout, parent, false);
         CollectionHolder holder = new CollectionHolder(view);
         holder.itemView.setOnClickListener(v -> callback.onAddToGroup(holder.getTvTitle().getText().toString()));

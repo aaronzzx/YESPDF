@@ -43,15 +43,15 @@ class RecentFragment : CommonFragment(), IOperation, IPickCallback<PDF> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isHorizontalLayout = Settings.isLinearLayout()
+        isHorizontalLayout = Settings.linearLayout
         initData()
         initView()
     }
 
     override fun onStart() {
         super.onStart()
-        if (isHorizontalLayout != Settings.isLinearLayout()) {
-            isHorizontalLayout = Settings.isLinearLayout()
+        if (isHorizontalLayout != Settings.linearLayout) {
+            isHorizontalLayout = Settings.linearLayout
             initView()
         }
     }

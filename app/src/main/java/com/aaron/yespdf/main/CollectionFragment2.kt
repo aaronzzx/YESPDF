@@ -116,8 +116,8 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                 this.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             }
         }
-        if (isHorizontalLayout != Settings.isLinearLayout()) {
-            isHorizontalLayout = Settings.isLinearLayout()
+        if (isHorizontalLayout != Settings.linearLayout) {
+            isHorizontalLayout = Settings.linearLayout
             initView()
         }
     }

@@ -71,7 +71,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     private val nightModeBtn: View by lazy { findViewById<View>(R.id.app_night_btn) }
     private val isNightMode: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
         observe(this@PreviewActivity::getLifecycle) {
-            Settings.setNightMode(it)
+            Settings.nightMode = it
 
             if (it) {
                 app_pdfview_bg.setImageResource(R.drawable.app_ic_placeholder_white)
@@ -132,7 +132,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     private var curPage = 0
     private var pageCount = 0
     private var password: String? = null
-    private var isVolumeControl = Settings.isVolumeControl()
+    private var isVolumeControl = Settings.volumeControl
     private var contentFragInterface: IContentFragInterface? = null
     private var bkFragInterface: IBkFragInterface? = null
     private var autoDisp: Disposable? = null // 自动滚动
@@ -247,7 +247,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-            if (Settings.isKeepScreenOn()) {
+            if (Settings.keepScreenOn) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -310,7 +310,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SETTINGS) {
-            isVolumeControl = Settings.isVolumeControl()
+            isVolumeControl = Settings.volumeControl
         }
     }
     //endregion
@@ -386,13 +386,13 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.app_ic_action_back_white)
         }
-        if (!Settings.isSwipeHorizontal()) {
+        if (!Settings.swipeHorizontal) {
             val lp = app_pdfview_bg.layoutParams
             lp.width = ViewGroup.LayoutParams.MATCH_PARENT
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT
             app_pdfview_bg.layoutParams = lp
         }
-        isNightMode.value = Settings.isNightMode()
+        isNightMode.value = Settings.nightMode
         nightModeBtn.isSelected = isNightMode.value == true
         nightModeBtn.background = if (nightModeBtn.isSelected) {
             resources.getDrawable(R.drawable.app_shape_circle_white_alpha)
@@ -406,12 +406,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 app_ll_content.translationX = -app_ll_content.measuredWidth.toFloat()
             }
         }
-        if (Settings.isSwipeHorizontal()) {
+        if (Settings.swipeHorizontal) {
             app_tv_horizontal.setTextColor(resources.getColor(R.color.app_color_accent))
         } else {
             app_tv_vertical.setTextColor(resources.getColor(R.color.app_color_accent))
         }
-        if (Settings.isLockLandscape()) {
+        if (Settings.lockLandscape) {
             app_tv_lock_landscape.setTextColor(resources.getColor(R.color.app_color_accent))
             if (!ScreenUtils.isLandscape()) ScreenUtils.setLandscape(this)
         } else {
@@ -586,7 +586,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
         })
         app_tv_auto_scroll.setOnClickListener {
-            if (Settings.isSwipeHorizontal()) {
+            if (Settings.swipeHorizontal) {
                 UiManager.showCenterShort(R.string.app_horizontal_does_not_support_auto_scroll)
                 return@setOnClickListener
             }
@@ -594,7 +594,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             if (it.isSelected) {
                 hideBar()
                 enterFullScreen()
-                sbScrollLevel.progress = Settings.getScrollLevel().toInt() - 1
+                sbScrollLevel.progress = Settings.scrollLevel.toInt() - 1
                 sbScrollLevel.visibility = View.VISIBLE
                 autoDisp = startAutoScroll()
             } else {
@@ -636,10 +636,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         })
         app_tv_lock_landscape.setOnClickListener {
             if (ScreenUtils.isPortrait()) {
-                Settings.setLockLandscape(true)
+                Settings.lockLandscape = true
                 ScreenUtils.setLandscape(this)
             } else {
-                Settings.setLockLandscape(false)
+                Settings.lockLandscape = false
                 ScreenUtils.setPortrait(this)
             }
         }
@@ -697,7 +697,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         }
         app_tv_horizontal.setOnClickListener {
             hideReadMethod()
-            if (!Settings.isSwipeHorizontal()) {
+            if (Settings.swipeHorizontal) {
                 if (autoDisp?.isDisposed == false) {
                     sbScrollLevel.visibility = View.GONE
                     autoDisp?.dispose()
@@ -706,16 +706,16 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 }
                 app_tv_horizontal.setTextColor(resources.getColor(R.color.app_color_accent))
                 app_tv_vertical.setTextColor(resources.getColor(R.color.base_white))
-                Settings.setSwipeHorizontal(true)
+                Settings.swipeHorizontal = true
                 initPdf(uri, pdf)
             }
         }
         app_tv_vertical.setOnClickListener {
             hideReadMethod()
-            if (Settings.isSwipeHorizontal()) {
+            if (Settings.swipeHorizontal) {
                 app_tv_vertical.setTextColor(resources.getColor(R.color.app_color_accent))
                 app_tv_horizontal.setTextColor(resources.getColor(R.color.base_white))
-                Settings.setSwipeHorizontal(false)
+                Settings.swipeHorizontal = false
                 initPdf(uri, pdf)
             }
         }
@@ -749,7 +749,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                             }
                         }
                         .start()
-                Settings.setScrollLevel((sbScrollLevel.progress + 1).toLong())
+                Settings.scrollLevel = (sbScrollLevel.progress + 1).toLong()
                 autoDisp?.dispose()
                 app_tv_auto_scroll.isSelected = true
                 autoDisp = startAutoScroll()
@@ -764,7 +764,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
 
     private fun startAutoScroll(): Disposable {
-        return Observable.interval(Settings.getScrollLevel(), TimeUnit.MILLISECONDS)
+        return Observable.interval(Settings.scrollLevel, TimeUnit.MILLISECONDS)
                 .doOnDispose {
                     app_tv_auto_scroll.isSelected = false
                     isPause = false
@@ -887,10 +887,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             configurator = configurator.password(password)
         }
         configurator.disableLongpress()
-                .swipeHorizontal(Settings.isSwipeHorizontal())
+                .swipeHorizontal(Settings.swipeHorizontal)
                 .nightMode(isNightMode.value == true)
-                .pageFling(Settings.isSwipeHorizontal())
-                .pageSnap(Settings.isSwipeHorizontal())
+                .pageFling(Settings.swipeHorizontal)
+                .pageSnap(Settings.swipeHorizontal)
                 .enableDoubletap(false)
                 .fitEachPage(true) // .spacing(ConvertUtils.dp2px(4))
                 .onError { throwable: Throwable ->
@@ -934,7 +934,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
     private fun initBgSize() {
         if (isNightMode.value != true) {
-            if (Settings.isSwipeHorizontal()) {
+            if (Settings.swipeHorizontal) {
                 val page = (app_pdfview.pageCount / 2.toFloat()).roundToInt()
                 val sizeF = app_pdfview.getPageSize(page)
                 val lp = app_pdfview_bg.layoutParams
@@ -992,7 +992,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         val x = event.rawX
         val previous: Float
         val next: Float
-        if (Settings.isClickFlipPage()) {
+        if (Settings.clickFlipPage) {
             previous = ScreenUtils.getScreenWidth() * 0.3f
             next = ScreenUtils.getScreenWidth() * 0.7f
         } else {
@@ -1210,7 +1210,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
     private fun enterFullScreen() {
         UiManager.setTransparentNavigationBar(window)
-        if (Settings.isShowStatusBar()) {
+        if (Settings.showStatusBar) {
             UiManager.setTranslucentStatusBar(this)
             app_ll_content.setPadding(0, ConvertUtils.dp2px(25f), 0, 0)
             window.decorView.systemUiVisibility = (
@@ -1233,7 +1233,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
 
     private fun exitFullScreen() {
-        if (Settings.isShowStatusBar()) {
+        if (Settings.showStatusBar) {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION

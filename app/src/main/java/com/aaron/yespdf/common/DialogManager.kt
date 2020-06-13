@@ -107,7 +107,7 @@ object DialogManager {
         val lm = GridLayoutManager(context, 3).apply {
             spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
-                    return if (Settings.isLinearLayout()) 3 else 1
+                    return if (Settings.linearLayout) 3 else 1
                 }
             }
         }

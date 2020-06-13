@@ -17,7 +17,7 @@ import com.blankj.utilcode.util.StringUtils
 class CollectionAdapter2(
         data: MutableList<PDF>
 ) : BaseAdapter<PDF, CoverHolder>(
-        if (Settings.isLinearLayout()) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
+        if (Settings.linearLayout) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
         else CoverHolder.DEFAULT_LAYOUT,
         data
 ) {
