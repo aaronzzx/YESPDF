@@ -14,6 +14,7 @@ import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
@@ -616,10 +617,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             it.isSelected = !it.isSelected
             if (it.isSelected) {
                 hideBar()
-                enterFullScreen()
-                sbScrollLevel.progress = Settings.scrollLevel.toInt() - 1
-                sbScrollLevel.visibility = View.VISIBLE
-                autoDisp = startAutoScroll()
+                showAutoScrollTipsDialog {
+                    enterFullScreen()
+                    sbScrollLevel.progress = Settings.scrollLevel.toInt() - 1
+                    sbScrollLevel.visibility = View.VISIBLE
+                    autoDisp = startAutoScroll()
+                }
             } else {
                 if (autoDisp?.isDisposed == false) {
                     autoDisp?.dispose()
@@ -784,6 +787,41 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         scale100.setOnClickListener(this)
         scale200.setOnClickListener(this)
         scale300.setOnClickListener(this)
+    }
+
+    private fun showAutoScrollTipsDialog(listener: (() -> Unit)?) {
+        if (Settings.autoScrollTipsHasShown) {
+            listener?.invoke()
+            return
+        }
+        DialogManager.createAutoScrollTipsDialog(this) { arrow, seekBar, animatable, btn, dialog ->
+            val arrowAnim = ValueAnimator.ofFloat(0f, 40f).apply {
+                duration = 600L
+                interpolator = LinearInterpolator()
+                repeatCount = ValueAnimator.INFINITE
+                repeatMode = ValueAnimator.REVERSE
+                addUpdateListener { arrow.translationX = it.animatedValue as Float }
+                start()
+            }
+            val seekBarAnim = ValueAnimator.ofInt(0, 100).apply {
+                duration = 1800L
+                interpolator = LinearInterpolator()
+                repeatCount = ValueAnimator.INFINITE
+                repeatMode = ValueAnimator.REVERSE
+                addUpdateListener { seekBar.progress = it.animatedValue as Int }
+                start()
+            }
+            animatable?.start()
+            btn.setOnClickListener {
+                Settings.autoScrollTipsHasShown = true
+                arrowAnim.cancel()
+                seekBarAnim.cancel()
+                animatable?.stop()
+                dialog.dismiss()
+            }
+            dialog.setOnDismissListener { listener?.invoke() }
+            dialog.show()
+        }
     }
 
     private fun startAutoScroll(): Disposable {

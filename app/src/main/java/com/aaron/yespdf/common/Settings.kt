@@ -21,6 +21,7 @@ object Settings {
     private const val SP_KEEP_SCREEN_ON = "SP_KEEP_SCREEN_ON"
     private const val SP_LINEAR_LAYOUT = "SP_LINEAR_LAYOUT"
     private const val SP_SCROLL_SHORTCUT = "SP_SCROLL_SHORTCUT"
+    private const val SP_AUTO_SCROLL_TIPS = "SP_AUTO_SCROLL_TIPS"
 
     var lockLandscape: Boolean
         get() = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false)
@@ -65,4 +66,11 @@ object Settings {
     var scrollShortCut: Boolean
         get() = SPStaticUtils.getBoolean(SP_SCROLL_SHORTCUT, false)
         set(value) = SPStaticUtils.put(SP_SCROLL_SHORTCUT, value)
+
+    /**
+     * 用于第一次打开自动滚动时的教程弹窗
+     */
+    var autoScrollTipsHasShown: Boolean
+        get() = SPStaticUtils.getBoolean(SP_AUTO_SCROLL_TIPS, false)
+        set(value) = SPStaticUtils.put(SP_AUTO_SCROLL_TIPS, value)
 }
