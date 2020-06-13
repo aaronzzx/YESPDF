@@ -78,7 +78,7 @@ internal class SearchAdapter(
             return HeaderHolder(itemView)
         }
         val itemView = inflater.inflate(
-                if (Settings.isHorizontalLayout()) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
+                if (Settings.isLinearLayout()) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
                 else CoverHolder.DEFAULT_LAYOUT,
                 parent,
                 false

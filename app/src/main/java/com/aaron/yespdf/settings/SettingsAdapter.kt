@@ -104,8 +104,8 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                         viewHolder.itemView.app_switch.isChecked = Settings.isKeepScreenOn()
                     }
                     POS_LAYOUT -> {
-                        viewHolder.itemView.app_tv_title.setText(R.string.app_horizontal_layout)
-                        viewHolder.itemView.app_switch.isChecked = Settings.isHorizontalLayout()
+                        viewHolder.itemView.app_tv_title.setText(R.string.app_linear_layout)
+                        viewHolder.itemView.app_switch.isChecked = Settings.isLinearLayout()
                     }
                 }
             }

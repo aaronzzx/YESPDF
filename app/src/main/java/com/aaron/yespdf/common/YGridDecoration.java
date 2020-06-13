@@ -15,7 +15,7 @@ public class YGridDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        if (Settings.isHorizontalLayout()) {
+        if (Settings.isLinearLayout()) {
             outRect.top = ConvertUtils.dp2px(6f);
             outRect.bottom = ConvertUtils.dp2px(6f);
             return;

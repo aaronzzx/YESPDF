@@ -27,7 +27,7 @@ internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<
 
     override fun createHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = inflater.inflate(
-                if (Settings.isHorizontalLayout()) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
+                if (Settings.isLinearLayout()) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
                 else CoverHolder.DEFAULT_LAYOUT,
                 parent,
                 false

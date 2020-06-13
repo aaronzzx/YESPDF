@@ -16,7 +16,7 @@ public final class Settings {
     private static final String SP_SCROLL_LEVEL = "SP_SCROLL_LEVEL";
     private static final String SP_CLICK_FLIP_PAGE = "SP_CLICK_FLIP_PAGE";
     private static final String SP_KEEP_SCREEN_ON = "SP_KEEP_SCREEN_ON";
-    private static final String SP_LAYOUT = "SP_LAYOUT";
+    private static final String SP_LINEAR_LAYOUT = "SP_LAYOUT";
     private static final String SP_DRAW_BOOKMARK = "SP_DRAW_BOOKMARK";
 
     private static boolean lockLandscape;
@@ -28,7 +28,7 @@ public final class Settings {
     private static long scrollLevel;
     private static boolean clickFlipPage;
     private static boolean keepScreenOn;
-    private static boolean layout;
+    private static boolean linearLayout;
 
     static void querySettings() {
         Settings.lockLandscape = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false);
@@ -40,7 +40,7 @@ public final class Settings {
         Settings.scrollLevel = SPStaticUtils.getLong(SP_SCROLL_LEVEL, 8L);
         Settings.clickFlipPage = SPStaticUtils.getBoolean(SP_CLICK_FLIP_PAGE, true);
         Settings.keepScreenOn = SPStaticUtils.getBoolean(SP_KEEP_SCREEN_ON, false);
-        Settings.layout = SPStaticUtils.getBoolean(SP_LAYOUT, false);
+        Settings.linearLayout = SPStaticUtils.getBoolean(SP_LINEAR_LAYOUT, false);
     }
 
     public static void setLockLandscape(boolean lockLandscape) {
@@ -89,8 +89,8 @@ public final class Settings {
     }
 
     public static void setHorizontalLayout(boolean horizontal) {
-        Settings.layout = horizontal;
-        SPStaticUtils.put(SP_LAYOUT, horizontal);
+        Settings.linearLayout = horizontal;
+        SPStaticUtils.put(SP_LINEAR_LAYOUT, horizontal);
     }
 
     public static boolean isLockLandscape() {
@@ -129,8 +129,8 @@ public final class Settings {
         return keepScreenOn;
     }
 
-    public static boolean isHorizontalLayout() {
-        return layout;
+    public static boolean isLinearLayout() {
+        return linearLayout;
     }
 
     private Settings() {

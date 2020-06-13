@@ -82,7 +82,7 @@
     <string name="app_show_status_bar">显示状态栏</string>
     <string name="app_click_flip_page">点击翻页</string>
     <string name="app_keep_screen_on">屏幕常亮</string>
-    <string name="app_horizontal_layout">水平布局</string>
+    <string name="app_linear_layout">线性布局</string>
     <string name="app_max_recent_count">最近显示数量</string>
     <string name="app_lock_landscape">锁定横屏</string>
     <string name="app_export_image">导出图片</string>

@@ -98,7 +98,7 @@ class SearchActivity : CommonActivity() {
             override fun getSpanSize(position: Int): Int {
                 return if (adapter?.isEmpty == true
                         || position == 0
-                        || Settings.isHorizontalLayout()) {
+                        || Settings.isLinearLayout()) {
                     3
                 } else 1
             }
