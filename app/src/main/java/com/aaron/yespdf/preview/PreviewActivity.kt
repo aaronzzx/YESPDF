@@ -720,7 +720,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         }
         app_tv_horizontal.setOnClickListener {
             hideReadMethod()
-            if (Settings.swipeHorizontal) {
+            if (!Settings.swipeHorizontal) {
                 if (autoDisp?.isDisposed == false) {
                     sbScrollLevel.visibility = View.GONE
                     autoDisp?.dispose()
