@@ -20,6 +20,7 @@ object Settings {
     private const val SP_CLICK_FLIP_PAGE = "SP_CLICK_FLIP_PAGE"
     private const val SP_KEEP_SCREEN_ON = "SP_KEEP_SCREEN_ON"
     private const val SP_LINEAR_LAYOUT = "SP_LINEAR_LAYOUT"
+    private const val SP_SCROLL_SHORTCUT = "SP_SCROLL_SHORTCUT"
 
     var lockLandscape: Boolean
         get() = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false)
@@ -60,4 +61,8 @@ object Settings {
     var linearLayout: Boolean
         get() = SPStaticUtils.getBoolean(SP_LINEAR_LAYOUT, false)
         set(value) = SPStaticUtils.put(SP_LINEAR_LAYOUT, value)
+
+    var scrollShortCut: Boolean
+        get() = SPStaticUtils.getBoolean(SP_SCROLL_SHORTCUT, false)
+        set(value) = SPStaticUtils.put(SP_SCROLL_SHORTCUT, value)
 }

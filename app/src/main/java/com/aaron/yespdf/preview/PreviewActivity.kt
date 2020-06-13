@@ -99,6 +99,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
     private val barShowState: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
         observe(this@PreviewActivity::getLifecycle) {
+            if (!Settings.scrollShortCut) {
+                return@observe
+            }
+
             val pair: Pair<Float, Animator.AnimatorListener?> = if (it) {
                 Pair(0.0f, null)
             } else {
@@ -122,6 +126,32 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 this.scaleFactor = this@PreviewActivity.scaleFactor
                 DBHelper.updatePDF(this)
                 DataManager.updatePDFs()
+            }
+        }
+    }
+    private val sbScrollLevel: SeekBar by lazy { findViewById<SeekBar>(R.id.app_sb_scroll_level) }
+    private val alertDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
+        DialogManager.createAlertDialog(this) { tvTitle, tvContent, btn ->
+            tvTitle.setText(R.string.app_oop_error)
+            tvContent.setText(R.string.app_doc_parse_error)
+            btn.setText(R.string.app_exit_cur_content)
+            btn.setOnClickListener { finish() }
+        }
+    }
+    private val inputDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
+        DialogManager.createInputDialog(this) { tvTitle, etInput, btnLeft, btnRight ->
+            tvTitle.setText(R.string.app_need_verify_password)
+            etInput.addTextChangedListener(object : TextWatcherImpl() {
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    password = charSequence.toString()
+                }
+            })
+            btnLeft.setText(R.string.app_do_not_delete)
+            btnLeft.setOnClickListener { finish() }
+            btnRight.setText(R.string.app_confirm)
+            btnRight.setOnClickListener {
+                initPdf(uri, pdf)
+                inputDialog.dismiss()
             }
         }
     }
@@ -149,32 +179,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     private var canvas: Canvas? = null // AndroidPDFView 的画布
     private var paint: Paint = Paint() // 画书签的画笔
     private var pageWidth = 0F
-    private val sbScrollLevel: SeekBar by lazy { findViewById<SeekBar>(R.id.app_sb_scroll_level) }
-    private val alertDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createAlertDialog(this) { tvTitle, tvContent, btn ->
-            tvTitle.setText(R.string.app_oop_error)
-            tvContent.setText(R.string.app_doc_parse_error)
-            btn.setText(R.string.app_exit_cur_content)
-            btn.setOnClickListener { finish() }
-        }
-    }
-    private val inputDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
-        DialogManager.createInputDialog(this) { tvTitle, etInput, btnLeft, btnRight ->
-            tvTitle.setText(R.string.app_need_verify_password)
-            etInput.addTextChangedListener(object : TextWatcherImpl() {
-                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    password = charSequence.toString()
-                }
-            })
-            btnLeft.setText(R.string.app_do_not_delete)
-            btnLeft.setOnClickListener { finish() }
-            btnRight.setText(R.string.app_confirm)
-            btnRight.setOnClickListener {
-                initPdf(uri, pdf)
-                inputDialog.dismiss()
-            }
-        }
-    }
     //endregion
 
     //region Lifecycle
@@ -185,6 +189,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
         scales = listOf(scale025, scale050, scale075, scale100, scale200, scale300)
         app_pdfview.curZoom.observe(this::getLifecycle) { scale ->
+            if (!Settings.scrollShortCut) {
+                return@observe
+            }
+
             fun scaleViewAnim(target: View, value: Float) {
                 target.animate().setDuration(SCALE_VIEW_ITEM_ANIM_DURATION).translationX(value).start()
             }
@@ -192,7 +200,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             if (barShowState.value == true) {
                 return@observe
             }
-            if (scaleLevel.visibility != View.VISIBLE) {
+            if (Settings.scrollShortCut && scaleLevel.visibility != View.VISIBLE) {
                 scaleViewParentAnim(1.0f, 0L, object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
                         scaleLevel.visibility = View.VISIBLE
@@ -216,6 +224,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onRestart() {
         super.onRestart()
         fixBackToForegroundClick()
+        checkScrollShortcut()
     }
 
     override fun onStart() {
@@ -340,6 +349,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
      */
     override fun onClick(v: View?) {
         v ?: return
+        if (!Settings.scrollShortCut) {
+            return
+        }
 
         val scale = when (v.id) {
             R.id.app_scale_0_25 -> 0.25f
@@ -458,7 +470,18 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         app_ll_more.translationY = screenHeight.toFloat()
     }
 
+    private fun checkScrollShortcut() {
+        if (Settings.scrollShortCut && app_pdfview.curZoom.value != 1.0f) {
+            scaleLevel.visibility = View.VISIBLE
+        } else {
+            scaleLevel.visibility = View.GONE
+        }
+    }
+
     private fun scaleViewParentAnim(alpha: Float, startDelayed: Long = 0L, listener: Animator.AnimatorListener? = null) {
+        if (!Settings.scrollShortCut) {
+            return
+        }
         scaleLevel.animate()
                 .setStartDelay(startDelayed)
                 .setDuration(ANIM_DURATION)
