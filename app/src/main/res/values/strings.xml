@@ -55,6 +55,10 @@
     <string name="app_db_is_upgrading">数据库升级中…</string>
     <string name="app_auto_scroll_tips">单击音量键呼出菜单\n单击屏幕进行暂停、开始\n拖动底部进度条改变滚动速度</string>
     <string name="app_got_it">知道了</string>
+    <string name="app_not_support_shortcut">Android 7.1 以下不支持快捷方式</string>
+    <string name="app_not_support_launcher_shortcut">Android 8.0 以下不支持创建桌面快捷方式</string>
+    <string name="app_shortcut_max">每次只能选择 %d 个 PDF 进行快捷方式创建</string>
+    <string name="app_first_create_shortcut_tips">如果快捷方式未创建成功，请检查是否已打开快捷方式权限</string>
 
     <string name="app_import">导入</string>
     <string name="app_import_count">导入(%d)</string>

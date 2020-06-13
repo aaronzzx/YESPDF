@@ -22,6 +22,7 @@ object Settings {
     private const val SP_LINEAR_LAYOUT = "SP_LINEAR_LAYOUT"
     private const val SP_SCROLL_SHORTCUT = "SP_SCROLL_SHORTCUT"
     private const val SP_AUTO_SCROLL_TIPS = "SP_AUTO_SCROLL_TIPS"
+    private const val SP_FIRST_CREATE_SHORTCUT = "SP_FIRST_CREATE_SHORTCUT"
 
     var lockLandscape: Boolean
         get() = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false)
@@ -73,4 +74,11 @@ object Settings {
     var autoScrollTipsHasShown: Boolean
         get() = SPStaticUtils.getBoolean(SP_AUTO_SCROLL_TIPS, false)
         set(value) = SPStaticUtils.put(SP_AUTO_SCROLL_TIPS, value)
+
+    /**
+     * 用于第一次创建桌面快捷方式
+     */
+    var firstCreateShortcut: Boolean
+        get() = SPStaticUtils.getBoolean(SP_FIRST_CREATE_SHORTCUT, true)
+        set(value) = SPStaticUtils.put(SP_FIRST_CREATE_SHORTCUT, value)
 }

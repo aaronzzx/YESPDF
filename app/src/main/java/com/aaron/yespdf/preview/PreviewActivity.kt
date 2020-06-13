@@ -526,13 +526,18 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
 
     private fun getData(savedInstanceState: Bundle?) {
-        val intent = intent
-        uri = intent.data
-        pdf = intent.getParcelableExtra(EXTRA_PDF)
-        if (pdf != null) {
-            curPage = savedInstanceState?.getInt(BUNDLE_CUR_PAGE) ?: pdf?.curPage ?: 0
-            password = savedInstanceState?.getString(BUNDLE_PASSWORD)
-            pageCount = pdf?.totalPage ?: 0
+        intent.apply {
+            uri = data
+            pdf = getParcelableExtra(EXTRA_PDF)
+            if (uri == null && pdf == null) {
+                val path = getStringExtra(EXTRA_PATH)
+                path?.let { pdf = DBHelper.queryPDFByPath(it) }
+            }
+            pdf?.let {
+                curPage = savedInstanceState?.getInt(BUNDLE_CUR_PAGE) ?: it.curPage
+                password = savedInstanceState?.getString(BUNDLE_PASSWORD)
+                pageCount = it.totalPage
+            }
         }
     }
 
@@ -1312,6 +1317,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     //endregion
 
     companion object {
+        const val EXTRA_PATH = "EXTRA_ID"
         private const val EXTRA_PDF = "EXTRA_PDF"
         private const val BUNDLE_CUR_PAGE = "BUNDLE_CUR_PAGE"
         private const val BUNDLE_PASSWORD = "BUNDLE_PASSWORD"

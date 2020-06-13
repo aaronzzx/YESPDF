@@ -21,14 +21,13 @@ import com.aaron.base.impl.TextWatcherImpl
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.PDF
+import com.aaron.yespdf.common.bean.Shortcut
 import com.aaron.yespdf.common.event.AllEvent
 import com.aaron.yespdf.common.event.RecentPDFEvent
 import com.aaron.yespdf.common.utils.DialogUtils
+import com.aaron.yespdf.common.utils.ShortcutUtils
 import com.aaron.yespdf.preview.PreviewActivity
-import com.blankj.utilcode.util.KeyboardUtils
-import com.blankj.utilcode.util.StringUtils
-import com.blankj.utilcode.util.ThreadUtils
-import com.blankj.utilcode.util.TimeUtils
+import com.blankj.utilcode.util.*
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback
 import com.chad.library.adapter.base.listener.OnItemDragListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -179,6 +178,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
 
     @SuppressLint("SetTextI18n")
     private fun select(selectAll: Boolean) {
+        app_ibtn_create_shortcut.isEnabled = selectPDFList.isNotEmpty()
         app_ibtn_delete.isEnabled = selectPDFList.isNotEmpty()
         app_ibtn_select_all.isSelected = selectAll
         app_tv_operationbar_title.text = getString(R.string.app_selected_count, selectPDFList.size)
@@ -349,7 +349,8 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                     fromPos: Int,
                     target: RecyclerView.ViewHolder,
                     toPos: Int
-            ) {}
+            ) {
+            }
 
             override fun onItemDragStart(viewHolder: RecyclerView.ViewHolder, position: Int) {
                 pdf = pdfList[position]
@@ -398,6 +399,38 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
             regroupingDialog.show()
         }
         app_ibtn_cancel.setOnClickListener { cancelSelect() }
+        app_ibtn_create_shortcut.apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                visibility = View.VISIBLE
+            }
+            setOnClickListener {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                    ToastUtils.showShort(R.string.app_not_support_launcher_shortcut)
+                    return@setOnClickListener
+                }
+                val selecteds = selectPDFList
+                if (selecteds.size > 1) {
+                    ToastUtils.showShort(App.getContext().resources.getString(R.string.app_shortcut_max), 1)
+                    return@setOnClickListener
+                }
+                selecteds[0].let {
+                    ShortcutUtils.createPinnedShortcut(App.getContext(), Shortcut(
+                            PreviewActivity::class.java,
+                            it.id.toString(),
+                            it.name,
+                            it.name,
+                            R.drawable.app_ic_shortcut_book,
+                            PreviewActivity.EXTRA_PATH,
+                            it.path
+                    ))
+                }
+                if (Settings.firstCreateShortcut) {
+                    ToastUtils.showLong(R.string.app_first_create_shortcut_tips)
+                    Settings.firstCreateShortcut = false
+                }
+                cancelSelect()
+            }
+        }
         app_ibtn_delete.setOnClickListener {
             deleteDialog.show()
             tvDeleteDescription?.text = getString(R.string.app_whether_delete_all, selectPDFList.size)

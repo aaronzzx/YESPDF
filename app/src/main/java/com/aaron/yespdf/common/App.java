@@ -9,6 +9,7 @@ import androidx.multidex.MultiDex;
 
 import com.aaron.yespdf.BuildConfig;
 import com.aaron.yespdf.common.greendao.DaoMaster;
+import com.aaron.yespdf.common.utils.ShortcutUtils;
 import com.blankj.utilcode.util.SPStaticUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
 import com.squareup.leakcanary.LeakCanary;
@@ -42,6 +43,7 @@ public class App extends Application {
         sContext = this.getApplicationContext();
 
         leakCanary();
+        ShortcutUtils.INSTANCE.init(this);
         DBHelper.init(this, AppConfig.DB_NAME);
 
         int dbVersion = SPStaticUtils.getInt(DB_VERSION);
