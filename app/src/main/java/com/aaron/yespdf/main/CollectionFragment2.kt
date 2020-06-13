@@ -23,11 +23,13 @@ import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.bean.Shortcut
 import com.aaron.yespdf.common.event.AllEvent
-import com.aaron.yespdf.common.event.RecentPDFEvent
 import com.aaron.yespdf.common.utils.DialogUtils
 import com.aaron.yespdf.common.utils.ShortcutUtils
 import com.aaron.yespdf.preview.PreviewActivity
-import com.blankj.utilcode.util.*
+import com.blankj.utilcode.util.KeyboardUtils
+import com.blankj.utilcode.util.StringUtils
+import com.blankj.utilcode.util.ThreadUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback
 import com.chad.library.adapter.base.listener.OnItemDragListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -35,8 +37,6 @@ import kotlinx.android.synthetic.main.app_fragment_collection.*
 import kotlinx.android.synthetic.main.app_include_operation_bar.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -329,15 +329,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                 select(selectPDFList.size == pdfList.size)
             } else {
                 val pdf = pdfList[position]
-                val cur = System.currentTimeMillis()
-                @SuppressLint("SimpleDateFormat")
-                val df: DateFormat = SimpleDateFormat("yyyyMMddHHmmss")
-                pdf.latestRead = TimeUtils.millis2String(cur, df).toLong()
-                DBHelper.updatePDF(pdf)
-                DBHelper.insertRecent(pdf)
-                DataManager.updatePDFs()
                 PreviewActivity.start(context!!, pdf)
-                EventBus.getDefault().post(RecentPDFEvent())
             }
         }
         adapter.setOnItemDragListener(object : OnItemDragListener {

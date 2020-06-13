@@ -48,7 +48,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import java.io.File
+import java.text.DateFormat
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
@@ -537,6 +539,15 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 curPage = savedInstanceState?.getInt(BUNDLE_CUR_PAGE) ?: it.curPage
                 password = savedInstanceState?.getString(BUNDLE_PASSWORD)
                 pageCount = it.totalPage
+
+                val cur = System.currentTimeMillis()
+                @SuppressLint("SimpleDateFormat")
+                val df: DateFormat = SimpleDateFormat("yyyyMMddHHmmss")
+                it.latestRead = TimeUtils.millis2String(cur, df).toLong()
+                DBHelper.updatePDF(it)
+                DBHelper.insertRecent(it)
+                DataManager.updatePDFs()
+                EventBus.getDefault().post(RecentPDFEvent())
             }
         }
     }
