@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:interpolator/anticipate_overshoot"
+    android:duration="1200"
+    android:repeatCount="infinite"
+    android:repeatMode="reverse"
+    android:propertyName="rotation"
+    android:valueFrom="90"
+    android:valueTo="0"
+    android:valueType="floatType" />

@@ -5,6 +5,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import com.aaron.yespdf.common.utils.NotchUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,12 +35,17 @@ abstract class CommonActivity : AppCompatActivity(), CoroutineScope {
             setSupportActionBar(this)
             UiManager.setStatusBar(this@CommonActivity, this)
         }
+        if (isAdaptNotch()) {
+            NotchUtils.checkNotch(window)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()
     }
+
+    open fun isAdaptNotch(): Boolean = true
 
     companion object {
         init {

@@ -3,12 +3,10 @@ package com.aaron.yespdf.common
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.drawable.Animatable
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
@@ -107,7 +105,7 @@ object DialogManager {
         val lm = GridLayoutManager(context, 3).apply {
             spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
-                    return if (Settings.isHorizontalLayout()) 3 else 1
+                    return if (Settings.linearLayout) 3 else 1
                 }
             }
         }
@@ -145,5 +143,18 @@ object DialogManager {
         scanDialog.setCanceledOnTouchOutside(false)
         scanDialog.setCancelable(false)
         return scanDialog
+    }
+
+    fun createAutoScrollTipsDialog(context: Context, callback: (View, SeekBar, Animatable?, Button, Dialog) -> Unit) {
+        val view = LayoutInflater.from(context.applicationContext)
+                .inflate(R.layout.app_dialog_auto_scroll_tips, null)
+        val arrow = view.findViewById<View>(R.id.app_arrow)
+        val drawable = view.findViewById<ImageView>(R.id.app_play_or_pause).drawable as Animatable
+        val seekbar = view.findViewById<SeekBar>(R.id.app_scroll_level)
+        val btn = view.findViewById<Button>(R.id.app_got_it)
+        callback(arrow, seekbar, drawable, btn, DialogUtils.createDialog(context, view).apply {
+            setCanceledOnTouchOutside(false)
+            setCancelable(false)
+        })
     }
 }

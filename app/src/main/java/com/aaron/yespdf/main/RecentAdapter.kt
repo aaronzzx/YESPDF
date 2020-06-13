@@ -27,7 +27,7 @@ internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<
 
     override fun createHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = inflater.inflate(
-                if (Settings.isHorizontalLayout()) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
+                if (Settings.linearLayout) CoverHolder.DEFAULT_LAYOUT_HORIZONTAL
                 else CoverHolder.DEFAULT_LAYOUT,
                 parent,
                 false
@@ -70,7 +70,7 @@ internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<
     override fun itemCount(): Int {
         val array = App.getContext().resources.getStringArray(R.array.max_recent_count)
         val infinite = array[array.size - 1]
-        val maxRecent = Settings.getMaxRecentCount()
+        val maxRecent = Settings.maxRecentCount
         if (maxRecent != infinite) {
             val count = maxRecent.toInt()
             if (count <= sourceList.size) {

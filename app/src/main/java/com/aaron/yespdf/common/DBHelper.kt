@@ -131,6 +131,11 @@ object DBHelper {
         return list
     }
 
+    @JvmStatic
+    fun queryPDFByPath(path: String): PDF {
+        return sDaoSession.pdfDao.queryRaw("where PATH = ?", path)[0]
+    }
+
     private fun queryPDF(dir: String?): List<PDF> {
         return if (StringUtils.isEmpty(dir)) {
             ArrayList()

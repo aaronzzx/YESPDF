@@ -14,6 +14,7 @@ import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
@@ -27,6 +28,7 @@ import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.event.RecentPDFEvent
 import com.aaron.yespdf.common.utils.AboutUtils
+import com.aaron.yespdf.common.utils.NotchUtils
 import com.aaron.yespdf.common.utils.PdfUtils
 import com.aaron.yespdf.settings.SettingsActivity.Companion.start
 import com.blankj.utilcode.util.*
@@ -46,7 +48,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import java.io.File
+import java.text.DateFormat
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
@@ -58,8 +62,9 @@ import kotlin.math.roundToInt
 class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListener {
 
     //region Field
+    private val rootView: ViewGroup by lazy { findViewById<ViewGroup>(R.id.app_rl_root) }
     private lateinit var scales: List<TextView>
-    private val scaleLevel: View by lazy { findViewById<View>(R.id.app_scale_level) }
+    private val scaleLevel: ViewGroup by lazy { findViewById<ViewGroup>(R.id.app_scale_level) }
     private val scale025: TextView by lazy { findViewById<TextView>(R.id.app_scale_0_25) }
     private val scale050: TextView by lazy { findViewById<TextView>(R.id.app_scale_0_50) }
     private val scale075: TextView by lazy { findViewById<TextView>(R.id.app_scale_0_75) }
@@ -69,7 +74,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     private val nightModeBtn: View by lazy { findViewById<View>(R.id.app_night_btn) }
     private val isNightMode: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
         observe(this@PreviewActivity::getLifecycle) {
-            Settings.setNightMode(it)
+            Settings.nightMode = it
 
             if (it) {
                 app_pdfview_bg.setImageResource(R.drawable.app_ic_placeholder_white)
@@ -78,7 +83,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 app_pdfview_bg.setImageResource(R.drawable.app_ic_placeholder_black)
                 app_pdfview_bg.setBackgroundColor(Color.WHITE)
             }
-            scaleViewParentAnim(0.0f, object : AnimatorListenerAdapter() {
+            scaleViewParentAnim(0.0f, 0L, object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     scaleLevel.visibility = View.GONE
                     scales.forEach { scaleView -> scaleView.translationX = 0f }
@@ -97,6 +102,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
     private val barShowState: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
         observe(this@PreviewActivity::getLifecycle) {
+            if (!Settings.scrollShortCut) {
+                return@observe
+            }
+
             val pair: Pair<Float, Animator.AnimatorListener?> = if (it) {
                 Pair(0.0f, null)
             } else {
@@ -108,7 +117,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                     }
                 } else null)
             }
-            scaleViewParentAnim(pair.first, pair.second)
+            scaleViewParentAnim(pair.first, 0L, pair.second)
         }
     }
     private val updateDB: MutableLiveData<Int> = MutableLiveData<Int>().apply {
@@ -123,30 +132,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
         }
     }
-
-    private var init = true
-    private var pdf: PDF? = null // 本应用打开
-    private var uri: Uri? = null // 一般是外部应用打开
-    private var curPage = 0
-    private var pageCount = 0
-    private var password: String? = null
-    private var isVolumeControl = Settings.isVolumeControl()
-    private var contentFragInterface: IContentFragInterface? = null
-    private var bkFragInterface: IBkFragInterface? = null
-    private var autoDisp: Disposable? = null // 自动滚动
-    private var isPause = false
-    private var hideBar = false
-    private val contentMap: MutableMap<Long, PdfDocument.Bookmark> = HashMap()
-    private val bookmarkMap: MutableMap<Long, Bookmark> = HashMap()
-    private val pageList: MutableList<Long> = ArrayList()
-
-    private var scaleFactor = 1.0f
-    private var isScrollLevelTouchFinish = true
-    private var previousPage = 0 // 记录 redo/undo的页码
-    private var nextPage = 0
-    private var canvas: Canvas? = null // AndroidPDFView 的画布
-    private var paint: Paint = Paint() // 画书签的画笔
-    private var pageWidth = 0F
     private val sbScrollLevel: SeekBar by lazy { findViewById<SeekBar>(R.id.app_sb_scroll_level) }
     private val alertDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
         DialogManager.createAlertDialog(this) { tvTitle, tvContent, btn ->
@@ -173,15 +158,44 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
         }
     }
+
+    private var init = true
+    private var pdf: PDF? = null // 本应用打开
+    private var uri: Uri? = null // 一般是外部应用打开
+    private var curPage = 0
+    private var pageCount = 0
+    private var password: String? = null
+    private var isVolumeControl = Settings.volumeControl
+    private var contentFragInterface: IContentFragInterface? = null
+    private var bkFragInterface: IBkFragInterface? = null
+    private var autoDisp: Disposable? = null // 自动滚动
+    private var isPause = false
+    private var hideBar = false
+    private val contentMap: MutableMap<Long, PdfDocument.Bookmark> = HashMap()
+    private val bookmarkMap: MutableMap<Long, Bookmark> = HashMap()
+    private val pageList: MutableList<Long> = ArrayList()
+
+    private var scaleFactor = 1.0f
+    private var isScrollLevelTouchFinish = true
+    private var previousPage = 0 // 记录 redo/undo的页码
+    private var nextPage = 0
+    private var canvas: Canvas? = null // AndroidPDFView 的画布
+    private var paint: Paint = Paint() // 画书签的画笔
+    private var pageWidth = 0F
     //endregion
 
     //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initView(savedInstanceState)
+        adaptNotch()
 
         scales = listOf(scale025, scale050, scale075, scale100, scale200, scale300)
         app_pdfview.curZoom.observe(this::getLifecycle) { scale ->
+            if (!Settings.scrollShortCut) {
+                return@observe
+            }
+
             fun scaleViewAnim(target: View, value: Float) {
                 target.animate().setDuration(SCALE_VIEW_ITEM_ANIM_DURATION).translationX(value).start()
             }
@@ -189,8 +203,8 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             if (barShowState.value == true) {
                 return@observe
             }
-            if (scaleLevel.visibility != View.VISIBLE) {
-                scaleViewParentAnim(1.0f, object : AnimatorListenerAdapter() {
+            if (Settings.scrollShortCut && scaleLevel.visibility != View.VISIBLE) {
+                scaleViewParentAnim(1.0f, 0L, object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
                         scaleLevel.visibility = View.VISIBLE
                     }
@@ -203,7 +217,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 0.25f -> scale025
                 0.50f -> scale050
                 0.75f -> scale075
-                1.00f -> scale100
                 2.00f -> scale200
                 3.00f -> scale300
                 else -> null
@@ -214,6 +227,11 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onRestart() {
         super.onRestart()
         fixBackToForegroundClick()
+        checkScrollShortcut()
+    }
+
+    override fun onStart() {
+        super.onStart()
         enterFullScreen()
     }
 
@@ -241,7 +259,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-            if (Settings.isKeepScreenOn()) {
+            if (Settings.keepScreenOn) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -304,7 +322,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SETTINGS) {
-            isVolumeControl = Settings.isVolumeControl()
+            isVolumeControl = Settings.volumeControl
         }
     }
     //endregion
@@ -334,6 +352,9 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
      */
     override fun onClick(v: View?) {
         v ?: return
+        if (!Settings.scrollShortCut) {
+            return
+        }
 
         val scale = when (v.id) {
             R.id.app_scale_0_25 -> 0.25f
@@ -347,7 +368,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         app_pdfview.zoomWithAnimation(scale)
         app_pdfview.curZoom.value = scale
         if (scale == 1.00f) {
-            scaleViewParentAnim(0.0f, object : AnimatorListenerAdapter() {
+            scaleViewParentAnim(0.0f, SCALE_VIEW_ITEM_ANIM_DURATION, object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     scaleLevel.visibility = View.GONE
                     scale100.translationX = 0f
@@ -360,10 +381,13 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     //region Private function
     @SuppressLint("SwitchIntDef")
     private fun initView(savedInstanceState: Bundle?) {
-        if (Settings.isLockLandscape() && BarUtils.isSupportNavBar()) {
-            nightModeBtn.translationX = -ConvertUtils.dp2px(48f).toFloat()
-        } else {
-            nightModeBtn.translationX = 0f
+        app_ll_undoredobar.apply {
+            layoutParams = layoutParams.apply {
+                width = if (ScreenUtils.isLandscape()) {
+                    ConvertUtils.dp2px(300f)
+                } else (ScreenUtils.getScreenWidth() * 0.7f).toInt()
+            }
+            requestLayout()
         }
         app_ll_content.post {
             app_ll_content.layoutParams.apply {
@@ -377,13 +401,13 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.app_ic_action_back_white)
         }
-        if (!Settings.isSwipeHorizontal()) {
+        if (!Settings.swipeHorizontal) {
             val lp = app_pdfview_bg.layoutParams
             lp.width = ViewGroup.LayoutParams.MATCH_PARENT
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT
             app_pdfview_bg.layoutParams = lp
         }
-        isNightMode.value = Settings.isNightMode()
+        isNightMode.value = Settings.nightMode
         nightModeBtn.isSelected = isNightMode.value == true
         nightModeBtn.background = if (nightModeBtn.isSelected) {
             resources.getDrawable(R.drawable.app_shape_circle_white_alpha)
@@ -397,12 +421,12 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 app_ll_content.translationX = -app_ll_content.measuredWidth.toFloat()
             }
         }
-        if (Settings.isSwipeHorizontal()) {
+        if (Settings.swipeHorizontal) {
             app_tv_horizontal.setTextColor(resources.getColor(R.color.app_color_accent))
         } else {
             app_tv_vertical.setTextColor(resources.getColor(R.color.app_color_accent))
         }
-        if (Settings.isLockLandscape()) {
+        if (Settings.lockLandscape) {
             app_tv_lock_landscape.setTextColor(resources.getColor(R.color.app_color_accent))
             if (!ScreenUtils.isLandscape()) ScreenUtils.setLandscape(this)
         } else {
@@ -421,7 +445,23 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         initScaleFactor()
         initListener()
         initPdf(uri, pdf)
-        enterFullScreen()
+    }
+
+    private fun adaptNotch() {
+        LiveDataBus.with<NotchUtils.SafeInset>(NotchUtils.NOTCH_DISPATCH).observe(this::getLifecycle) {
+            val (left, _, _, _) = it
+            toolbar?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
+            app_tv_pageinfo?.apply {
+                layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
+                requestLayout()
+            }
+            scaleLevel.apply { setPadding(left, paddingTop, paddingRight, paddingBottom) }
+            app_ll_bottombar.apply { setPadding(left, paddingTop, paddingRight, paddingBottom) }
+            app_ll_undoredobar.apply {
+                layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
+                requestLayout()
+            }
+        }
     }
 
     /**
@@ -433,8 +473,20 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         app_ll_more.translationY = screenHeight.toFloat()
     }
 
-    private fun scaleViewParentAnim(alpha: Float, listener: Animator.AnimatorListener?) {
+    private fun checkScrollShortcut() {
+        if (Settings.scrollShortCut && app_pdfview.curZoom.value != 1.0f) {
+            scaleLevel.visibility = View.VISIBLE
+        } else {
+            scaleLevel.visibility = View.GONE
+        }
+    }
+
+    private fun scaleViewParentAnim(alpha: Float, startDelayed: Long = 0L, listener: Animator.AnimatorListener? = null) {
+        if (!Settings.scrollShortCut) {
+            return
+        }
         scaleLevel.animate()
+                .setStartDelay(startDelayed)
                 .setDuration(ANIM_DURATION)
                 .alpha(alpha)
                 .setListener(listener)
@@ -476,13 +528,27 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
 
     private fun getData(savedInstanceState: Bundle?) {
-        val intent = intent
-        uri = intent.data
-        pdf = intent.getParcelableExtra(EXTRA_PDF)
-        if (pdf != null) {
-            curPage = savedInstanceState?.getInt(BUNDLE_CUR_PAGE) ?: pdf?.curPage ?: 0
-            password = savedInstanceState?.getString(BUNDLE_PASSWORD)
-            pageCount = pdf?.totalPage ?: 0
+        intent.apply {
+            uri = data
+            pdf = getParcelableExtra(EXTRA_PDF)
+            if (uri == null && pdf == null) {
+                val path = getStringExtra(EXTRA_PATH)
+                path?.let { pdf = DBHelper.queryPDFByPath(it) }
+            }
+            pdf?.let {
+                curPage = savedInstanceState?.getInt(BUNDLE_CUR_PAGE) ?: it.curPage
+                password = savedInstanceState?.getString(BUNDLE_PASSWORD)
+                pageCount = it.totalPage
+
+                val cur = System.currentTimeMillis()
+                @SuppressLint("SimpleDateFormat")
+                val df: DateFormat = SimpleDateFormat("yyyyMMddHHmmss")
+                it.latestRead = TimeUtils.millis2String(cur, df).toLong()
+                DBHelper.updatePDF(it)
+                DBHelper.insertRecent(it)
+                DataManager.updatePDFs()
+                EventBus.getDefault().post(RecentPDFEvent())
+            }
         }
     }
 
@@ -560,17 +626,19 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
         })
         app_tv_auto_scroll.setOnClickListener {
-            if (Settings.isSwipeHorizontal()) {
+            if (Settings.swipeHorizontal) {
                 UiManager.showCenterShort(R.string.app_horizontal_does_not_support_auto_scroll)
                 return@setOnClickListener
             }
             it.isSelected = !it.isSelected
             if (it.isSelected) {
                 hideBar()
-                enterFullScreen()
-                sbScrollLevel.progress = Settings.getScrollLevel().toInt() - 1
-                sbScrollLevel.visibility = View.VISIBLE
-                autoDisp = startAutoScroll()
+                showAutoScrollTipsDialog {
+                    enterFullScreen()
+                    sbScrollLevel.progress = Settings.scrollLevel.toInt() - 1
+                    sbScrollLevel.visibility = View.VISIBLE
+                    autoDisp = startAutoScroll()
+                }
             } else {
                 if (autoDisp?.isDisposed == false) {
                     autoDisp?.dispose()
@@ -610,10 +678,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         })
         app_tv_lock_landscape.setOnClickListener {
             if (ScreenUtils.isPortrait()) {
-                Settings.setLockLandscape(true)
+                Settings.lockLandscape = true
                 ScreenUtils.setLandscape(this)
             } else {
-                Settings.setLockLandscape(false)
+                Settings.lockLandscape = false
                 ScreenUtils.setPortrait(this)
             }
         }
@@ -671,7 +739,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         }
         app_tv_horizontal.setOnClickListener {
             hideReadMethod()
-            if (!Settings.isSwipeHorizontal()) {
+            if (!Settings.swipeHorizontal) {
                 if (autoDisp?.isDisposed == false) {
                     sbScrollLevel.visibility = View.GONE
                     autoDisp?.dispose()
@@ -680,16 +748,16 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 }
                 app_tv_horizontal.setTextColor(resources.getColor(R.color.app_color_accent))
                 app_tv_vertical.setTextColor(resources.getColor(R.color.base_white))
-                Settings.setSwipeHorizontal(true)
+                Settings.swipeHorizontal = true
                 initPdf(uri, pdf)
             }
         }
         app_tv_vertical.setOnClickListener {
             hideReadMethod()
-            if (Settings.isSwipeHorizontal()) {
+            if (Settings.swipeHorizontal) {
                 app_tv_vertical.setTextColor(resources.getColor(R.color.app_color_accent))
                 app_tv_horizontal.setTextColor(resources.getColor(R.color.base_white))
-                Settings.setSwipeHorizontal(false)
+                Settings.swipeHorizontal = false
                 initPdf(uri, pdf)
             }
         }
@@ -723,7 +791,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                             }
                         }
                         .start()
-                Settings.setScrollLevel((sbScrollLevel.progress + 1).toLong())
+                Settings.scrollLevel = (sbScrollLevel.progress + 1).toLong()
                 autoDisp?.dispose()
                 app_tv_auto_scroll.isSelected = true
                 autoDisp = startAutoScroll()
@@ -737,8 +805,43 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         scale300.setOnClickListener(this)
     }
 
+    private fun showAutoScrollTipsDialog(listener: (() -> Unit)?) {
+        if (Settings.autoScrollTipsHasShown) {
+            listener?.invoke()
+            return
+        }
+        DialogManager.createAutoScrollTipsDialog(this) { arrow, seekBar, animatable, btn, dialog ->
+            val arrowAnim = ValueAnimator.ofFloat(0f, 40f).apply {
+                duration = 600L
+                interpolator = LinearInterpolator()
+                repeatCount = ValueAnimator.INFINITE
+                repeatMode = ValueAnimator.REVERSE
+                addUpdateListener { arrow.translationX = it.animatedValue as Float }
+                start()
+            }
+            val seekBarAnim = ValueAnimator.ofInt(0, 100).apply {
+                duration = 1800L
+                interpolator = LinearInterpolator()
+                repeatCount = ValueAnimator.INFINITE
+                repeatMode = ValueAnimator.REVERSE
+                addUpdateListener { seekBar.progress = it.animatedValue as Int }
+                start()
+            }
+            animatable?.start()
+            btn.setOnClickListener {
+                Settings.autoScrollTipsHasShown = true
+                arrowAnim.cancel()
+                seekBarAnim.cancel()
+                animatable?.stop()
+                dialog.dismiss()
+            }
+            dialog.setOnDismissListener { listener?.invoke() }
+            dialog.show()
+        }
+    }
+
     private fun startAutoScroll(): Disposable {
-        return Observable.interval(Settings.getScrollLevel(), TimeUnit.MILLISECONDS)
+        return Observable.interval(Settings.scrollLevel, TimeUnit.MILLISECONDS)
                 .doOnDispose {
                     app_tv_auto_scroll.isSelected = false
                     isPause = false
@@ -861,10 +964,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             configurator = configurator.password(password)
         }
         configurator.disableLongpress()
-                .swipeHorizontal(Settings.isSwipeHorizontal())
+                .swipeHorizontal(Settings.swipeHorizontal)
                 .nightMode(isNightMode.value == true)
-                .pageFling(Settings.isSwipeHorizontal())
-                .pageSnap(Settings.isSwipeHorizontal())
+                .pageFling(Settings.swipeHorizontal)
+                .pageSnap(Settings.swipeHorizontal)
                 .enableDoubletap(false)
                 .fitEachPage(true) // .spacing(ConvertUtils.dp2px(4))
                 .onError { throwable: Throwable ->
@@ -908,7 +1011,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
     private fun initBgSize() {
         if (isNightMode.value != true) {
-            if (Settings.isSwipeHorizontal()) {
+            if (Settings.swipeHorizontal) {
                 val page = (app_pdfview.pageCount / 2.toFloat()).roundToInt()
                 val sizeF = app_pdfview.getPageSize(page)
                 val lp = app_pdfview_bg.layoutParams
@@ -966,7 +1069,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         val x = event.rawX
         val previous: Float
         val next: Float
-        if (Settings.isClickFlipPage()) {
+        if (Settings.clickFlipPage) {
             previous = ScreenUtils.getScreenWidth() * 0.3f
             next = ScreenUtils.getScreenWidth() * 0.7f
         } else {
@@ -1183,7 +1286,8 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     }
 
     private fun enterFullScreen() {
-        if (Settings.isShowStatusBar()) {
+        UiManager.setTransparentNavigationBar(window)
+        if (Settings.showStatusBar) {
             UiManager.setTranslucentStatusBar(this)
             app_ll_content.setPadding(0, ConvertUtils.dp2px(25f), 0, 0)
             window.decorView.systemUiVisibility = (
@@ -1203,24 +1307,28 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
-
     }
 
     private fun exitFullScreen() {
-        if (Settings.isShowStatusBar()) {
+        if (Settings.showStatusBar) {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         } else {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
-        toolbar?.post { UiManager.setNavigationBarColor(this, resources.getColor(R.color.base_black)) }
+//        toolbar?.post { UiManager.setNavigationBarColor(this, resources.getColor(R.color.base_black)) }
     }
     //endregion
 
     companion object {
+        const val EXTRA_PATH = "EXTRA_ID"
         private const val EXTRA_PDF = "EXTRA_PDF"
         private const val BUNDLE_CUR_PAGE = "BUNDLE_CUR_PAGE"
         private const val BUNDLE_PASSWORD = "BUNDLE_PASSWORD"

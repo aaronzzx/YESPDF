@@ -4,14 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
 
-//apply plugin: 'bugly'
+apply plugin: 'bugly'
 //apply from: 'tinker-support.gradle'
-//// 上传符号表插件
-//bugly {
-//    debug  = false
-//    appId  = 'fd084373ed' // 注册时分配的App ID
-//    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
-//}
+// 上传符号表插件
+bugly {
+    debug  = false
+    appId  = 'fd084373ed' // 注册时分配的App ID
+    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
+}
 
 android {
     compileSdkVersion 29
@@ -21,8 +21,8 @@ android {
         applicationId "com.aaron.yespdf"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 24
-        versionName "2.1.5"
+        versionCode 25
+        versionName "2.1.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 

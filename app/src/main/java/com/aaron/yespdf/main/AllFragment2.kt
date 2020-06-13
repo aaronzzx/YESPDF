@@ -47,7 +47,7 @@ class AllFragment2 : CommonFragment(), IOperation {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isHorizontalLayout = Settings.isHorizontalLayout()
+        isHorizontalLayout = Settings.linearLayout
         initView()
         LiveDataBus.with<Any>(CollectionFragment2.EVENT_UPDATE_ALL_FRAGMENT)
                 .observe(this::getLifecycle) { adapter.notifyDataSetChanged() }
@@ -55,8 +55,8 @@ class AllFragment2 : CommonFragment(), IOperation {
 
     override fun onStart() {
         super.onStart()
-        if (isHorizontalLayout != Settings.isHorizontalLayout()) {
-            isHorizontalLayout = Settings.isHorizontalLayout()
+        if (isHorizontalLayout != Settings.linearLayout) {
+            isHorizontalLayout = Settings.linearLayout
             initView()
         }
     }
