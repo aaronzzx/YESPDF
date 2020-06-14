@@ -151,6 +151,16 @@ class MainActivity : CommonActivity(), IMainView {
         initView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        intent?.getStringExtra(EXTRA_DIR_NAME)?.let {
+            app_vp.apply {
+                currentItem = 1
+                post { (operation as? AllFragment2)?.openCollection(it) }
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
@@ -224,6 +234,11 @@ class MainActivity : CommonActivity(), IMainView {
 
     fun startOperation() {
         app_vp.setScrollable(false)
+        app_ibtn_create_shortcut.visibility =
+                if (operation?.showExport() == true)
+                    View.VISIBLE
+                else
+                    View.GONE
         app_ibtn_select_all.isSelected = false
         OperationBarHelper.show(app_vg_operation)
     }
@@ -235,6 +250,7 @@ class MainActivity : CommonActivity(), IMainView {
     }
 
     fun selectResult(count: Int, selectAll: Boolean) {
+        app_ibtn_create_shortcut.isEnabled = count > 0
         app_ibtn_delete.isEnabled = count > 0
         app_ibtn_select_all.isSelected = selectAll
         app_tv_operationbar_title.text = getString(R.string.app_selected_count, count)
@@ -260,6 +276,9 @@ class MainActivity : CommonActivity(), IMainView {
 
     private fun initView() {
         app_ibtn_cancel.setOnClickListener { finishOperation() }
+        app_ibtn_create_shortcut.setOnClickListener {
+            operation?.createShortcut()
+        }
         app_ibtn_delete.setOnClickListener {
             deleteDialog.show()
             tvDeleteDescription?.text = operation?.deleteDescription()
@@ -273,6 +292,7 @@ class MainActivity : CommonActivity(), IMainView {
     }
 
     companion object {
+        const val EXTRA_DIR_NAME = "EXTRA_DIR_NAME"
         private const val SELECT_REQUEST_CODE = 101
     }
 }
