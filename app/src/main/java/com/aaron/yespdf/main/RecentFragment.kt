@@ -144,6 +144,11 @@ class RecentFragment : CommonFragment(), IOperation, IPickCallback<PDF> {
         (activity as MainActivity).selectResult(list.size, selectAll)
     }
 
+    override fun showExport(): Boolean = false
+
+    override fun createShortcut() {
+    }
+
     override fun delete(deleteLocal: Boolean) {
         if (selectPDFList.isNotEmpty()) {
             ThreadUtils.executeByIo<List<String>>(object : SimpleTask<List<String>>() {

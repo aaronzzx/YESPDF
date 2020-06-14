@@ -184,6 +184,9 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
         app_tv_operationbar_title.text = getString(R.string.app_selected_count, selectPDFList.size)
     }
 
+    override fun createShortcut() {
+    }
+
     override fun delete(deleteLocal: Boolean) {
         ThreadUtils.executeByIo<List<String>>(object : ThreadUtils.SimpleTask<List<String>>() {
             override fun doInBackground(): List<String>? {
@@ -371,6 +374,8 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
         adapter.enableDragItem(dragHelper)
         app_rv_collection.adapter = adapter
     }
+
+    override fun showExport(): Boolean = true
 
     @SuppressLint("SetTextI18n")
     private fun setListener() {

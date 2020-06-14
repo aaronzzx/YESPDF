@@ -48,7 +48,7 @@ object ShortcutUtils {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun createPinnedShortcut(context: Context, shortcut: Shortcut): Boolean {
+    fun createPinnedShortcut(context: Context, shortcut: Shortcut, needMainIntent: Boolean = true): Boolean {
         val shortcutManager = context.getSystemService(ShortcutManager::class.java)
         shortcutManager ?: return false
         if (shortcutManager.isRequestPinShortcutSupported) {
@@ -60,12 +60,15 @@ object ShortcutUtils {
                 action = Intent.ACTION_VIEW
                 putExtra(extraKey, extraValue)
             }
-            val pinShortcutInfo = ShortcutInfo.Builder(context, id)
-                    .setShortLabel(shortLabel)
-                    .setLongLabel(longLabel)
-                    .setIcon(Icon.createWithResource(context, icon))
-                    .setIntents(arrayOf(mainIntent, targetIntent))
-                    .build()
+            val pinShortcutInfo = ShortcutInfo.Builder(context, id).run {
+                setShortLabel(shortLabel)
+                setLongLabel(longLabel)
+                setIcon(Icon.createWithResource(context, icon))
+                if (needMainIntent)
+                    setIntents(arrayOf(mainIntent, targetIntent))
+                else setIntent(targetIntent)
+                build()
+            }
             val pinnedShortcutCallbackIntent = shortcutManager.createShortcutResultIntent(pinShortcutInfo)
             val successCallback = PendingIntent.getBroadcast(context, 0,
                     pinnedShortcutCallbackIntent, 0)

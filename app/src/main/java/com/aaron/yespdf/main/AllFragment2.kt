@@ -1,5 +1,6 @@
 package com.aaron.yespdf.main
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
 import com.aaron.yespdf.common.*
 import com.aaron.yespdf.common.bean.Cover
+import com.aaron.yespdf.common.bean.Shortcut
 import com.aaron.yespdf.common.event.AllEvent
+import com.aaron.yespdf.common.utils.ShortcutUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback
 import com.chad.library.adapter.base.listener.OnItemDragListener
 import kotlinx.android.synthetic.main.app_fragment_all.*
@@ -76,6 +80,23 @@ class AllFragment2 : CommonFragment(), IOperation {
     override fun onDestroyView() {
         super.onDestroyView()
         EventBus.getDefault().unregister(this)
+    }
+
+    fun openCollection(name: String?) {
+        val original = name?.run {
+            if (length > SHORTCUT_PREFIX.length)
+                substring(SHORTCUT_PREFIX.length)
+            else
+                null
+        }
+        adapter.data.forEach {
+            if (original == it.name) {
+                val pos = adapter.data.indexOf(it)
+                val view = adapter.getViewByPosition(pos, R.id.app_root)
+                view?.performClick()
+                return@forEach
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -229,7 +250,39 @@ class AllFragment2 : CommonFragment(), IOperation {
         adapter.bindToRecyclerView(app_rv_all)
     }
 
+    override fun createShortcut() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            ToastUtils.showShort(R.string.app_not_support_launcher_shortcut)
+            return
+        }
+        val selecteds = selectList
+        if (selecteds.size > 1) {
+            ToastUtils.showShort(App.getContext().resources.getString(R.string.app_shortcut_max), 1)
+            return
+        }
+        selecteds[0].let {
+            ShortcutUtils.createPinnedShortcut(App.getContext(), Shortcut(
+                    MainActivity::class.java,
+                    it.name.toString(),
+                    it.name,
+                    it.name,
+                    R.drawable.app_ic_shortcut_folder,
+                    MainActivity.EXTRA_DIR_NAME,
+                    "$SHORTCUT_PREFIX${it.name}"
+            ), false)
+        }
+        if (Settings.firstCreateShortcut) {
+            ToastUtils.showLong(R.string.app_first_create_shortcut_tips)
+            Settings.firstCreateShortcut = false
+        }
+        (activity as MainActivity).finishOperation()
+    }
+
+    override fun showExport(): Boolean = true
+
     companion object {
+        private const val SHORTCUT_PREFIX = "collection-"
+
         fun newInstance(): Fragment {
             return AllFragment2()
         }

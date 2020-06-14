@@ -70,8 +70,8 @@
     <string name="app_content">目录</string>
     <string name="app_have_no_content">没有目录信息</string>
     <string name="app_read_method">阅读方式</string>
-    <string name="app_read_method_horizontal">水平阅读</string>
-    <string name="app_read_method_vertical">垂直阅读</string>
+    <string name="app_read_method_horizontal">横向阅读</string>
+    <string name="app_read_method_vertical">纵向阅读</string>
     <string name="app_bookmark">书签</string>
     <string name="app_have_no_add_bookmark">没有添加书签</string>
     <string name="app_have_no_recent">没有阅读记录</string>
