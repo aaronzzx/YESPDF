@@ -531,6 +531,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         intent.apply {
             uri = data
             pdf = getParcelableExtra(EXTRA_PDF)
+            // 如果都为空，那一般来自快捷方式，直接通过路径查找
             if (uri == null && pdf == null) {
                 val path = getStringExtra(EXTRA_PATH)
                 path?.let { pdf = DBHelper.queryPDFByPath(it) }

@@ -153,6 +153,7 @@ class MainActivity : CommonActivity(), IMainView {
 
     override fun onResume() {
         super.onResume()
+        // 判断是否通过快捷方式打开
         intent?.getStringExtra(EXTRA_DIR_NAME)?.let {
             app_vp.apply {
                 currentItem = 1
