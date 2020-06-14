@@ -7,7 +7,7 @@
     android:background="@color/base_transparent">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="320dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         app:cardCornerRadius="16dp"
@@ -25,8 +25,8 @@
 
                 <ImageView
                     android:id="@+id/app_mobile_model"
-                    android:layout_width="120dp"
-                    android:layout_height="240dp"
+                    android:layout_width="50dp"
+                    android:layout_height="100dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
@@ -34,27 +34,27 @@
 
                 <ImageView
                     android:id="@+id/app_arrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="50dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="30dp"
                     android:layout_toRightOf="@id/app_mobile_model"
                     android:src="@drawable/app_ic_arrow_back_white_24dp" />
 
                 <ImageView
                     android:id="@+id/app_play_or_pause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="120dp"
+                    android:layout_marginTop="56dp"
                     android:src="@drawable/app_animated_play_pause" />
 
                 <SeekBar
                     android:id="@+id/app_scroll_level"
-                    android:layout_width="100dp"
+                    android:layout_width="64dp"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="220dp"
-                    android:maxHeight="3dp"
+                    android:layout_marginTop="96dp"
+                    android:maxHeight="2dp"
                     android:progress="40"
                     android:progressDrawable="@drawable/app_seekbar_bg"
                     android:thumb="@drawable/app_shape_circle_red" />
@@ -66,12 +66,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="32dp">
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:lineSpacingExtra="16dp"
+                    android:lineSpacingExtra="8dp"
+                    android:textSize="14dp"
                     android:text="@string/app_auto_scroll_tips"
                     android:textColor="@color/base_black" />
 
@@ -79,15 +80,15 @@
 
             <Button
                 android:id="@+id/app_got_it"
-                android:layout_width="200dp"
-                android:layout_height="44dp"
+                android:layout_width="100dp"
+                android:layout_height="36dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/app_sel_btn_round_red"
+                android:textSize="14dp"
                 android:text="@string/app_got_it"
                 android:textColor="@color/base_white"
-                android:textSize="@dimen/base_text_large"
                 android:textStyle="bold" />
 
         </LinearLayout>
