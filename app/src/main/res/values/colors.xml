@@ -9,4 +9,13 @@
     <color name="app_preview_night_bg">@color/base_white_hint</color>
     <color name="app_preview_not_night_bg">@color/base_black</color>
     <color name="app_highlight">#FFCB6B</color>
+
+    <color name="app_backup_item_bg_normal">#08000000</color>
+    <color name="app_backup_item_bg_selected">#1FE54F4F</color>
+
+    <color name="app_backup_update_progress_1">#E57373</color>
+    <color name="app_backup_update_progress_2">#9575CD</color>
+    <color name="app_backup_update_progress_3">#4FC3F7</color>
+    <color name="app_backup_update_progress_4">#81C784</color>
+    <color name="app_backup_update_progress_5">#FFB74D</color>
 </resources>

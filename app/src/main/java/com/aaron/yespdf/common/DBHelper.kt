@@ -8,7 +8,6 @@ import com.aaron.yespdf.common.bean.RecentPDF
 import com.aaron.yespdf.common.event.ImportEvent
 import com.aaron.yespdf.common.greendao.*
 import com.aaron.yespdf.common.utils.PdfUtils
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.PathUtils
 import com.blankj.utilcode.util.StringUtils
 import org.greenrobot.eventbus.EventBus
@@ -223,6 +222,17 @@ object DBHelper {
         return true
     }
 
+    fun insertBackup(pdfs: List<PDF>, groupName: String) {
+        if (pdfs.isEmpty()) {
+            return
+        }
+        val c = Collection(groupName, DataManager.getCollectionList().size)
+        sDaoSession.insertOrReplace(c)
+        for (pdf in pdfs) {
+            insertPDFs(groupName, "", 0, pdf)
+        }
+    }
+
     fun insert(pathList: List<String>?, groupName: String): Boolean {
         if (pathList == null || pathList.isEmpty()) return false
         // 插入 Collection 对象
@@ -252,31 +262,33 @@ object DBHelper {
         transferPDFs(dirName, pdfList)
     }
 
-    private fun insertPDFs(groupName: String, filePath: String, position: Int): Boolean {
-        val bookmarkPage = ""
-        val curPage = 0
-        val totalPage = PdfUtils.getPdfTotalPage(filePath)
-        val name = getName(filePath)
-        val progress = "0.0%"
-        var cover: String? = PathUtils.getInternalAppDataPath() + name + ".jpg"
-        // 制作 PDF 封面并缓存
-        val start = System.currentTimeMillis()
-        cover = PdfUtils.saveBitmap(PdfUtils.pdfToBitmap(filePath, 0), cover)
-        val end = System.currentTimeMillis()
-        LogUtils.e(name + " cost: " + (end - start) + " milliseconds")
-        val pdf = PDF()
-        pdf.dir = groupName
-        pdf.name = name.substring(1) // 去除斜杠
-        pdf.cover = cover
-        pdf.path = filePath
-        pdf.progress = progress
-        pdf.curPage = curPage
-        pdf.bookmark = bookmarkPage
-        pdf.totalPage = totalPage
-        pdf.latestRead = 0
-        pdf.position = position
-        pdf.scaleFactor = 1.0f
-        sDaoSession.insertOrReplace(pdf)
+    private fun insertPDFs(groupName: String, filePath: String, position: Int, pdf: PDF? = null): Boolean {
+        val dir = pdf?.dir ?: groupName
+        val name = pdf?.name ?: getName(filePath)
+        val path = pdf?.path ?: filePath
+        val cover = PdfUtils.saveBitmap(PdfUtils.pdfToBitmap(pdf?.path
+                ?: filePath, 0), "${PathUtils.getInternalAppDataPath()}/$name.jpg")
+        val progress = pdf?.progress ?: "0.0%"
+        val curPage = pdf?.curPage ?: 0
+        val bookmarkPage = pdf?.bookmark ?: ""
+        val totalPage = pdf?.totalPage ?: PdfUtils.getPdfTotalPage(filePath)
+        val latestRead = pdf?.latestRead ?: 0
+        val pos = pdf?.position ?: position
+        val scaleFactor = pdf?.scaleFactor ?: 1.0f
+        PDF().apply {
+            this.dir = dir
+            this.name = name
+            this.path = path
+            this.cover = cover
+            this.progress = progress
+            this.curPage = curPage
+            this.bookmark = bookmarkPage
+            this.totalPage = totalPage
+            this.latestRead = latestRead
+            this.position = pos
+            this.scaleFactor = scaleFactor
+            sDaoSession.insertOrReplace(this)
+        }
         return true
     }
 
@@ -288,6 +300,6 @@ object DBHelper {
     }
 
     private fun getName(path: String): String {
-        return path.substring(path.lastIndexOf("/"), path.length - 4)
+        return path.substring(path.lastIndexOf("/") + 1, path.length - 4)
     }
 }

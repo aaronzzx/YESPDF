@@ -1,37 +1,49 @@
 package com.aaron.yespdf.main
 
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Process
+import android.os.SystemClock
 import android.view.*
+import android.view.animation.LinearInterpolator
 import android.widget.CheckBox
 import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.aaron.base.impl.OnClickListenerImpl
 import com.aaron.yespdf.R
 import com.aaron.yespdf.about.AboutActivity
-import com.aaron.yespdf.common.CommonActivity
-import com.aaron.yespdf.common.DataManager
-import com.aaron.yespdf.common.DialogManager
-import com.aaron.yespdf.common.UiManager
+import com.aaron.yespdf.common.*
+import com.aaron.yespdf.common.bean.Backup
+import com.aaron.yespdf.common.bean.Cover
 import com.aaron.yespdf.common.event.HotfixEvent
 import com.aaron.yespdf.common.event.ImportEvent
+import com.aaron.yespdf.common.utils.Base64
+import com.aaron.yespdf.common.widgets.ImageTextView
 import com.aaron.yespdf.filepicker.SelectActivity
 import com.aaron.yespdf.settings.SettingsActivity
 import com.blankj.utilcode.constant.PermissionConstants
-import com.blankj.utilcode.util.ConvertUtils
-import com.blankj.utilcode.util.PermissionUtils
+import com.blankj.utilcode.util.*
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.app_activity_main.*
 import kotlinx.android.synthetic.main.app_include_operation_bar.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.File
 import java.util.*
 
 /**
@@ -47,6 +59,7 @@ class MainActivity : CommonActivity(), IMainView {
         @SuppressLint("InflateParams")
         val pwView = LayoutInflater.from(this).inflate(R.layout.app_pw_main, null)
         val tvImport = pwView.findViewById<TextView>(R.id.app_tv_import)
+        val tvBackup = pwView.findViewById<TextView>(R.id.app_tv_backup)
         val tvSettings = pwView.findViewById<TextView>(R.id.app_tv_settings)
         val tvAbout = pwView.findViewById<TextView>(R.id.app_tv_about)
         PopupWindow(pwView).apply {
@@ -58,7 +71,21 @@ class MainActivity : CommonActivity(), IMainView {
                             }
 
                             override fun onDenied() {
-                                UiManager.showShort(R.string.app_have_no_storage_permission)
+                                UiManager.showShort(R.string.app_import_need_storage_permission)
+                            }
+                        })
+                        .request()
+                dismiss()
+            }
+            tvBackup.setOnClickListener {
+                PermissionUtils.permission(PermissionConstants.STORAGE)
+                        .callback(object : PermissionUtils.SimpleCallback {
+                            override fun onGranted() {
+                                createBackupDialog().show()
+                            }
+
+                            override fun onDenied() {
+                                UiManager.showShort(R.string.app_backup_need_storage_permission)
                             }
                         })
                         .request()
@@ -141,6 +168,14 @@ class MainActivity : CommonActivity(), IMainView {
     private var tvDialogTitle: TextView? = null
     private var pbDialogProgress: ProgressBar? = null
     private var tvDialogProgressInfo: TextView? = null
+
+    /**
+     * 用于显示备份恢复的结果展示
+     */
+    private var result: TextView? = null
+    private var ok: View? = null
+    private var rotationAnim: Animator? = null
+    private var colorAnim: Animator? = null
 
     private var receiveHotfix = false
 
@@ -292,8 +327,256 @@ class MainActivity : CommonActivity(), IMainView {
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
+    private fun createBackupUpdateDialog(@StringRes titleId: Int): BottomSheetDialog {
+        return DialogManager.createBackupUpdateDialog(this) { title, progress, result, ok, dialog ->
+            this.result = result
+            this.ok = ok
+            title.text = resources.getString(titleId)
+            val duration = 1200L
+            rotationAnim = ValueAnimator.ofFloat(0f, 360f).apply {
+                this.duration = duration
+                interpolator = LinearInterpolator()
+                repeatCount = ValueAnimator.INFINITE
+                addUpdateListener {
+                    progress.rotation = it.animatedValue as Float
+                }
+                start()
+            }
+            val c1 = resources.getColor(R.color.app_backup_update_progress_1)
+            val c2 = resources.getColor(R.color.app_backup_update_progress_2)
+            val c3 = resources.getColor(R.color.app_backup_update_progress_3)
+            val c4 = resources.getColor(R.color.app_backup_update_progress_4)
+            val c5 = resources.getColor(R.color.app_backup_update_progress_5)
+            colorAnim = ValueAnimator.ofArgb(c1, c2, c3, c4, c5).apply {
+                this.duration = duration
+                interpolator = LinearInterpolator()
+                repeatCount = ValueAnimator.INFINITE
+                repeatMode = ValueAnimator.REVERSE
+                addUpdateListener {
+                    val d = progress.drawable
+                    d.setTint(it.animatedValue as Int)
+                    progress.setImageDrawable(d)
+                }
+                start()
+            }
+            ok.setOnClickListener {
+                dialog.dismiss()
+            }
+        }
+    }
+
+    private fun createBackupDialog(): BottomSheetDialog {
+        return DialogManager.createBackupDialog(this) { dialog, selectAll, cb, rv, backup, recovery ->
+            val datas = DataManager.getCoverList()
+            rv.apply {
+                if (datas.size > 9) {
+                    layoutParams = layoutParams.apply { height = ConvertUtils.dp2px(270f) }
+                    requestLayout()
+                }
+                addItemDecoration(object : RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                        super.getItemOffsets(outRect, view, parent, state)
+                        val pos = parent.getChildAdapterPosition(view)
+                        if (pos % 3 == 0) {
+                            outRect.left = ConvertUtils.dp2px(16f)
+                            outRect.right = ConvertUtils.dp2px(8f)
+                        } else if (pos % 3 == 1) {
+                            outRect.left = ConvertUtils.dp2px(8f)
+                            outRect.right = ConvertUtils.dp2px(8f)
+                        } else {
+                            outRect.left = ConvertUtils.dp2px(8f)
+                            outRect.right = ConvertUtils.dp2px(16f)
+                        }
+                    }
+                })
+                addItemDecoration(object : RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                        super.getItemOffsets(outRect, view, parent, state)
+                        val pos = parent.getChildAdapterPosition(view)
+                        if (pos < 3) {
+                            outRect.top = ConvertUtils.dp2px(16f)
+                        }
+                        outRect.bottom = ConvertUtils.dp2px(16f)
+                    }
+                })
+                layoutManager = GridLayoutManager(this@MainActivity, 3).apply {
+                    spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(position: Int): Int {
+                            return if (datas.isEmpty()) 3 else 1
+                        }
+                    }
+                }
+                adapter = BackupAdapter(datas) {
+                    var isSelectAll = true
+                    for (index in 0 until rv.childCount) {
+                        if (!rv.getChildAt(index).findViewById<View>(R.id.app_bg).isSelected) {
+                            isSelectAll = false
+                            break
+                        }
+                    }
+                    cb.isChecked = isSelectAll
+                }
+            }
+            selectAll.setOnClickListener {
+                if (datas.isEmpty()) {
+                    return@setOnClickListener
+                }
+                cb.isChecked = !cb.isChecked
+                for (index in 0 until rv.childCount) {
+                    rv.getChildAt(index).findViewById<View>(R.id.app_bg).isSelected = cb.isChecked
+                }
+            }
+            backup.setOnClickListener {
+                if (datas.isEmpty()) {
+                    return@setOnClickListener
+                }
+                var none = true
+                for (index in 0 until rv.childCount) {
+                    if (rv.getChildAt(index).findViewById<View>(R.id.app_bg).isSelected) {
+                        none = false
+                        break
+                    }
+                }
+                if (none) {
+                    ToastUtils.showShort(R.string.app_backup_select_must_not_be_empty)
+                    return@setOnClickListener
+                }
+                dialog.dismiss()
+                createBackupUpdateDialog(R.string.app_backup).show()
+                launch {
+                    var count = 0
+                    var failed = 0
+                    withContext(Dispatchers.IO) {
+                        SystemClock.sleep(SLEEP_TIME)
+                        for (index in 0 until rv.childCount) {
+                            if (!rv.getChildAt(index).findViewById<View>(R.id.app_bg).isSelected) {
+                                continue
+                            }
+                            count++
+                            val dirName = rv.getChildAt(index).findViewById<TextView>(R.id.app_title).text.toString()
+                            val pdfList = DataManager.getPdfList(dirName)
+                            val bean = Backup(dirName, pdfList)
+                            val json = GsonUtils.toJson(bean)
+                            val state = FileIOUtils.writeFileFromBytesByChannel(File(BACKUP_PATH, "$dirName.txt"), Base64.getEncoder().encode(json.toByteArray()), true)
+                            if (!state) failed++
+                        }
+                    }
+                    rotationAnim?.cancel()
+                    colorAnim?.cancel()
+                    result?.apply {
+                        visibility = View.VISIBLE
+                        text = resources.getString(R.string.app_backup_completed, count, failed)
+                    }
+                    ok?.isEnabled = true
+                }
+            }
+            recovery.setOnClickListener {
+                dialog.dismiss()
+                createBackupUpdateDialog(R.string.app_recovery).show()
+                launch {
+                    var count = 0
+                    var failed = 0
+                    withContext(Dispatchers.IO) {
+                        SystemClock.sleep(SLEEP_TIME)
+                        val fileList = FileUtils.listFilesInDir(BACKUP_PATH)
+                        for (file in fileList) {
+                            file ?: continue
+                            if (!file.isFile || !file.name.endsWith(".txt", true)) {
+                                continue
+                            }
+                            count++
+                            val fileName = file.name
+                            val base64 = FileIOUtils.readFile2BytesByChannel(File(BACKUP_PATH, fileName))
+                            if (base64 == null) {
+                                failed++
+                                continue
+                            }
+                            val bytes = Base64.getDecoder().decode(base64)
+                            val json = String(bytes)
+                            val bean = GsonUtils.fromJson<Backup>(json, Backup::class.java)
+                            if (bean == null) {
+                                failed++
+                                continue
+                            }
+                            val dirName = bean.dirName
+                            val pdfs = bean.datas
+                            DBHelper.insertBackup(pdfs, dirName)
+                            DataManager.updateAll()
+                        }
+                    }
+                    onUpdate()
+                    rotationAnim?.cancel()
+                    colorAnim?.cancel()
+                    result?.apply {
+                        visibility = View.VISIBLE
+                        text = resources.getString(R.string.app_recovery_completed, count, failed)
+                    }
+                    ok?.isEnabled = true
+                }
+            }
+        }
+    }
+
     companion object {
         const val EXTRA_DIR_NAME = "EXTRA_DIR_NAME"
+        private val BACKUP_PATH = "${PathUtils.getExternalAppDataPath()}/files"
+        private const val SLEEP_TIME = 1000L
         private const val SELECT_REQUEST_CODE = 101
     }
+}
+
+private class BackupAdapter(val datas: List<Cover>, val onClick: () -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val context = parent.context
+        if (viewType == TYPE_EMPTY) {
+            val view = LayoutInflater.from(context)
+                    .inflate(R.layout.app_recycler_item_emptyview, parent, false)
+            return EmptyHolder(view).apply {
+                imageTv.setText(R.string.app_have_no_all)
+                imageTv.setIconTop(R.drawable.app_img_all)
+            }
+        }
+        val view = LayoutInflater.from(context)
+                .inflate(R.layout.app_recycler_item_backup, parent, false)
+        return ViewHolder(view).apply {
+            itemView.setOnClickListener {
+                if (viewType == TYPE_EMPTY) {
+                    return@setOnClickListener
+                }
+                bg.isSelected = !bg.isSelected
+                onClick()
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        (holder as? ViewHolder)?.apply {
+            val cover = datas[position]
+            title.text = cover.name
+            count.text = App.getContext().resources.getString(R.string.app_total, cover.count)
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return if (datas.isEmpty()) 1 else datas.size
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (datas.isEmpty()) TYPE_EMPTY else TYPE_CONTENT
+    }
+
+    companion object {
+        private const val TYPE_EMPTY = 1
+        private const val TYPE_CONTENT = 2
+    }
+}
+
+private class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val title: TextView = itemView.findViewById(R.id.app_title)
+    val count: TextView = itemView.findViewById(R.id.app_count)
+    val bg: ViewGroup = itemView.findViewById(R.id.app_bg)
+}
+
+private class EmptyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val imageTv: ImageTextView = itemView.findViewById(R.id.app_itv_placeholder)
 }
