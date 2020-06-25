@@ -184,17 +184,7 @@ class MainActivity : CommonActivity(), IMainView {
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
         initView()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // 判断是否通过快捷方式打开
-        intent?.getStringExtra(EXTRA_DIR_NAME)?.let {
-            app_vp.apply {
-                currentItem = 1
-                post { (operation as? AllFragment2)?.openCollection(it) }
-            }
-        }
+        shortcut(intent ?: return)
     }
 
     override fun onStop() {
@@ -205,6 +195,11 @@ class MainActivity : CommonActivity(), IMainView {
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        shortcut(intent ?: return)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -518,6 +513,16 @@ class MainActivity : CommonActivity(), IMainView {
                     }
                     ok?.isEnabled = true
                 }
+            }
+        }
+    }
+
+    private fun shortcut(intent: Intent) {
+        intent.getStringExtra(EXTRA_DIR_NAME)?.let {
+            intent.extras?.remove(EXTRA_DIR_NAME)
+            app_vp.apply {
+                currentItem = 1
+                post { (operation as? AllFragment2)?.openCollection(it) }
             }
         }
     }
