@@ -3,9 +3,9 @@ package com.aaron.yespdf.preview
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aaron.yespdf.R
+import com.aaron.yespdf.common.App
 import com.aaron.yespdf.common.EmptyHolder
 import com.blankj.utilcode.util.TimeUtils
 import kotlinx.android.synthetic.main.app_recycler_item_bookmark.view.*
@@ -24,7 +24,10 @@ internal class BookmarkAdapter(private val mBookmarks: List<Bookmark>) : Recycle
         val inflater = LayoutInflater.from(context)
         if (viewType == TYPE_EMPTY) {
             val itemView = inflater.inflate(R.layout.app_recycler_item_emptyview, parent, false)
-            return EmptyHolder(itemView)
+            return EmptyHolder(itemView).apply {
+                itvEmpty.setTextColor(App.getContext().resources.getColor(R.color.app_content_bookmark_primary))
+                itvEmpty.alpha = 0.6f
+            }
         }
         val itemView = inflater.inflate(R.layout.app_recycler_item_bookmark, parent, false)
         val holder = ViewHolder(itemView)
@@ -46,7 +49,7 @@ internal class BookmarkAdapter(private val mBookmarks: List<Bookmark>) : Recycle
         } else if (viewHolder is EmptyHolder) {
             viewHolder.itvEmpty.visibility = View.VISIBLE
             viewHolder.itvEmpty.setText(R.string.app_have_no_add_bookmark)
-            viewHolder.itvEmpty.setIconTop(R.drawable.app_ic_bookmark_emptyview)
+            viewHolder.itvEmpty.setIconTop(R.drawable.app_ic_bookmark_border_white_24dp)
         }
     }
 

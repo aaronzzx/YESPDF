@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.aaron.yespdf.R
+import com.aaron.yespdf.common.App
 import com.aaron.yespdf.common.CommonFragment
 import com.aaron.yespdf.preview.ContentHolder.IconTreeItem
 import com.shockwave.pdfium.PdfDocument
@@ -35,14 +36,16 @@ class ContentFragment : CommonFragment(), IContentFragInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         app_itv_placeholder.setText(R.string.app_have_no_content)
-        app_itv_placeholder.setIconTop(R.drawable.app_ic_content_emptyview)
+        app_itv_placeholder.setTextColor(App.getContext().resources.getColor(R.color.app_content_bookmark_primary))
+        app_itv_placeholder.setIconTop(R.drawable.app_ic_action_content_white)
+        app_itv_placeholder.alpha = 0.6f
     }
 
     private fun initContent() {
         if (contentList.isNotEmpty()) {
             app_itv_placeholder.visibility = View.GONE
             for (bk in contentList) {
-                val icon = if (bk.hasChildren()) R.drawable.app_ic_can_down_grey else R.drawable.app_ic_cannot_down_grey
+                val icon = if (bk.hasChildren()) R.drawable.app_ic_can_down_white else R.drawable.app_ic_cannot_down_white
                 val title = bk.title
                 val pageId = (bk.pageIdx + 1).toString()
                 //创建根节点
@@ -84,7 +87,7 @@ class ContentFragment : CommonFragment(), IContentFragInterface {
 
     private fun addChild(parent: TreeNode, childList: List<PdfDocument.Bookmark>) {
         for (bk in childList) {
-            val icon = if (bk.hasChildren()) R.drawable.app_ic_can_down_grey else R.drawable.app_ic_cannot_down_grey
+            val icon = if (bk.hasChildren()) R.drawable.app_ic_can_down_white else R.drawable.app_ic_cannot_down_white
             val title = bk.title
             val pageId = (bk.pageIdx + 1).toString()
             //创建节点item

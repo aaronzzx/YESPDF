@@ -18,4 +18,9 @@
     <color name="app_backup_update_progress_3">#4FC3F7</color>
     <color name="app_backup_update_progress_4">#81C784</color>
     <color name="app_backup_update_progress_5">#FFB74D</color>
+
+    <color name="app_content_bookmark_bg">@color/base_black</color>
+    <color name="app_content_bookmark_accent">@color/app_color_accent</color>
+    <color name="app_content_bookmark_primary">@color/base_white</color>
+    <color name="app_content_bookmark_second">@color/base_white_shallow</color>
 </resources>

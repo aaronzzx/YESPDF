@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/app_ic_bookmark_border_red_24dp" android:state_selected="true"/>
-    <item android:drawable="@drawable/app_ic_bookmark_border_grey_24dp"/>
+    <item android:drawable="@drawable/app_ic_bookmark_border_tab_24dp" />
 </selector>

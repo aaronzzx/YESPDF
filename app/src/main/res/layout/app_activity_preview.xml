@@ -363,7 +363,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/base_white">
+        android:background="@color/base_black">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/app_tab_layout"
