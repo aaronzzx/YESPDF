@@ -272,19 +272,7 @@
         style="@style/AppToolbarStyle"
         android:alpha="0.0"
         android:visibility="gone"
-        tools:title="大话设计模式" >
-
-        <CheckBox
-            android:id="@+id/app_cb_bookmark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:button="@null"
-            android:background="@drawable/app_sel_bookmark"
-            android:layout_gravity="center_vertical|end"
-            android:visibility="gone"/>
-
-    </androidx.appcompat.widget.Toolbar>
+        tools:title="大话设计模式" />
 
     <!-- 左上角页数提示 -->
     <TextView
