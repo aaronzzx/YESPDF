@@ -41,6 +41,7 @@
             android:background="?selectableItemBackground"
             android:textStyle="bold"
             android:text="@string/app_backup"
+            android:visibility="gone"
             android:drawableStart="@drawable/app_ic_import_export_black_24dp"
             android:drawablePadding="16dp" />
 
