@@ -396,7 +396,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         app_ll_content.post {
             app_ll_content.layoutParams.apply {
                 val screenWidth = min(ScreenUtils.getScreenHeight(), ScreenUtils.getScreenWidth())
-                width = (screenWidth * 0.85f).toInt()
+                width = if (Settings.lockLandscape) screenWidth else (screenWidth * 0.85f).toInt()
                 app_ll_content.requestLayout()
             }
         }
