@@ -3,7 +3,7 @@ package com.aaron.yespdf.common.utils
 import android.os.Build
 import android.view.Window
 import android.view.WindowManager
-import com.aaron.yespdf.common.LiveDataBus
+import org.greenrobot.eventbus.EventBus
 
 object NotchUtils {
 
@@ -32,11 +32,13 @@ object NotchUtils {
                     NotchUtils.safeInsetRight = safeInsetRight
                     NotchUtils.safeInsetTop = safeInsetTop
                     NotchUtils.safeInsetBottom = safeInsetBottom
-                    LiveDataBus.with<SafeInset>(NOTCH_DISPATCH).value = SafeInset(
-                            NotchUtils.safeInsetLeft,
-                            NotchUtils.safeInsetRight,
-                            NotchUtils.safeInsetTop,
-                            NotchUtils.safeInsetBottom
+                    EventBus.getDefault().post(
+                            SafeInset(
+                                    NotchUtils.safeInsetLeft,
+                                    NotchUtils.safeInsetRight,
+                                    NotchUtils.safeInsetTop,
+                                    NotchUtils.safeInsetBottom
+                            )
                     )
                 }
             }

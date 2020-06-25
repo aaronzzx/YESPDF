@@ -47,6 +47,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.text.DateFormat
 import java.text.NumberFormat
@@ -187,7 +189,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initView(savedInstanceState)
-        adaptNotch()
+        EventBus.getDefault().register(this)
 
         scales = listOf(scale025, scale050, scale075, scale100, scale200, scale300)
         app_pdfview.curZoom.observe(this::getLifecycle) { scale ->
@@ -255,6 +257,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
     override fun onDestroy() {
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
         app_pdfview.recycle()
     }
     //endregion
@@ -382,6 +385,24 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             })
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onNotchEvent(safeInset: NotchUtils.SafeInset) {
+        val (left, _, top, _) = safeInset
+        toolbar?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
+        app_tab_layout?.apply { setPadding(paddingLeft, paddingTop + top, paddingRight, paddingBottom) }
+        app_vp?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
+        app_tv_pageinfo?.apply {
+            layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
+            requestLayout()
+        }
+        scaleLevel.apply { setPadding(left, paddingTop, paddingRight, paddingBottom) }
+        app_ll_bottombar.apply { setPadding(left, paddingTop, paddingRight, paddingBottom) }
+        app_ll_undoredobar.apply {
+            layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
+            requestLayout()
+        }
+    }
     //endregion
 
     //region Private function
@@ -451,25 +472,6 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         initScaleFactor()
         initListener()
         initPdf(uri, pdf)
-    }
-
-    private fun adaptNotch() {
-        LiveDataBus.with<NotchUtils.SafeInset>(NotchUtils.NOTCH_DISPATCH).observe(this::getLifecycle) {
-            val (left, _, top, _) = it
-            toolbar?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
-            app_tab_layout?.apply { setPadding(paddingLeft, paddingTop + top, paddingRight, paddingBottom) }
-            app_vp?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
-            app_tv_pageinfo?.apply {
-                layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
-                requestLayout()
-            }
-            scaleLevel.apply { setPadding(left, paddingTop, paddingRight, paddingBottom) }
-            app_ll_bottombar.apply { setPadding(left, paddingTop, paddingRight, paddingBottom) }
-            app_ll_undoredobar.apply {
-                layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
-                requestLayout()
-            }
-        }
     }
 
     /**
