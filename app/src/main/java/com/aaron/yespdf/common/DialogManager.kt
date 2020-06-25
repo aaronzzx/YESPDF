@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.graphics.drawable.Animatable
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -143,6 +144,35 @@ object DialogManager {
         scanDialog.setCanceledOnTouchOutside(false)
         scanDialog.setCancelable(false)
         return scanDialog
+    }
+
+    fun createBackupDialog(context: Context, callback: (Dialog, ViewGroup, CheckBox, RecyclerView, Button, Button) -> Unit): BottomSheetDialog {
+        val view = LayoutInflater.from(context)
+                .inflate(R.layout.app_bottomdialog_backup, null)
+        val selectAll = view.findViewById<ViewGroup>(R.id.app_all)
+        val cb = view.findViewById<CheckBox>(R.id.app_cb)
+        val rv = view.findViewById<RecyclerView>(R.id.app_rv)
+        val backup = view.findViewById<Button>(R.id.app_backup)
+        val recovery = view.findViewById<Button>(R.id.app_recovery)
+        return DialogUtils.createBottomSheetDialog(context, view).apply {
+            callback(this, selectAll, cb, rv, backup, recovery)
+            setCanceledOnTouchOutside(true)
+            setCancelable(true)
+        }
+    }
+
+    fun createBackupUpdateDialog(context: Context, callback: (TextView, ImageView, TextView, View, Dialog) -> Unit): BottomSheetDialog {
+        val view = LayoutInflater.from(context)
+                .inflate(R.layout.app_bottomdialog_backup_update, null)
+        val title = view.findViewById<TextView>(R.id.app_title)
+        val progress = view.findViewById<ImageView>(R.id.app_progress)
+        val result = view.findViewById<TextView>(R.id.app_result)
+        val ok = view.findViewById<View>(R.id.app_ok)
+        return DialogUtils.createBottomSheetDialog(context, view).apply {
+            callback(title, progress, result, ok, this)
+            setCanceledOnTouchOutside(false)
+            setCancelable(false)
+        }
     }
 
     fun createAutoScrollTipsDialog(context: Context, callback: (View, SeekBar, Animatable?, Button, Dialog) -> Unit) {

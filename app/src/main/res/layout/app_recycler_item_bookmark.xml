@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:background="@color/base_black">
 
     <TextView
         android:id="@+id/app_tv_title"
@@ -13,6 +14,7 @@
         android:maxLines="2"
         android:ellipsize="end"
         android:textSize="@dimen/base_text_large"
+        android:textColor="@color/app_content_bookmark_primary"
         tools:text="1.1 Activity 的生命周期全面分析"/>
 
     <RelativeLayout
@@ -27,8 +29,9 @@
             android:layout_centerVertical="true"
             android:gravity="center"
             android:textSize="@dimen/base_text_small"
+            android:textColor="@color/app_content_bookmark_second"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/app_ic_bookmark_grey_16dp"
+            android:drawableStart="@drawable/app_ic_bookmark_white_shallow_16dp"
             tools:text="50"/>
 
         <TextView
@@ -38,6 +41,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:textSize="@dimen/base_text_small"
+            android:textColor="@color/app_content_bookmark_second"
             tools:text="2019-09-11 14:12"/>
 
     </RelativeLayout>

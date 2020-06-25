@@ -18,7 +18,7 @@
     <string name="app_need_verify_password">需要验证密码</string>
     <string name="app_password_error">密码错误</string>
     <string name="app_group_name_existed">已存在分组名</string>
-    <string name="app_do_not_delete">我不</string>
+    <string name="app_do_not_delete">取消</string>
     <string name="app_type_new_group_name">输入新的分组名</string>
     <string name="app_cancel">取消</string>
     <string name="app_confirm">确认</string>
@@ -63,6 +63,14 @@
     <string name="app_import">导入</string>
     <string name="app_import_count">导入(%d)</string>
     <string name="app_selected_count">已选中(%d)</string>
+    <string name="app_backup">备份</string>
+    <string name="app_recovery">恢复</string>
+    <string name="app_backup_and_recovery">备份与恢复</string>
+    <string name="app_ok">好的</string>
+    <string name="app_backup_completed">备份完成，总计：%d，失败：%d</string>
+    <string name="app_recovery_completed">恢复完成，总计：%d，失败：%d</string>
+    <string name="app_backup_select_must_not_be_empty">请先选择分组</string>
+    <string name="app_backup_tips">1. 备份文件存放在 /storage/emulated/0/Android/data/com.aaron.yespdf/files 下，请移动到其他地方以免应用数据清除导致备份丢失\n2. 恢复文件时同样将备份文件放在原始目录下，然后点击按钮进行恢复\n3. 请不要编辑文件，以免造成数据损坏</string>
     <string name="app_about">关于</string>
     <string name="app_settings">设置</string>
     <string name="app_previous_chapter">上一章</string>
@@ -98,7 +106,8 @@
     <string name="app_not_support_external_open">暂不支持外部资源</string>
 
     <string name="app_delete_completed">删除成功</string>
-    <string name="app_have_no_storage_permission">导入文件需要存储权限噢 :)</string>
+    <string name="app_import_need_storage_permission">导入文件需要存储权限噢 :)</string>
+    <string name="app_backup_need_storage_permission">备份文件需要存储权限噢 (:</string>
     <string name="app_import_file">导入文件</string>
     <string name="app_storage_device">存储设备</string>
     <string name="app_have_not_select">还没选择文件噢~</string>

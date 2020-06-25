@@ -160,6 +160,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
 
     override fun onStop() {
         super.onStop()
+        cancelSelect()
         if (isNeedUpdateDb) {
             DBHelper.updatePDFs(pdfList)
             DataManager.updatePDFs()

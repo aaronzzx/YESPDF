@@ -61,8 +61,6 @@ import kotlin.math.roundToInt
  */
 class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListener {
 
-    //region Field
-    private val rootView: ViewGroup by lazy { findViewById<ViewGroup>(R.id.app_rl_root) }
     private lateinit var scales: List<TextView>
     private val scaleLevel: ViewGroup by lazy { findViewById<ViewGroup>(R.id.app_scale_level) }
     private val scale025: TextView by lazy { findViewById<TextView>(R.id.app_scale_0_25) }
@@ -158,6 +156,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
         }
     }
+    private var autoScrollDialog: Dialog? = null
 
     private var init = true
     private var pdf: PDF? = null // 本应用打开
@@ -247,6 +246,11 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         super.onStop()
         hideBar()
         resetUIAndCancelAutoScroll()
+        if (autoScrollDialog != null) {
+            app_tv_auto_scroll.isSelected = false
+            autoScrollDialog?.dismiss()
+            autoScrollDialog = null
+        }
     }
 
     override fun onDestroy() {
@@ -392,7 +396,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         app_ll_content.post {
             app_ll_content.layoutParams.apply {
                 val screenWidth = min(ScreenUtils.getScreenHeight(), ScreenUtils.getScreenWidth())
-                width = (screenWidth * 0.85f).toInt()
+                width = if (Settings.lockLandscape) screenWidth else (screenWidth * 0.85f).toInt()
                 app_ll_content.requestLayout()
             }
         }
@@ -449,8 +453,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
     private fun adaptNotch() {
         LiveDataBus.with<NotchUtils.SafeInset>(NotchUtils.NOTCH_DISPATCH).observe(this::getLifecycle) {
-            val (left, _, _, _) = it
+            val (left, _, top, _) = it
             toolbar?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
+            app_tab_layout?.apply { setPadding(paddingLeft, paddingTop + top, paddingRight, paddingBottom) }
+            app_vp?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
             app_tv_pageinfo?.apply {
                 layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
                 requestLayout()
@@ -812,6 +818,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             return
         }
         DialogManager.createAutoScrollTipsDialog(this) { arrow, seekBar, animatable, btn, dialog ->
+            autoScrollDialog = dialog
             val arrowAnim = ValueAnimator.ofFloat(0f, 40f).apply {
                 duration = 600L
                 interpolator = LinearInterpolator()
@@ -830,13 +837,18 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
             animatable?.start()
             btn.setOnClickListener {
-                Settings.autoScrollTipsHasShown = true
                 arrowAnim.cancel()
                 seekBarAnim.cancel()
                 animatable?.stop()
                 dialog.dismiss()
+                listener?.invoke()
             }
-            dialog.setOnDismissListener { listener?.invoke() }
+            dialog.setOnDismissListener {
+                Settings.autoScrollTipsHasShown = true
+                arrowAnim.cancel()
+                seekBarAnim.cancel()
+                animatable?.stop()
+            }
             dialog.show()
         }
     }

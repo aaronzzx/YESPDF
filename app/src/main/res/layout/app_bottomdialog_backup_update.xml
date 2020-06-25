@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:background="@drawable/app_shape_round_rect_white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/app_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/base_black"
+        android:textSize="@dimen/base_text_xxhlarge" />
+
+    <ImageView
+        android:id="@+id/app_progress"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:src="@drawable/app_ic_toys_red_24dp" />
+
+    <TextView
+        android:id="@+id/app_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="invisible"
+        tools:text="备份完成，总计：3， 失败：0" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:lineSpacingExtra="8dp"
+        android:textColor="@color/base_black_hint"
+        android:textSize="10sp"
+        android:text="@string/app_backup_tips" />
+
+    <Button
+        android:id="@+id/app_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/app_sel_btn_round_red"
+        android:text="@string/app_ok"
+        android:textColor="@color/base_white"
+        android:textSize="@dimen/base_text_large"
+        android:enabled="false"
+        style="?android:attr/borderlessButtonStyle" />
+
+</LinearLayout>

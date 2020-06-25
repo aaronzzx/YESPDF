@@ -58,8 +58,11 @@ class ViewAllAdapter(
             }
 
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
-                filterList = results.values as MutableList<File>
-                notifyDataSetChanged()
+                val list = results.values
+                list?.let {
+                    filterList = it as MutableList<File>
+                    notifyDataSetChanged()
+                }
             }
         }
     }

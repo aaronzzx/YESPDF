@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textSize="@dimen/base_text_xxxhlarge"
+        android:textSize="@dimen/base_text_hlarge"
         android:textColor="@color/base_black_hint"
         android:drawablePadding="8dp"
         app:iconTopWidth="100dp"

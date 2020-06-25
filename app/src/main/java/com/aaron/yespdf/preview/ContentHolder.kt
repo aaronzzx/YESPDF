@@ -56,11 +56,11 @@ class ContentHolder(context: Context?) : BaseNodeViewHolder<IconTreeItem>(contex
     override fun toggle(active: Boolean) {
         if (treeNode.isLeaf) return
         if (active) {
-            val color = context.resources.getColor(R.color.app_color_accent)
+            val color = context.resources.getColor(R.color.app_content_bookmark_accent)
             tvTitle.setTextColor(color)
             ivIcon.rotation = 90f
         } else {
-            val color = context.resources.getColor(R.color.base_black_shallow)
+            val color = context.resources.getColor(R.color.app_content_bookmark_primary)
             tvTitle.setTextColor(color)
             ivIcon.rotation = 0f
         }

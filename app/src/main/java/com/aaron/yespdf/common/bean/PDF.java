@@ -128,6 +128,24 @@ public class PDF implements Parcelable {
     }
 
     @Override
+    public String toString() {
+        return "PDF{" +
+                "id=" + id +
+                ", path='" + path + '\'' +
+                ", dir='" + dir + '\'' +
+                ", name='" + name + '\'' +
+                ", cover='" + cover + '\'' +
+                ", progress='" + progress + '\'' +
+                ", curPage=" + curPage +
+                ", totalPage=" + totalPage +
+                ", bookmark='" + bookmark + '\'' +
+                ", latestRead=" + latestRead +
+                ", position=" + position +
+                ", scaleFactor=" + scaleFactor +
+                '}';
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
