@@ -61,8 +61,6 @@ import kotlin.math.roundToInt
  */
 class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListener {
 
-    //region Field
-    private val rootView: ViewGroup by lazy { findViewById<ViewGroup>(R.id.app_rl_root) }
     private lateinit var scales: List<TextView>
     private val scaleLevel: ViewGroup by lazy { findViewById<ViewGroup>(R.id.app_scale_level) }
     private val scale025: TextView by lazy { findViewById<TextView>(R.id.app_scale_0_25) }
@@ -158,6 +156,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
         }
     }
+    private var autoScrollDialog: Dialog? = null
 
     private var init = true
     private var pdf: PDF? = null // 本应用打开
@@ -247,6 +246,11 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         super.onStop()
         hideBar()
         resetUIAndCancelAutoScroll()
+        if (autoScrollDialog != null) {
+            app_tv_auto_scroll.isSelected = false
+            autoScrollDialog?.dismiss()
+            autoScrollDialog = null
+        }
     }
 
     override fun onDestroy() {
@@ -812,6 +816,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             return
         }
         DialogManager.createAutoScrollTipsDialog(this) { arrow, seekBar, animatable, btn, dialog ->
+            autoScrollDialog = dialog
             val arrowAnim = ValueAnimator.ofFloat(0f, 40f).apply {
                 duration = 600L
                 interpolator = LinearInterpolator()
@@ -830,13 +835,18 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
             }
             animatable?.start()
             btn.setOnClickListener {
-                Settings.autoScrollTipsHasShown = true
                 arrowAnim.cancel()
                 seekBarAnim.cancel()
                 animatable?.stop()
                 dialog.dismiss()
+                listener?.invoke()
             }
-            dialog.setOnDismissListener { listener?.invoke() }
+            dialog.setOnDismissListener {
+                Settings.autoScrollTipsHasShown = true
+                arrowAnim.cancel()
+                seekBarAnim.cancel()
+                animatable?.stop()
+            }
             dialog.show()
         }
     }
