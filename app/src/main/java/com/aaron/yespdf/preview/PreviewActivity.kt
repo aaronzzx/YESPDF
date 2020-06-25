@@ -453,8 +453,10 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
 
     private fun adaptNotch() {
         LiveDataBus.with<NotchUtils.SafeInset>(NotchUtils.NOTCH_DISPATCH).observe(this::getLifecycle) {
-            val (left, _, _, _) = it
+            val (left, _, top, _) = it
             toolbar?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
+            app_tab_layout?.apply { setPadding(paddingLeft, paddingTop + top, paddingRight, paddingBottom) }
+            app_vp?.apply { setPadding(paddingLeft + left, paddingTop, paddingRight, paddingBottom) }
             app_tv_pageinfo?.apply {
                 layoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply { leftMargin += left }
                 requestLayout()
