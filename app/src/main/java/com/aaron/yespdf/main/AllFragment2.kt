@@ -41,6 +41,7 @@ class AllFragment2 : CommonFragment(), IOperation {
     private val selectList: MutableList<Cover> = ArrayList()
     private var isNeedUpdateDB = false
     private var isHorizontalLayout = false
+    private var dialogFragment: DialogFragment? = null
     private var xItemDecoration: RecyclerView.ItemDecoration? = null
     private var yItemDecoration: RecyclerView.ItemDecoration? = null
 
@@ -199,9 +200,13 @@ class AllFragment2 : CommonFragment(), IOperation {
                 val size = selectList.size
                 (activity as MainActivity).selectResult(size, size == coverList.size)
             } else {
+                if (dialogFragment != null) {
+                    dialogFragment?.dismiss()
+                    dialogFragment = null
+                }
                 val name = coverList[position].name
-                val df: DialogFragment = CollectionFragment2.newInstance(name)
-                df.show(fragmentManager!!, "")
+                dialogFragment = CollectionFragment2.newInstance(name)
+                dialogFragment?.show(fragmentManager!!, "")
             }
         }
         adapter.setOnItemDragListener(object : OnItemDragListener {
