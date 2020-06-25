@@ -206,7 +206,7 @@ object DBHelper {
         } else 0
         for (path in pathList) {
             if (event.stop) return false
-            event.name = getName(path).substring(1)
+            event.name = getName(path)
             event.curProgress++
             EventBus.getDefault().post(event)
 //            // 去除了文件名称的父路径
@@ -244,7 +244,7 @@ object DBHelper {
         var max = queryPDF(groupName).size
         for (path in pathList) {
             if (event.stop) return false
-            event.name = getName(path).substring(1)
+            event.name = getName(path)
             event.curProgress++
             EventBus.getDefault().post(event)
             insertPDFs(groupName, path, max++)
