@@ -197,6 +197,11 @@ class MainActivity : CommonActivity(), IMainView {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        finishOperation()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
