@@ -339,6 +339,8 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun createToolbar(): Toolbar? {
         return findViewById(R.id.app_toolbar)
     }
+
+    override fun isAdaptNotch(): Boolean = true
     //endregion
 
     //region Implement from interfaces

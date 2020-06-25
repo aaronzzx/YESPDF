@@ -45,7 +45,7 @@ abstract class CommonActivity : AppCompatActivity(), CoroutineScope {
         job.cancel()
     }
 
-    open fun isAdaptNotch(): Boolean = true
+    open fun isAdaptNotch(): Boolean = false
 
     companion object {
         init {
