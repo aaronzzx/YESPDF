@@ -57,9 +57,10 @@ internal object AboutUtils {
 
     fun copyImageToDevice(
             context: Context,
-            bitmap: Bitmap,
+            bitmap: Bitmap?,
             savePath: String = "${PathUtils.getExternalAppCachePath()}/yespdf-gift.jpg"
     ) {
+        bitmap ?: return
         val file = File(savePath)
         file.mkdirs()
         if (file.exists()) file.delete()
