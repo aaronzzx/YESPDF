@@ -7,14 +7,12 @@ import android.content.pm.PackageManager;
 
 import androidx.multidex.MultiDex;
 
-import com.aaron.yespdf.BuildConfig;
 import com.aaron.yespdf.common.greendao.DaoMaster;
+import com.aaron.yespdf.common.statistic.Statistic;
 import com.aaron.yespdf.common.utils.ShortcutUtils;
 import com.blankj.utilcode.util.SPStaticUtils;
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper;
 import com.squareup.leakcanary.LeakCanary;
-import com.tencent.bugly.Bugly;
-import com.tencent.bugly.beta.Beta;
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -54,7 +52,9 @@ public class App extends Application {
 
         DataManager.init();
         registerActivityLifecycleCallbacks(ParallaxHelper.getInstance());
-        bugly();
+
+        Statistic.INSTANCE.init(this);
+//        Statistic.INSTANCE.setLogEnabled(true);
     }
 
     private boolean isFirstInstall() {
@@ -80,9 +80,9 @@ public class App extends Application {
         LeakCanary.install(this);
     }
 
-    private void bugly() {
+    /*private void bugly() {
         // Tinker
-        /*Beta.enableHotfix = true; // 设置是否开启热更新能力，默认为true
+        *//*Beta.enableHotfix = true; // 设置是否开启热更新能力，默认为true
         Beta.canAutoDownloadPatch = true; // 设置是否自动下载补丁
         Beta.canNotifyUserRestart = false; // 设置是否提示用户重启
         Beta.canAutoPatch = true; // 设置是否自动合成补丁
@@ -130,7 +130,7 @@ public class App extends Application {
                 Log.e(TAG, "补丁回滚");
                 Beta.cleanTinkerPatch(true);
             }
-        };*/
+        };*//*
 
         // Bugly
 //        Beta.autoInit = true; // 自动初始化开关
@@ -199,9 +199,9 @@ public class App extends Application {
 //        };
 //        Bugly.setIsDevelopmentDevice(this, BuildConfig.DEBUG); // 是否开发设备
         Bugly.init(this, AppConfig.BUGLY_APPID, BuildConfig.DEBUG);
-    }
+    }*/
 
-    private void tinker() {
-        Beta.installTinker();
-    }
+//    private void tinker() {
+//        Beta.installTinker();
+//    }
 }

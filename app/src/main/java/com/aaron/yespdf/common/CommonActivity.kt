@@ -5,6 +5,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import com.aaron.yespdf.common.statistic.Statistic
 import com.aaron.yespdf.common.utils.NotchUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +39,16 @@ abstract class CommonActivity : AppCompatActivity(), CoroutineScope {
         if (isAdaptNotch()) {
             NotchUtils.checkNotch(window)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Statistic.onResume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Statistic.onPause(this)
     }
 
     override fun onDestroy() {
