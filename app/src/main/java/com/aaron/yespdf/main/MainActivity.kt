@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
@@ -107,7 +106,7 @@ class MainActivity : CommonActivity(), IMainView {
             elevation = ConvertUtils.dp2px(4f).toFloat()
         }
     }
-    private val hotfixDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
+    /*private val hotfixDialog: Dialog by lazy(LazyThreadSafetyMode.NONE) {
         DialogManager.createDoubleBtnDialog(this) { tvTitle, tvContent, btnLeft, btnRight ->
             tvTitle.setText(R.string.app_find_update)
             tvContent.setText(R.string.app_restart_to_update)
@@ -129,7 +128,7 @@ class MainActivity : CommonActivity(), IMainView {
                 }
             })
         }
-    }
+    }*/
     private val deleteDialog: BottomSheetDialog by lazy(LazyThreadSafetyMode.NONE) {
         DialogManager.createDeleteDialog(this) { tv, deleteLocal, btnLeft, btnRight ->
             tvDeleteDescription = tv
@@ -247,7 +246,7 @@ class MainActivity : CommonActivity(), IMainView {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     fun onHotfixSuccess(event: HotfixEvent) {
         receiveHotfix = true
-        hotfixDialog.show()
+//        hotfixDialog.show()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -74,7 +74,7 @@
             android:background="@null"
             android:textStyle="bold"
             android:textSize="@dimen/base_text_large"
-            android:text="@string/app_do_not_delete" />
+            android:text="@string/app_cancel" />
 
         <View
             android:layout_width="0.7dp"

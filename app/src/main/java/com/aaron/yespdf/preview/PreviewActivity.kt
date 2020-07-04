@@ -150,7 +150,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                     password = charSequence.toString()
                 }
             })
-            btnLeft.setText(R.string.app_do_not_delete)
+            btnLeft.setText(R.string.app_cancel)
             btnLeft.setOnClickListener { finish() }
             btnRight.setText(R.string.app_confirm)
             btnRight.setOnClickListener {
