@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import com.aaron.yespdf.common.statistic.Statistic
+import com.aaron.yespdf.common.utils.GreyUI
 import com.aaron.yespdf.common.utils.NotchUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +40,8 @@ abstract class CommonActivity : AppCompatActivity(), CoroutineScope {
         if (isAdaptNotch()) {
             NotchUtils.checkNotch(window)
         }
+
+        GreyUI.grey(window, Settings.globalGrey)
     }
 
     override fun onResume() {

@@ -98,6 +98,7 @@
     <string name="app_keep_screen_on">屏幕常亮</string>
     <string name="app_linear_layout">线性布局</string>
     <string name="app_scroll_shortcut">快捷缩放</string>
+    <string name="app_global_grey">全局灰度(实验)</string>
     <string name="app_max_recent_count">最近显示数量</string>
     <string name="app_lock_landscape">锁定横屏</string>
     <string name="app_export_image">导出图片</string>
