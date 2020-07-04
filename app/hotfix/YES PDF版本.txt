@@ -1,5 +1,0 @@
-Tinker: tinker patch directory: /data/user/0/com.aaron.yespdf/tinker
-
-v1.1.2(base-1.1.2): 1.修复导入时基于文件夹命名的选项无效的问题；2.尝试修复AllAdapter coverList空指针的问题
-v1.1.3(base-1.1.3): 1.增加拖拽排序；2.增加导出图片
-v1.1.4(base-1.1.4): 1.支持更慢速度的自动滚动
