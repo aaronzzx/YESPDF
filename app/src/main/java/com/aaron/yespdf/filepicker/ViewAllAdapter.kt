@@ -2,6 +2,7 @@ package com.aaron.yespdf.filepicker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.StateListDrawable
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,8 @@ import com.blankj.utilcode.util.TimeUtils
 import kotlinx.android.synthetic.main.app_recycler_item_filepicker.view.*
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Aaron aaronzzxup@gmail.com
@@ -84,6 +87,21 @@ class ViewAllAdapter(
         }
         val itemView = inflater.inflate(R.layout.app_recycler_item_filepicker, parent, false)
         val holder = ViewHolder(itemView)
+        holder.itemView.app_cb.apply {
+            val language = Locale.getDefault().language
+            val resources = context.resources
+            val sel = resources.getDrawable(R.drawable.app_sel_select_single) as StateListDrawable
+            val checked = resources.getDrawable(R.drawable.app_ic_check_circle_red_24dp)
+            val normal = resources.getDrawable(R.drawable.app_ic_unchecked_grey_24dp)
+            sel.addState(intArrayOf(android.R.attr.state_checked), checked)
+            if ("en" == language) {
+                sel.addState(intArrayOf(-android.R.attr.state_enabled), resources.getDrawable(R.drawable.app_ic_imported_en))
+            } else {
+                sel.addState(intArrayOf(-android.R.attr.state_enabled), resources.getDrawable(R.drawable.app_ic_imported))
+            }
+            sel.addState(intArrayOf(), normal)
+            buttonDrawable = sel
+        }
         holder.itemView.setOnClickListener {
             val pos = if (itemCount == fileList.size) holder.adapterPosition else holder.adapterPosition - 1
             val file = filterList[pos]
@@ -135,7 +153,7 @@ class ViewAllAdapter(
                 holder.itemView.app_iv_next.visibility = View.GONE
                 holder.itemView.app_cb.visibility = View.VISIBLE
                 holder.itemView.app_cb.setPadding(0, 0, 0, 0)
-                if (file.name.endsWith(".pdf")) {
+                if (file.name.endsWith(".pdf") || file.name.endsWith(".PDF")) {
                     holder.itemView.app_iv_icon.setImageResource(R.drawable.app_ic_pdf)
                 }
                 //判断是否已导入

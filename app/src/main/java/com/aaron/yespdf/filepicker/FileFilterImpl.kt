@@ -8,6 +8,6 @@ import java.io.FileFilter
  */
 internal class FileFilterImpl : FileFilter {
     override fun accept(file: File): Boolean {
-        return !file.name.startsWith(".") && (file.isDirectory || file.name.endsWith(".pdf"))
+        return !file.name.startsWith(".") && (file.isDirectory || file.name.endsWith(".pdf") || file.name.endsWith(".PDF"))
     }
 }

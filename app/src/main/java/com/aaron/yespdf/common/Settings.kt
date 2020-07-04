@@ -23,6 +23,7 @@ object Settings {
     private const val SP_SCROLL_SHORTCUT = "SP_SCROLL_SHORTCUT"
     private const val SP_AUTO_SCROLL_TIPS = "SP_AUTO_SCROLL_TIPS"
     private const val SP_FIRST_CREATE_SHORTCUT = "SP_FIRST_CREATE_SHORTCUT"
+    private const val SP_GLOBAL_GREY = "SP_GLOBAL_GREY"
 
     var lockLandscape: Boolean
         get() = SPStaticUtils.getBoolean(SP_LOCK_LANDSCAPE, false)
@@ -81,4 +82,11 @@ object Settings {
     var firstCreateShortcut: Boolean
         get() = SPStaticUtils.getBoolean(SP_FIRST_CREATE_SHORTCUT, true)
         set(value) = SPStaticUtils.put(SP_FIRST_CREATE_SHORTCUT, value)
+
+    /**
+     * 全局灰度开关
+     */
+    var globalGrey: Boolean
+        get() = SPStaticUtils.getBoolean(SP_GLOBAL_GREY, false)
+        set(value) = SPStaticUtils.put(SP_GLOBAL_GREY, value)
 }

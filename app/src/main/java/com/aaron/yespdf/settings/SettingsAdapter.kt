@@ -14,6 +14,7 @@ import com.aaron.yespdf.R
 import com.aaron.yespdf.common.App
 import com.aaron.yespdf.common.Settings
 import com.aaron.yespdf.common.event.MaxRecentEvent
+import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.ConvertUtils
 import kotlinx.android.synthetic.main.app_recycler_item_settings_recent_count.view.*
 import kotlinx.android.synthetic.main.app_recycler_item_settings_seekbar.view.*
@@ -81,6 +82,10 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             POS_KEEP_SCREEN_ON -> Settings.keepScreenOn = switcher.isChecked
             POS_LINEAR_LAYOUT -> Settings.linearLayout = switcher.isChecked
             POS_SCROLL_SHORTCUT -> Settings.scrollShortCut = switcher.isChecked
+            POS_GLOBAL_GREY -> {
+                Settings.globalGrey = switcher.isChecked
+                switcher.postDelayed({ AppUtils.relaunchApp(true) }, 500L)
+            }
         }
     }
 
@@ -111,6 +116,13 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                     POS_SCROLL_SHORTCUT -> {
                         viewHolder.itemView.app_tv_title.setText(R.string.app_scroll_shortcut)
                         viewHolder.itemView.app_switch.isChecked = Settings.scrollShortCut
+                    }
+                    POS_GLOBAL_GREY -> {
+                        if ((viewHolder.itemView.context as SettingsActivity).fromPreview) {
+                            viewHolder.itemView.isEnabled = false
+                        }
+                        viewHolder.itemView.app_tv_title.setText(R.string.app_global_grey)
+                        viewHolder.itemView.app_switch.isChecked = Settings.globalGrey
                     }
                 }
             }
@@ -164,7 +176,7 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     }
 
     companion object {
-        private const val ITEM_COUNT = 8
+        private const val ITEM_COUNT = 9
 
         private const val TYPE_SWITCH = 0
         private const val TYPE_SEEKBAR = 1
@@ -176,8 +188,9 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         private const val POS_KEEP_SCREEN_ON = 3
         private const val POS_LINEAR_LAYOUT = 4
         private const val POS_SCROLL_SHORTCUT = 5
-        private const val POS_NUM_PICKER = 6
-        private const val POS_SCROLL_LEVEL = 7
+        private const val POS_GLOBAL_GREY = 6
+        private const val POS_NUM_PICKER = 7
+        private const val POS_SCROLL_LEVEL = 8
     }
 
     init {

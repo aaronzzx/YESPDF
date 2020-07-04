@@ -24,6 +24,7 @@ import com.aaron.yespdf.common.bean.PDF
 import com.aaron.yespdf.common.bean.Shortcut
 import com.aaron.yespdf.common.event.AllEvent
 import com.aaron.yespdf.common.utils.DialogUtils
+import com.aaron.yespdf.common.utils.GreyUI
 import com.aaron.yespdf.common.utils.ShortcutUtils
 import com.aaron.yespdf.preview.PreviewActivity
 import com.blankj.utilcode.util.KeyboardUtils
@@ -104,6 +105,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     override fun onStart() {
         super.onStart()
         dialog?.window?.run {
+            GreyUI.grey(this, Settings.globalGrey)
             val lp = this.attributes
             lp.gravity = Gravity.CENTER
             lp.dimAmount = 0.0f
@@ -334,6 +336,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
             } else {
                 val pdf = pdfList[position]
                 PreviewActivity.start(context!!, pdf)
+                dismissAllowingStateLoss()
             }
         }
         adapter.setOnItemDragListener(object : OnItemDragListener {
@@ -389,7 +392,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                     cancelSelect()
                 }
                 else -> {
-                    dismiss()
+                    dismissAllowingStateLoss()
                 }
             }
         }

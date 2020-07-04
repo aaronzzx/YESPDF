@@ -6,12 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.Unbinder
 import com.aaron.yespdf.R
-import com.aaron.yespdf.R2
 import com.aaron.yespdf.common.CommonActivity
 import com.github.anzewei.parallaxbacklayout.ParallaxBack
 import com.github.anzewei.parallaxbacklayout.ParallaxHelper
@@ -19,6 +14,8 @@ import kotlinx.android.synthetic.main.app_activity_settings.*
 
 @ParallaxBack
 class SettingsActivity : CommonActivity() {
+
+    var fromPreview = false
 
     override fun layoutId(): Int {
         return R.layout.app_activity_settings
@@ -30,8 +27,10 @@ class SettingsActivity : CommonActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val data = intent
-        disableSwipeBack(data != null && data.getBooleanExtra(EXTRA_FROM_PREVIEW, false))
+        intent?.apply {
+            fromPreview = getBooleanExtra(EXTRA_FROM_PREVIEW, false)
+        }
+        disableSwipeBack(fromPreview)
         initView()
     }
 

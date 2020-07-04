@@ -8,6 +8,7 @@ import android.view.Window;
 import androidx.annotation.StyleRes;
 
 import com.aaron.yespdf.R;
+import com.aaron.yespdf.common.Settings;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -19,6 +20,7 @@ public final class DialogUtils {
     public static Dialog createDialog(Context context, int layoutId) {
         Dialog dialog = new Dialog(context);
         Window window = dialog.getWindow();
+        GreyUI.INSTANCE.grey(window, Settings.INSTANCE.getGlobalGrey());
         if (window != null) {
             window.setWindowAnimations(R.style.AppDialogAnim);
             window.setBackgroundDrawableResource(android.R.color.transparent);
@@ -32,6 +34,7 @@ public final class DialogUtils {
     public static Dialog createDialog(Context context, View view) {
         Dialog dialog = new Dialog(context);
         Window window = dialog.getWindow();
+        GreyUI.INSTANCE.grey(window, Settings.INSTANCE.getGlobalGrey());
         if (window != null) {
             window.setWindowAnimations(R.style.AppDialogAnim);
             window.setBackgroundDrawableResource(android.R.color.transparent);
@@ -51,6 +54,7 @@ public final class DialogUtils {
             behavior.setHideable(false);
         }
         Window window = dialog.getWindow();
+        GreyUI.INSTANCE.grey(window, Settings.INSTANCE.getGlobalGrey());
         if (window != null) {
             window.setWindowAnimations(R.style.AppBottomDialogAnim);
             window.findViewById(R.id.design_bottom_sheet)
@@ -68,6 +72,7 @@ public final class DialogUtils {
             behavior.setHideable(false);
         }
         Window window = dialog.getWindow();
+        GreyUI.INSTANCE.grey(window, Settings.INSTANCE.getGlobalGrey());
         if (window != null) {
             window.setWindowAnimations(animStyle);
             if (transparentBg) {

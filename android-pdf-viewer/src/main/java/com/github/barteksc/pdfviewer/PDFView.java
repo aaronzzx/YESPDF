@@ -102,6 +102,7 @@ public class PDFView extends RelativeLayout {
     public static final float DEFAULT_MAX_SCALE = 3.0f;
     public static final float DEFAULT_MID_SCALE = 1.75f;
     public static final float DEFAULT_MIN_SCALE = 0.25f;
+    public static final float DEFAULT_SCALE = 1.00f;
 
     private float minZoom = DEFAULT_MIN_SCALE;
     private float midZoom = DEFAULT_MID_SCALE;
@@ -1141,7 +1142,6 @@ public class PDFView extends RelativeLayout {
     }
 
     public void zoomWithAnimation(float scale) {
-
         animationManager.startZoomAnimation(getWidth() / 2, getHeight() / 2, zoom, scale);
     }
 

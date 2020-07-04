@@ -130,7 +130,9 @@
         android:background="@color/app_preview_bar_bg"
         android:visibility="gone"
         android:alpha="0.0"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:visibility="visible"
+        tools:alpha="1.0">
 
         <LinearLayout
             android:layout_width="match_parent"

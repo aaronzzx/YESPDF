@@ -32,6 +32,7 @@ import com.aaron.yespdf.common.utils.NotchUtils
 import com.aaron.yespdf.common.utils.PdfUtils
 import com.aaron.yespdf.settings.SettingsActivity.Companion.start
 import com.blankj.utilcode.util.*
+import com.github.barteksc.pdfviewer.PDFView
 import com.github.barteksc.pdfviewer.PDFView.Configurator
 import com.google.gson.reflect.TypeToken
 import com.shockwave.pdfium.PdfDocument
@@ -149,7 +150,7 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                     password = charSequence.toString()
                 }
             })
-            btnLeft.setText(R.string.app_do_not_delete)
+            btnLeft.setText(R.string.app_cancel)
             btnLeft.setOnClickListener { finish() }
             btnRight.setText(R.string.app_confirm)
             btnRight.setOnClickListener {
@@ -234,6 +235,20 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     override fun onStart() {
         super.onStart()
         enterFullScreen()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!Settings.scrollShortCut) {
+            app_pdfview.apply {
+                minZoom = PDFView.DEFAULT_SCALE
+                if (app_pdfview.zoom != PDFView.DEFAULT_SCALE) {
+                    zoomWithAnimation(minZoom)
+                }
+            }
+        } else {
+            app_pdfview.minZoom = PDFView.DEFAULT_MIN_SCALE
+        }
     }
 
     override fun onPause() {

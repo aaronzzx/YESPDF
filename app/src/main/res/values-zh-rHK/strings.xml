@@ -1,0 +1,138 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_recent">最近</string>
+    <string name="app_all">全部</string>
+    <string name="app_auto_scan">自動掃描</string>
+    <string name="app_scan_result">掃描結果(%d)</string>
+    <string name="app_scan_right_now">立即掃描</string>
+    <string name="app_stop_scan">停止掃描</string>
+    <string name="app_already_scan">已掃描 %d 個文件</string>
+    <string name="app_find">找到：PDF(%d)</string>
+    <string name="app_view_all">瀏覽全部</string>
+    <string name="app_more">更多</string>
+    <string name="app_select_all">全選</string>
+    <string name="app_file_is_empty">文件為空</string>
+    <string name="app_cur_page_parse_error">當前頁面：%d 解析錯誤</string>
+    <string name="app_need_verify_password">需要驗證密碼</string>
+    <string name="app_password_error">密碼錯誤</string>
+    <string name="app_group_name_existed">已存在分組名</string>
+    <string name="app_type_new_group_name">輸入新的分組名</string>
+    <string name="app_cancel">取消</string>
+    <string name="app_confirm">確認</string>
+    <string name="app_oop_error">哎呀，出錯了</string>
+    <string name="app_doc_parse_error">文檔解析錯誤</string>
+    <string name="app_exit_cur_content">退出當前頁面</string>
+    <string name="app_notice">注意！</string>
+    <string name="app_whether_delete_recent">本次操作將會刪除 %d 個最近閲讀記錄（不清楚閲讀進度），是否繼續？</string>
+    <string name="app_whether_delete_all">本次操作將會刪除 %d 本書籍（包含閲讀進度與書簽等，不影響源文件），是否繼續？</string>
+    <string name="app_whether_delete_collection">本次操作將會刪除 %d 個分組（包含分組内所有書籍信息等，不影響源文件），是否繼續？</string>
+    <string name="app_delete_local_files">刪除本地文件</string>
+    <string name="app_delete">删除</string>
+    <string name="app_wechat_pay">微信付款</string>
+    <string name="app_gift_description">如果您覺得用著還不錯，歡迎捐贈！\n\n如果出現跳轉未保存圖片的情況，請點擊“打開二維碼”\n\付款時認準「aaronzzx」</string>
+    <string name="app_open_qrcode">打開二維碼</string>
+    <string name="app_open_wechat_scanner">跳轉微信掃一掃</string>
+    <string name="app_screenshot">截圖進入微信選擇圖片掃碼或使用另一部手機掃碼</string>
+    <string name="app_wechat_scan_notice">從微信相冊中選取收款碼</string>
+    <string name="app_not_support_empty_string">不支持空字符</string>
+    <string name="app_regrouping">重新分組</string>
+    <string name="app_group">分組</string>
+    <string name="app_exist_group">現有分組</string>
+    <string name="app_have_no_group">沒有分組信息</string>
+    <string name="app_have_no_file">沒有文件信息</string>
+    <string name="app_add_new_group">新建分組</string>
+    <string name="app_how_to_group">如何分組？</string>
+    <string name="app_base_on_folder_name">以文件夾命名</string>
+    <string name="app_confirm_name">確定命名</string>
+    <string name="app_import_to_existed">導入到現有分組</string>
+    <string name="app_importing">正在導入「%s」</string>
+    <string name="app_stop_import">停止導入</string>
+    <string name="app_email_app_not_found">找不到郵箱應用程式</string>
+    <string name="app_db_is_upgrading">數據庫升級中…</string>
+    <string name="app_auto_scroll_tips">單擊音量鍵呼出菜單\單擊屏幕進行暫停、開始\拖動底部進度條改變滾動速度</string>
+    <string name="app_got_it">知道了</string>
+    <string name="app_not_support_shortcut">Android 7.1 以下不支持快捷方式</string>
+    <string name="app_not_support_launcher_shortcut">Android 8.0 以下不支持創建桌面快捷方式</string>
+    <string name="app_shortcut_max">每次只能選擇 %d 個 PDF(s) 進行快捷方式創建</string>
+    <string name="app_first_create_shortcut_tips">如果快捷方式未創建成功，請檢查是否已打開快捷方式權限</string>
+
+    <string name="app_import">導入</string>
+    <string name="app_import_count">導入(%d)</string>
+    <string name="app_selected_count">已選中(%d)</string>
+    <string name="app_backup">備份</string>
+    <string name="app_recovery">恢復</string>
+    <string name="app_backup_and_recovery">備份與恢復</string>
+    <string name="app_ok">好的</string>
+    <string name="app_backup_completed">備份完成，總計：%d，失敗：%d</string>
+    <string name="app_recovery_completed">恢復完成，總計：%d，失敗：%d</string>
+    <string name="app_backup_select_must_not_be_empty">請先選擇分組</string>
+    <string name="app_backup_tips">1. 備份文件存放在 /storage/emulated/0/Android/data/com.aaron.yespdf/files 下，請移動到其他地方以免應用數據清除導致備份丟失\n2. 恢復文件時同樣將備份文件放在原始目錄下，然後點擊按鈕進行恢復\n3. 請不要編輯文件，以免造成數據損壞</string>
+    <string name="app_about">關於</string>
+    <string name="app_settings">設定</string>
+    <string name="app_previous_chapter">上一章</string>
+    <string name="app_next_chapter">下一章</string>
+    <string name="app_content">目錄</string>
+    <string name="app_have_no_content">沒有目錄信息</string>
+    <string name="app_read_method">閲讀方式</string>
+    <string name="app_read_method_horizontal">橫向閲讀</string>
+    <string name="app_read_method_vertical">縱向閲讀</string>
+    <string name="app_bookmark">書簽</string>
+    <string name="app_have_no_add_bookmark">沒有添加書簽</string>
+    <string name="app_have_no_recent">沒有閲讀記錄</string>
+    <string name="app_search_null">搜索不到文件</string>
+    <string name="app_search">搜索</string>
+    <string name="app_have_no_all">沒有添加文件</string>
+    <string name="app_auto_scroll">自動滾動</string>
+    <string name="app_total">共 %d 本</string>
+    <string name="app_already_read">已讀 %s</string>
+    <string name="app_item">%d項&#160; - &#160;</string>
+    <string name="app_horizontal_does_not_support_auto_scroll">橫向閲讀不支持自動滾動</string>
+    <string name="app_scroll_velocity">滾動速度</string>
+    <string name="app_cur_level">當前等級：%d</string>
+    <string name="app_show_status_bar">顯示狀態欄</string>
+    <string name="app_click_flip_page">點擊翻頁</string>
+    <string name="app_keep_screen_on">屏幕常亮</string>
+    <string name="app_linear_layout">綫性佈局</string>
+    <string name="app_scroll_shortcut">快捷縮放</string>
+    <string name="app_global_grey">全局灰度(實驗)</string>
+    <string name="app_max_recent_count">最近顯示數量</string>
+    <string name="app_lock_landscape">鎖定橫屏</string>
+    <string name="app_export_image">導出圖片</string>
+    <string name="app_clip">裁切</string>
+    <string name="app_export_image_succeed">導出成功，圖片存放在根目錄/Pictures/YESPDF</string>
+    <string name="app_not_support_external_open">暫不支持外部資源</string>
+
+    <string name="app_delete_completed">刪除成功</string>
+    <string name="app_import_need_storage_permission">導入文件需要存儲權限噢 :)</string>
+    <string name="app_backup_need_storage_permission">備份文件需要存儲權限噢 (:</string>
+    <string name="app_import_file">導入文件</string>
+    <string name="app_storage_device">存儲設備</string>
+    <string name="app_have_not_select">還沒選擇文件噢~</string>
+    <string name="app_import_success">導入成功</string>
+    <string name="app_import_failure">導入失敗</string>
+    <string name="app_wait_a_moment">請稍後…</string>
+    <string name="app_overview">概覽</string>
+    <string name="app_open_source">開源庫</string>
+    <string name="app_introduce">介紹</string>
+    <string name="app_feedback">反饋</string>
+    <string name="app_source_code">源碼</string>
+    <string name="app_rate_app">給個好評</string>
+    <string name="app_gift">捐贈(微信)</string>
+    <string name="app_feedback_title">請盡可能詳細描述您的問題或建議，不要刪除或修改下列設備信息。</string>
+    <string name="app_have_no_install_coolapk">請先安裝酷安客戶端</string>
+    <string name="app_have_no_install_wechat">請先安裝微信客戶端</string>
+
+    <!-- 设置项 -->
+    <string name="app_color_reverse">顔色反轉</string>
+    <string name="app_volume_control">音量鍵翻頁</string>
+
+    <string-array name="max_recent_count" tools:ignore="ResourceName">
+        <item>3</item>
+        <item>6</item>
+        <item>9</item>
+        <item>12</item>
+        <item>15</item>
+        <item>不限</item>
+    </string-array>
+
+</resources>

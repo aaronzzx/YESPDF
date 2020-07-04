@@ -4,14 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
 
-apply plugin: 'bugly'
-//apply from: 'tinker-support.gradle'
-// 上传符号表插件
-bugly {
-    debug  = false
-    appId  = 'fd084373ed' // 注册时分配的App ID
-    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
-}
+//apply plugin: 'bugly'
+////apply from: 'tinker-support.gradle'A
+//// 上传符号表插件
+//bugly {
+//    debug  = false
+//    appId  = 'fd084373ed' // 注册时分配的App ID
+//    appKey = 'a4ad086c-1c43-4dcf-92eb-ee0454f4988d' // 注册时分配的App Key
+//}
 
 android {
     compileSdkVersion 29
@@ -21,8 +21,8 @@ android {
         applicationId "com.aaron.yespdf"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 28
-        versionName "2.1.9"
+        versionCode 29
+        versionName "2.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -90,7 +90,7 @@ greendao {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.2.0-alpha01'
+    implementation 'com.google.android.material:material:1.3.0-alpha01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -107,18 +107,26 @@ dependencies {
     implementation 'com.github.mmin18:realtimeblurview:1.2.1'
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.github.bmelnychuk:atv:1.2.9'
-    implementation 'com.tencent.bugly:crashreport_upgrade:1.4.0'
-    implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
+//    implementation 'com.tencent.bugly:crashreport_upgrade:1.4.0'
+//    implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
 //    implementation 'com.tencent.tinker:tinker-android-lib:1.9.9'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
-    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.core:core-ktx:1.3.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2'
 
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.46'
 //    implementation 'io.github.yuweiguocn:GreenDaoUpgradeHelper:v2.2.1'
+
+    implementation  'com.umeng.umsdk:common:9.1.0' // (必选)
+    implementation  'com.umeng.umsdk:asms:1.1.3' // asms包依赖(必选)
+    implementation 'com.umeng.umsdk:crash:0.0.4' // native crash包依赖(必选)
+    implementation  'com.umeng.umsdk:oaid_lenovo:1.0.0' // (可选)
+    implementation  'com.umeng.umsdk:oaid_mi:1.0.0' // (可选)
+    implementation  'com.umeng.umsdk:oaid_oppo:1.0.4' // (可选)
+    implementation  'com.umeng.umsdk:oaid_vivo:1.0.0.1' // (可选)
 }
 repositories {
     mavenCentral()
