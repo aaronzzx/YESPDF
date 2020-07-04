@@ -14,13 +14,13 @@
         tools:replace="name,icon,label,theme,android:allowBackup">
         <activity
             android:name=".main.SearchActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".filepicker.ScanActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".main.MainActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/AppSplash"
             android:launchMode="singleTask">
             <intent-filter>
@@ -32,7 +32,7 @@
         <activity
             android:name=".preview.PreviewActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -43,13 +43,13 @@
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".about.AboutActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".filepicker.SelectActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
