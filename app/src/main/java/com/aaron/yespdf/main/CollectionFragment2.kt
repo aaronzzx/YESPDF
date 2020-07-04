@@ -334,6 +334,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
             } else {
                 val pdf = pdfList[position]
                 PreviewActivity.start(context!!, pdf)
+                dismissAllowingStateLoss()
             }
         }
         adapter.setOnItemDragListener(object : OnItemDragListener {
@@ -389,7 +390,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
                     cancelSelect()
                 }
                 else -> {
-                    dismiss()
+                    dismissAllowingStateLoss()
                 }
             }
         }

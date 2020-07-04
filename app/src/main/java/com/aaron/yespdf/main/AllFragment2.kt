@@ -201,7 +201,7 @@ class AllFragment2 : CommonFragment(), IOperation {
                 (activity as MainActivity).selectResult(size, size == coverList.size)
             } else {
                 if (dialogFragment != null) {
-                    dialogFragment?.dismiss()
+                    dialogFragment?.dismissAllowingStateLoss()
                     dialogFragment = null
                 }
                 val name = coverList[position].name
