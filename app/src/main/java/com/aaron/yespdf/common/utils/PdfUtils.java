@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
 import android.os.ParcelFileDescriptor;
 
+import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.StringUtils;
 
 import java.io.File;
@@ -24,7 +25,11 @@ public final class PdfUtils {
             e.printStackTrace();
         } finally {
             if (page != null) {
-                Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
+                int screenW = ScreenUtils.getScreenWidth();
+                int screenH = ScreenUtils.getScreenHeight();
+                int width = Math.min(screenW, screenH);
+                float ratio = page.getWidth() / 1.0f / page.getHeight();
+                Bitmap bitmap = Bitmap.createBitmap(width, (int) (width / ratio), Bitmap.Config.ARGB_8888);
                 page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
                 return bitmap;
             }
