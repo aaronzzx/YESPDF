@@ -94,7 +94,7 @@ internal class RecentAdapter(pickCallback: IPickCallback<PDF>, sourceList: List<
                 checkArray.put(position, isChecked)
                 pickCallback?.onSelected(selectList, selectList.size == itemCount)
             } else {
-                val pdf = sourceList[position]
+                val pdf = sourceList.getOrNull(position) ?: return
                 val cur = System.currentTimeMillis()
                 @SuppressLint("SimpleDateFormat") val df: DateFormat = SimpleDateFormat("yyyyMMddHHmmss")
                 pdf.latestRead = TimeUtils.millis2String(cur, df).toLong()

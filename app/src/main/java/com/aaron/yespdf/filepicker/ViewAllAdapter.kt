@@ -206,6 +206,9 @@ class ViewAllAdapter(
         checkArray.clear()
         selectList.clear()
         for (file in filterList) {
+            if (file == null) {
+                continue
+            }
             if (file.isFile && importedList?.contains(file.absolutePath) == false) {
                 if (fileCount() == fileList.size) {
                     checkArray.put(filterList.indexOf(file), selectAll)
