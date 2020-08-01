@@ -98,6 +98,7 @@
     <string name="app_linear_layout">Linear Layout</string>
     <string name="app_scroll_shortcut">Quick Zoom</string>
     <string name="app_global_grey">Global Grayscale (Experimental)</string>
+    <string name="app_hide_scroll_level_bar">Hide scroll level bar</string>
     <string name="app_max_recent_count">Recent Display Count</string>
     <string name="app_lock_landscape">Lock Landscape</string>
     <string name="app_export_image">Export Picture</string>

@@ -662,7 +662,11 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 showAutoScrollTipsDialog {
                     enterFullScreen()
                     sbScrollLevel.progress = Settings.scrollLevel.toInt() - 1
-                    sbScrollLevel.visibility = View.VISIBLE
+                    sbScrollLevel.visibility =
+                            if (Settings.hideScrollLevelBar)
+                                View.GONE
+                            else
+                                View.VISIBLE
                     autoDisp = startAutoScroll()
                 }
             } else {

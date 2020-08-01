@@ -135,5 +135,6 @@
         <item>15</item>
         <item>不限</item>
     </string-array>
+    <string name="app_hide_scroll_level_bar">隐藏滚动调节</string>
 
 </resources>

@@ -86,6 +86,7 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                 Settings.globalGrey = switcher.isChecked
                 switcher.postDelayed({ AppUtils.relaunchApp(true) }, 500L)
             }
+            POS_HIDE_SCROLL_LEVEL_BAR -> Settings.hideScrollLevelBar = switcher.isChecked
         }
     }
 
@@ -123,6 +124,10 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                         }
                         viewHolder.itemView.app_tv_title.setText(R.string.app_global_grey)
                         viewHolder.itemView.app_switch.isChecked = Settings.globalGrey
+                    }
+                    POS_HIDE_SCROLL_LEVEL_BAR -> {
+                        viewHolder.itemView.app_tv_title.setText(R.string.app_hide_scroll_level_bar)
+                        viewHolder.itemView.app_switch.isChecked = Settings.hideScrollLevelBar
                     }
                 }
             }
@@ -176,7 +181,7 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     }
 
     companion object {
-        private const val ITEM_COUNT = 9
+        private const val ITEM_COUNT = 10
 
         private const val TYPE_SWITCH = 0
         private const val TYPE_SEEKBAR = 1
@@ -189,8 +194,9 @@ internal class SettingsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         private const val POS_LINEAR_LAYOUT = 4
         private const val POS_SCROLL_SHORTCUT = 5
         private const val POS_GLOBAL_GREY = 6
-        private const val POS_NUM_PICKER = 7
-        private const val POS_SCROLL_LEVEL = 8
+        private const val POS_HIDE_SCROLL_LEVEL_BAR = 7
+        private const val POS_NUM_PICKER = 8
+        private const val POS_SCROLL_LEVEL = 9
     }
 
     init {
