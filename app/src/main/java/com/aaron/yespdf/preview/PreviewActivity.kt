@@ -555,11 +555,19 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
     private fun getData(savedInstanceState: Bundle?) {
         intent.apply {
             uri = data
+            val uri = this@PreviewActivity.uri
             pdf = getParcelableExtra(EXTRA_PDF)
             // 如果都为空，那一般来自快捷方式，直接通过路径查找
             if (uri == null && pdf == null) {
                 val path = getStringExtra(EXTRA_PATH)
                 path?.let { pdf = DBHelper.queryPDFByPath(it) }
+            } else if (uri != null) {
+                val file = UriUtils.uri2File(uri)
+                val path = if (file != null) UriUtils.uri2File(uri).absolutePath else null
+                path?.also {
+                    DBHelper.insert(listOf(it))
+                    pdf = DBHelper.queryPDFByPath(it)
+                }
             }
             pdf?.let {
                 curPage = savedInstanceState?.getInt(BUNDLE_CUR_PAGE) ?: it.curPage
@@ -967,14 +975,14 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
         })
         var configurator: Configurator
         when {
-            uri != null -> {
-                val file = UriUtils.uri2File(uri)
-                val path = if (file != null) UriUtils.uri2File(uri).absolutePath else null
-                app_tv_pageinfo.text = "1 / $pageCount"
-                val bookName = path?.substring(path.lastIndexOf("/") + 1, path.length - 4) ?: ""
-                toolbar?.post { toolbar?.title = bookName }
-                configurator = app_pdfview.fromUri(uri).defaultPage(curPage)
-            }
+//            uri != null -> {
+//                val file = UriUtils.uri2File(uri)
+//                val path = if (file != null) UriUtils.uri2File(uri).absolutePath else null
+//                app_tv_pageinfo.text = "1 / $pageCount"
+//                val bookName = path?.substring(path.lastIndexOf("/") + 1, path.length - 4) ?: ""
+//                toolbar?.post { toolbar?.title = bookName }
+//                configurator = app_pdfview.fromUri(uri).defaultPage(curPage)
+//            }
             pdf != null -> {
                 val bkJson = pdf.bookmark // 获取书签 json
                 val bkList = GsonUtils.fromJson<List<Bookmark>>(bkJson, object : TypeToken<List<Bookmark?>?>() {}.type)
