@@ -135,7 +135,6 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
         if (args != null) {
             name = args.getString(BUNDLE_NAME)
             app_et_name.setText(name)
-            pdfList.addAll(DataManager.getPdfList(name))
         }
         initView()
     }
@@ -143,6 +142,11 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
     override fun onResume() {
         super.onResume()
         isNeedUpdateDb = false
+        pdfList.apply {
+            clear()
+            addAll(DataManager.getPdfList(name))
+            adapter.setNewData(pdfList)
+        }
         // 监听返回键
         val view = view
         if (view != null) {
@@ -336,7 +340,7 @@ class CollectionFragment2 : DialogFragment(), IOperation, GroupingAdapter.Callba
             } else {
                 val pdf = pdfList[position]
                 PreviewActivity.start(context!!, pdf)
-                dismissAllowingStateLoss()
+//                dismissAllowingStateLoss()
             }
         }
         adapter.setOnItemDragListener(object : OnItemDragListener {
