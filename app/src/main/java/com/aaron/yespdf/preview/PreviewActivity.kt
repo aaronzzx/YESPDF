@@ -565,8 +565,11 @@ class PreviewActivity : CommonActivity(), IActivityInterface, View.OnClickListen
                 val file = UriUtils.uri2File(uri)
                 val path = if (file != null) UriUtils.uri2File(uri).absolutePath else null
                 path?.also {
-                    DBHelper.insert(listOf(it))
                     pdf = DBHelper.queryPDFByPath(it)
+                    if (pdf == null) {
+                        DBHelper.insert(listOf(it))
+                        pdf = DBHelper.queryPDFByPath(it)
+                    }
                 }
             }
             pdf?.let {

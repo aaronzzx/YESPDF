@@ -131,8 +131,8 @@ object DBHelper {
     }
 
     @JvmStatic
-    fun queryPDFByPath(path: String): PDF {
-        return sDaoSession.pdfDao.queryRaw("where PATH = ?", path)[0]
+    fun queryPDFByPath(path: String): PDF? {
+        return sDaoSession.pdfDao.queryRaw("where PATH = ?", path).getOrNull(0)
     }
 
     private fun queryPDF(dir: String?): List<PDF> {
